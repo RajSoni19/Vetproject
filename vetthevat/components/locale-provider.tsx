@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { usePathname } from "next/navigation";
 import { isLocale, localeDirection, message, type Locale, type MessageKey } from "@/lib/i18n/catalog";
 import { applyDomTranslations } from "@/lib/i18n/dom-translator";
+import { machineTranslationAllowed, protectBrandNames } from "@/lib/i18n/translate-scope";
 
 const storageKey = "vtv.preferred-locale.v1";
 type LocaleContextValue = { locale: Locale; setLocale: (locale: Locale) => void; syncAccountLocale: () => Promise<boolean>; t: (key: MessageKey) => string };
@@ -32,46 +33,53 @@ function localeToGoogleLang(loc: Locale): string {
   return "en";
 }
 
-function triggerGoogleTranslate(loc: Locale) {
-  if (typeof window === "undefined" || typeof document === "undefined") return;
-  const lang = localeToGoogleLang(loc);
+function setGoogleCookie(lang: string) {
   const host = window.location.hostname;
+  const value = lang === "en" ? "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC" : `googtrans=/en/${lang}`;
+  document.cookie = `${value}; path=/;`;
+  if (host) { document.cookie = `${value}; domain=${host}; path=/;`; document.cookie = `${value}; domain=.${host}; path=/;`; }
+}
 
-  if (lang === "en") {
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    if (host) {
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${host}; path=/;`;
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.${host}; path=/;`;
-    }
-  } else {
-    document.cookie = `googtrans=/en/${lang}; path=/;`;
-    if (host) {
-      document.cookie = `googtrans=/en/${lang}; domain=${host}; path=/;`;
-      document.cookie = `googtrans=/en/${lang}; domain=.${host}; path=/;`;
-    }
+// Loads Google's page translator once, on public pages only.
+function loadGoogleTranslate() {
+  const w = window as unknown as { googleTranslateElementInit?: () => void; google?: { translate?: { TranslateElement: new (options: object, id: string) => unknown } } };
+  if (document.getElementById("google-translate-script")) return;
+  w.googleTranslateElementInit = () => {
+    if (w.google?.translate) new w.google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "gu,hi,es,ar,fr,de,pt,it,pl,ur,pa,en", autoDisplay: false }, "google_translate_element");
+  };
+  const script = document.createElement("script");
+  script.id = "google-translate-script";
+  script.async = true;
+  script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  document.body.appendChild(script);
+}
+
+// Returns true when Google translates this page (whole sentences), so the
+// word-level DOM translator must stay out of its way.
+function triggerGoogleTranslate(loc: Locale, pathname: string): boolean {
+  if (typeof window === "undefined" || typeof document === "undefined") return false;
+  const lang = localeToGoogleLang(loc);
+  const translated = document.documentElement.classList.contains("translated-ltr") || document.documentElement.classList.contains("translated-rtl");
+  if (lang === "en" || !machineTranslationAllowed(pathname)) {
+    setGoogleCookie("en");
+    // Google cannot cleanly undo a translated page; reload it in English.
+    if (translated) window.location.reload();
+    return false;
   }
-
+  setGoogleCookie(lang);
+  protectBrandNames(document.body);
+  loadGoogleTranslate();
   const applySelect = () => {
     const select = document.querySelector<HTMLSelectElement>(".goog-te-combo");
-    if (select) {
-      if (select.value !== lang) {
-        select.value = lang;
-        select.dispatchEvent(new Event("change"));
-      }
-      return true;
-    }
-    return false;
+    if (!select) return false;
+    if (select.value !== lang) { select.value = lang; select.dispatchEvent(new Event("change")); }
+    return true;
   };
-
   if (!applySelect()) {
     let attempts = 0;
-    const interval = setInterval(() => {
-      attempts++;
-      if (applySelect() || attempts > 20) {
-        clearInterval(interval);
-      }
-    }, 150);
+    const interval = setInterval(() => { attempts++; if (applySelect() || attempts > 60) clearInterval(interval); }, 200);
   }
+  return true;
 }
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
@@ -93,9 +101,11 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = localeDirection(locale);
-    triggerGoogleTranslate(locale);
+    const google = triggerGoogleTranslate(locale, pathname);
     const timer = setTimeout(() => {
-      applyDomTranslations(locale);
+      // Public pages: Google translates whole sentences; the word translator
+      // would leave half-translated text ("कैप्चर every receipt").
+      applyDomTranslations(google ? "en-GB" : locale);
     }, 50);
     return () => clearTimeout(timer);
   }, [locale, pathname]);
@@ -157,7 +167,6 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     updateLocale(next);
     chosenLocale.current = next;
     persistLocal(next);
-    triggerGoogleTranslate(next);
     const sequence = ++writeSequence.current;
     queueAccountPreference(next, sequence);
   }, [persistLocal, queueAccountPreference]);

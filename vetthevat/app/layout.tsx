@@ -109,25 +109,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning>
         <div id="google_translate_element" style={{ display: "none" }} />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              function googleTranslateElementInit() {
-                if (window.google && window.google.translate) {
-                  new window.google.translate.TranslateElement({
-                    pageLanguage: 'en',
-                    includedLanguages: 'gu,hi,es,ar,fr,de,pt,it,pl,ur,pa,en',
-                    autoDisplay: false
-                  }, 'google_translate_element');
-                }
-              }
-            `
-          }}
-        />
-        <script
-          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-          async
-        />
         <LocaleProvider><ToastProvider>{children}</ToastProvider><GlobalLanguageSwitcher /></LocaleProvider>
       </body>
     </html>
