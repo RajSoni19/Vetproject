@@ -17,7 +17,7 @@ export async function webAuthHandler(request:Request,services:WebAuthServices|un
  try{
   const s=configured(services),mutation=request.method!=="GET";if(mutation)protectRequest(request,s.config.origin);
   const reply=(body:unknown,status=200,headers:Record<string,string>={})=>Response.json(body,{status,headers:{...cache,...headers}});
-  if(path==="/api/auth/session"&&mutation){const result=await loginAccount(await jsonBody(request,16000),s);return reply({signedIn:true,redirect:"/app/dashboard"},200,{"set-cookie":cookie(result.token,Math.max(0,Math.floor((result.session.expiresAt-Date.now())/1000)))});}
+  if(path==="/api/auth/session"&&mutation){const result=await loginAccount(await jsonBody(request,16000),s);return reply({signedIn:true,redirect:result.admin?"/super-admin":"/app/dashboard"},200,{"set-cookie":cookie(result.token,Math.max(0,Math.floor((result.session.expiresAt-Date.now())/1000)))});}
   if(path==="/api/auth/register")return reply(await registerAccount(await jsonBody(request,16000),s),202);
   if(path==="/api/auth/forgot-password"||path==="/api/auth/verification")return reply(await requestAccountToken(await jsonBody(request,16000),s,path.endsWith("verification")?"verify_email":"reset_password"),202);
   if(path==="/api/auth/verify-email"||path==="/api/auth/reset-password")return reply(await consumeAccountToken(await jsonBody(request,16000),s,path.endsWith("verify-email")?"verify_email":"reset_password"));

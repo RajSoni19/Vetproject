@@ -25,6 +25,7 @@ vetthevat/.env*
 db-backups/
 *.dump
 *.sql
+!vetthevat/database/**/*.sql
 
 # Binaries & executable tools
 *.exe

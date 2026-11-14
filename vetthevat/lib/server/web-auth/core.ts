@@ -57,7 +57,10 @@ export async function loginAccount(body:unknown,s:WebAuthServices){
  if(!user.email_verified_at&&autoVerify){
   await s.store.transaction(sql=>sql.query("UPDATE web_auth.users SET email_verified_at=now() WHERE id=$1",[user.id]));
  }
- const token=opaqueToken(),session=await s.store.createSession(user.id,tokenHash(token),user.password_hash);return {token,session};
+ const token=opaqueToken(),session=await s.store.createSession(user.id,tokenHash(token),user.password_hash);
+ // Platform administrators go straight to the admin panel after sign-in.
+ let admin=false;try{admin=(await s.store.transaction(sql=>sql.query("SELECT 1 FROM platform_admin.grants WHERE user_id=$1 AND active",[user.id]))).rows.length>0;}catch{/* admin schema absent */}
+ return {token,session,admin};
 }
 export async function requestAccountToken(body:unknown,s:WebAuthServices,kind:"verify_email"|"reset_password"){
  const value=objectBody(body,["email"]),email=emailInput(value.email);await throttle(s,kind,email);let notificationId:string|undefined;

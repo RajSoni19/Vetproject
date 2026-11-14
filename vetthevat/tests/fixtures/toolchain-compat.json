@@ -1,5 +1,5 @@
 {
   "css": "@tailwind base;\n@tailwind components;\n@tailwind utilities;",
   "raw": "bg-primary text-brand-700 border-line md:grid-cols-3 w-[37%] hover:bg-green-50 focus-visible:ring-2 disabled:opacity-60 placeholder:text-muted h-11 rounded-lg px-4 sm:flex-row",
-  "expectedSha256": "83acb6b62dccbb32ca8b591576886dd8d4c21ccbf84feda1d731c7a42ae849bc"
+  "expectedSha256": "35e16691751ab7185244725166102d7ae719ea5be6d29ccbd97a9f087cac05cc"
 }
