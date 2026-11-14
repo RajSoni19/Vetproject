@@ -1,0 +1,208 @@
+﻿{
+    "date":  "2026-10-22",
+    "project":  "D:\\vetthevat",
+    "gitCheckout":  false,
+    "inventoryFile":  "docs/get-started-leads-change-inventory.json",
+    "inventorySelfHash":  "omitted",
+    "files":  [
+                  {
+                      "path":  "app/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "88f2f8c82b2c337dabf1ced421a5d8de5b4ccb7912d5cb0f5696d9832133baa9"
+                  },
+                  {
+                      "path":  "app/app/admin/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "36f539a57ae3e5d097e2d0ac923bed0a899e40fa5cf07cfe0b80e718a9fe4fb2"
+                  },
+                  {
+                      "path":  "app/features/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "154855fe9d317b1e36fd2b6f5afbaaae76a9441c136d6ba07576fd7ca91316d1"
+                  },
+                  {
+                      "path":  "app/privacy/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "4ada7f0dabbc23c253181cd84a22fbfea8c7ac968313c1e03384154e4bfe3d9b"
+                  },
+                  {
+                      "path":  "components/public-shell.tsx",
+                      "status":  "modified",
+                      "sha256":  "882222c61aee40afbae8e77ce36aea7ac54bdf698598f782ae11f8a7e1ff6780"
+                  },
+                  {
+                      "path":  "tests/browser-invoices.cjs",
+                      "status":  "modified",
+                      "sha256":  "cfc99105313cd78e7b7205aa812e14e1cfdb8d13f3054cd0d2da439dbfd8a1f3"
+                  },
+                  {
+                      "path":  "tests/marketing-launch.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "539429965c0f1d29a5f50c40ff060c505075d869e66bdfca1db7559dd5e7ace7"
+                  },
+                  {
+                      "path":  "proxy.ts",
+                      "status":  "modified",
+                      "sha256":  "459a4bcecc82d36f98b36e32c2f418487f7315b74fd281a56738d77eb2ba175f"
+                  },
+                  {
+                      "path":  ".vercelignore",
+                      "status":  "modified",
+                      "sha256":  "d7bd0b7133f5f776761827c805d8dfdd0ef9638e30db08b0587e63bab0993dc4"
+                  },
+                  {
+                      "path":  ".gitignore",
+                      "status":  "modified",
+                      "sha256":  "265812f22ea446e30b11561b82ef7f1da915c71e656a882e097ae89a7358d486"
+                  },
+                  {
+                      "path":  ".env.example",
+                      "status":  "modified",
+                      "sha256":  "ea605ac6e64688eec26c035c766e1ace8370f381d0ea50710e87fdcf15aecdaa"
+                  },
+                  {
+                      "path":  "next.config.ts",
+                      "status":  "modified",
+                      "sha256":  "89c94a1394ffa85c9b63a4210ab8095ff45ca5cd5842ca5493473f422d579398"
+                  },
+                  {
+                      "path":  "app/api/admin/leads/route.ts",
+                      "status":  "added",
+                      "sha256":  "2ee2d242cfbb46cd76cf17cdccb7bfef31a7763a6bb1dfe7acf2f25f3a997950"
+                  },
+                  {
+                      "path":  "app/api/internal/lead-notifications/route.ts",
+                      "status":  "added",
+                      "sha256":  "59a4a069242770365f5337a224bd653e74c7ec8ea96677022737f4d16bf6d493"
+                  },
+                  {
+                      "path":  "app/api/public/leads/route.ts",
+                      "status":  "added",
+                      "sha256":  "7c3511172ff4c4921fdc9d09586d19e4256c258dea8e643b7c688d2af3cabdaf"
+                  },
+                  {
+                      "path":  "app/app/admin/leads/page.tsx",
+                      "status":  "added",
+                      "sha256":  "8df2530eebb744c6d22431c1a42c5a1f3e27425b299440ec44549d3e1f81919c"
+                  },
+                  {
+                      "path":  "app/get-started/page.tsx",
+                      "status":  "added",
+                      "sha256":  "4f031bf03a367538d57ea90440477bb13d6e94ed2bbc5b035b3a4010649069c2"
+                  },
+                  {
+                      "path":  "app/get-started/thank-you/page.tsx",
+                      "status":  "added",
+                      "sha256":  "41c2e93834bd944b815e2a460901f722cca2ef93d9d58c0bdbbeb77b1da2221e"
+                  },
+                  {
+                      "path":  "components/admin-leads.tsx",
+                      "status":  "added",
+                      "sha256":  "13c63c7e5fcccd57bc08f0174627eae2662c5f9b080ad669280045925ed53aff"
+                  },
+                  {
+                      "path":  "components/lead-form.tsx",
+                      "status":  "added",
+                      "sha256":  "8c29f4218dcf3dc2c76c3aa387106f36dd42cf9f2900c258312c8581317af100"
+                  },
+                  {
+                      "path":  "lib/leads/contracts.ts",
+                      "status":  "added",
+                      "sha256":  "f9ee1b1c7e2e406c0b180724b18915967418608ad3bd15b7b220f325be04d334"
+                  },
+                  {
+                      "path":  "lib/server/admin-leads.ts",
+                      "status":  "added",
+                      "sha256":  "4e8ab9839f078df6b85b2f52ca86e8d574656f4fad51b431e45646b11e9b79ed"
+                  },
+                  {
+                      "path":  "lib/server/leads/admin-core.ts",
+                      "status":  "added",
+                      "sha256":  "844c14b4c3e1adb5c49ecb9a58b9eeb317d26aa35cf98b5ebd8a91900788f75f"
+                  },
+                  {
+                      "path":  "lib/server/leads/config.ts",
+                      "status":  "added",
+                      "sha256":  "237c00d38e38cdc39841a2a3a7d937e363ceb0cbdd77dcc89720e730fc43ebf2"
+                  },
+                  {
+                      "path":  "lib/server/leads/core.ts",
+                      "status":  "added",
+                      "sha256":  "15d4f351ff61b38bda219bacc4cb163917457de3e74f04b0b683a8b444c04534"
+                  },
+                  {
+                      "path":  "lib/server/leads/postgres.ts",
+                      "status":  "added",
+                      "sha256":  "2919e177dc0c58312b4249b53815bd31c0b98b3375164d0392b357d142ee5fd7"
+                  },
+                  {
+                      "path":  "lib/server/leads/providers.ts",
+                      "status":  "added",
+                      "sha256":  "9dc1fbf1cd27f3f28ff91c596aad9a073720e821aea7fabdaa454499803a2855"
+                  },
+                  {
+                      "path":  "lib/server/leads/runtime.ts",
+                      "status":  "added",
+                      "sha256":  "86881be415ec5fcdf9a912103d2ff588f2788919853bad7cbaa89a73ac8aa3d4"
+                  },
+                  {
+                      "path":  "lib/server/leads/worker.ts",
+                      "status":  "added",
+                      "sha256":  "193efd5f1f98cd05823ac3ca1bf45ce4d56713582d21899956a8e4be9696327c"
+                  },
+                  {
+                      "path":  "tests/browser-leads.cjs",
+                      "status":  "added",
+                      "sha256":  "2bb1522ebc423520cd7255e2d90ee8ca287ec18f65a3755fcd58aa1ce065df13"
+                  },
+                  {
+                      "path":  "tests/leads.test.cjs",
+                      "status":  "added",
+                      "sha256":  "4cd23ff75399b70b00514aabfb974e710f6ad26adee9d724045128038487927c"
+                  },
+                  {
+                      "path":  "docs/get-started-leads-delivery.md",
+                      "status":  "added",
+                      "sha256":  "1f5308eabf5e08e2dbbe07691a6b66184e6ae430384e44be56985f1799d1fd44"
+                  },
+                  {
+                      "path":  "docs/get-started-leads-verification.json",
+                      "status":  "added",
+                      "sha256":  "396692d8e236926117e371e9e32b588fe40da76ccf35df227e2c396fefe7344d"
+                  },
+                  {
+                      "path":  "docs/previews/leads/confirmation-synthetic-1440.png",
+                      "status":  "added",
+                      "sha256":  "637e812fd7fdddba81f5ebd84eeb9e118cc8c7e23bfd00e6eef0b19d138fee3d"
+                  },
+                  {
+                      "path":  "docs/previews/leads/form-synthetic-1440.png",
+                      "status":  "added",
+                      "sha256":  "fc58b13e9f85c038a84c04cc42f95c1bb2b08d33869cc52a65955fdecc448fe6"
+                  },
+                  {
+                      "path":  "docs/previews/leads/form-synthetic-390.png",
+                      "status":  "added",
+                      "sha256":  "33ae7a7c6287631953614490b7472ecde631425131ed48b09366d97a3b09ed61"
+                  },
+                  {
+                      "path":  "docs/previews/leads/unconfigured-1440.png",
+                      "status":  "added",
+                      "sha256":  "380658e8e75ac31d3d07788b33a929106ff5639694e39b7acd554d7bcbdef1d2"
+                  },
+                  {
+                      "path":  "docs/previews/leads/unconfigured-390.png",
+                      "status":  "added",
+                      "sha256":  "0aaa535fb2b12176997357080531aa5798a6c831e34c3a60b031a2dc8ba8eedd"
+                  },
+                  {
+                      "path":  "database/drafts/leads/001_lead_intake.review.sql",
+                      "status":  "added",
+                      "sha256":  "bf5ae62d01fa68049304ced694a7a77bc08d38e6baaceba896f27cebe695d07f"
+                  }
+              ],
+    "verification":  "docs/get-started-leads-verification.json",
+    "livePersistenceVerified":  false,
+    "realEmailSent":  false,
+    "deployed":  false
+}

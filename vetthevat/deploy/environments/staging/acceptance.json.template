@@ -1,0 +1,16 @@
+{
+  "profile": "staging",
+  "releaseSha256": "<exact-linux-CI-artifact-sha256>",
+  "linux": false,
+  "nonroot": false,
+  "nginx": false,
+  "rls": false,
+  "privateStorage": false,
+  "processing": false,
+  "stripeTest": false,
+  "smtp": false,
+  "restore": false,
+  "workerRecovery": false,
+  "functionalRelease": false,
+  "productionApproval": false
+}

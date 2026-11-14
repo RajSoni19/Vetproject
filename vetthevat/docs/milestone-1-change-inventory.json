@@ -1,0 +1,248 @@
+﻿{
+    "milestone":  "1",
+    "date":  "2026-10-15",
+    "recoverySnapshot":  "D:\\vetthevat\\.recovery\\milestone-1-2026-10-15T00-11-52-282Z",
+    "immutableBackup":  {
+                            "path":  "D:\\vetthevat-backup",
+                            "inspectedFiles":  90,
+                            "changedFiles":  0
+                        },
+    "unchangedBusinessModules":  [
+                                     "lib/money.ts",
+                                     "lib/vat-calculations.ts",
+                                     "lib/invoice-rules.ts",
+                                     "lib/invoice-parsing.ts",
+                                     "lib/document-extraction.ts",
+                                     "lib/services.ts",
+                                     "lib/workspace.ts"
+                                 ],
+    "files":  [
+                  {
+                      "path":  ".gitignore",
+                      "status":  "modified",
+                      "sha256":  "d3794dd97ee8c4e9268e14a05b2f80c5f25558d5e657d9231c4626c382ce0443",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/dashboard/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "dcb9d5ac242b670db9f43064bc6517b33686d89b26671d5dd03b88a0d0a381fc",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/invoices/[id]/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "72034bdf90033f5ce32aa5f6592883d7b5c04e09f880594cc938d30d1d2cbbd0",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/invoices/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "3df66e6180082fdc445f6ba3efc6ed7d22a613181732ad167117e421d43b9f62",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/invoices/upload/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "f4b9f916b1c88863941e96db0603ead37c04345b4b3a34566e2b1703cb29dd83",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/layout.tsx",
+                      "status":  "modified",
+                      "sha256":  "bc7d4f607821e59c9a47f400000cdca6c52af9428c2ed3ce30fc6a49c4a98cdf",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/settings/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "963597643d15e34f679d5a46270f240d9f938022d0c5546b493485bc247428f1",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/app/support/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "7e40201be5d42f18879b1a3383140c70a38d2ce93ec7dbb36aecd41021e8b5c6",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "app/globals.css",
+                      "status":  "modified",
+                      "sha256":  "b62cc1c7c164c48e45a048266f5dfecb37dc6287f035a06685205d78c5fb6d54",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/app-shell.tsx",
+                      "status":  "modified",
+                      "sha256":  "a695c2b8bd981a69fab513d81cfbe6c1a2629f8528665492946f69f67a410584",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/app-state.tsx",
+                      "status":  "modified",
+                      "sha256":  "a05be79d62808b4faff3fccbecf26857b49bcff4c26ca38991045a549856af15",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/document-viewer.tsx",
+                      "status":  "modified",
+                      "sha256":  "68b1f9808751f71503d403d03ff8cf96587358c4d1f0efe0056bba18f8a55434",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/invoice-editor.tsx",
+                      "status":  "modified",
+                      "sha256":  "bf074fd57ee9b6dba366a7065e277e009c180ee510c6c7dbb94804a03b00233d",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/invoice-review-workflow.tsx",
+                      "status":  "modified",
+                      "sha256":  "1f93b746d639f1c93a988f4e795cbc35adea6f20e9665bcc85057de8574c4b5f",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/invoice-workbench.tsx",
+                      "status":  "created",
+                      "sha256":  "310f14617eec907b77c388d0a8318b2cc3d8f46163f591e18b76906e92afcb05",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/navigation-guard.tsx",
+                      "status":  "created",
+                      "sha256":  "1fdc1b4f8de935b43467bf281a8b809285f846c2cf04f7006de64298563ab120",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/record-form-dialog.tsx",
+                      "status":  "modified",
+                      "sha256":  "58bcc0ed0d99c217934249c8762e169a9d6c494290d49033595c2ffb9ae56e13",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/reporting-kit.tsx",
+                      "status":  "modified",
+                      "sha256":  "ee09873c3ccb201acd2042784f48ae83c1f61039388fc2ea8fa2fb086ce870c0",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/ui/button.tsx",
+                      "status":  "modified",
+                      "sha256":  "28bd296e9cd2f8c9b1a98eb59c13d563de53c1ff307b69d8c4b42c73ac5ed605",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "components/ui/dialog.tsx",
+                      "status":  "created",
+                      "sha256":  "0bcb64fde0e650594cf7af80fc4a65d42753d4e78bae524da08cddb948d50146",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/ui/feedback.tsx",
+                      "status":  "created",
+                      "sha256":  "f9b0fa03810ed9eb30df6401f2502d7243b393a59aa29159e6eb79d4af599522",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/ui/field.tsx",
+                      "status":  "created",
+                      "sha256":  "caa95c40f1355816cc34234fbf446852632ac1a430bf2a50c443957144d835fe",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/ui/financial-table.tsx",
+                      "status":  "created",
+                      "sha256":  "7dcfee3fb323353090017db0acb21d527bc20c7c68feb63dcba08ebb201b46bd",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "components/workspace-kit.tsx",
+                      "status":  "modified",
+                      "sha256":  "be12da4865e0639a76eea21ba73ea32934b30a3e4d94a71b49b280292ddd2e9f",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "docs/milestone-1-results.md",
+                      "status":  "created",
+                      "sha256":  "02c24d52ede381efc16c06dd67a269fbc0202b2fb87745b9630876e79f8cb81a",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/desktop-dashboard.png",
+                      "status":  "created",
+                      "sha256":  "40dd0239b4bd9bc1b444ac54b6f9e9ec76feafb744025f715267890b1d7f4a34",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/desktop-invoices.png",
+                      "status":  "created",
+                      "sha256":  "9c7883f580a7e986acb0475f121caea99a745cc13f39bf8012394f3ea47e5e2d",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/mobile-dashboard.png",
+                      "status":  "created",
+                      "sha256":  "044a50709eea84f535c83764b166f76f860a49e84f76a0e5470f8f0b47bb8e8c",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/mobile-invoices.png",
+                      "status":  "created",
+                      "sha256":  "5704f4a9ce0144d039eeb70cc041e477b1906f210bcfa6dca655d9efc6aabf91",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/mobile-new.png",
+                      "status":  "created",
+                      "sha256":  "302c87a89ebc2fe644269af2acf663304745f70855b6e99560d953874c718569",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/previews/milestone-1/mobile-upload.png",
+                      "status":  "created",
+                      "sha256":  "7b456d14bb55fb58a0df6289b71305622114c2fe0d2be38724975036ec311a0c",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "lib/workspace-navigation.ts",
+                      "status":  "created",
+                      "sha256":  "e7cb3c276bff89ed1fe23db644ac11e0c636692f0084d78b26aa5102981edac9",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "tailwind.config.ts",
+                      "status":  "modified",
+                      "sha256":  "2142641c4557833b0ae3afc276fa6f6639389e93236851a2d38d6cf546cab8db",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "tests/browser-invoices.cjs",
+                      "status":  "modified",
+                      "sha256":  "9d9af06d52da1cc04fe920d3af0002ac3ffc4664096f9635d2d28dffbe9e93d4",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "tests/browser-milestone1-flows.cjs",
+                      "status":  "created",
+                      "sha256":  "91cb73897e728d468dacd3b5808db49576a9b4e68998c69b8402f4c3ac7e777e",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "tests/browser-stage3-flows.cjs",
+                      "status":  "modified",
+                      "sha256":  "82b2bb5b7f15874d1ebdbe81506e31a16489ad098bd822986e2b79d095c0d317",
+                      "originalPreserved":  true
+                  },
+                  {
+                      "path":  "tests/milestone1.test.cjs",
+                      "status":  "created",
+                      "sha256":  "c5fb641107797ea3c20fc87d0c3611dae4342f4e1276b009b3ad0feaa6ad5601",
+                      "originalPreserved":  false
+                  },
+                  {
+                      "path":  "docs/milestone-1-change-inventory.json",
+                      "status":  "created",
+                      "originalPreserved":  false
+                  }
+              ]
+}

@@ -1,0 +1,31 @@
+-- DESIGN TEMPLATE, NOT AN APPROVED MIGRATION. Provider DBA renders/reviews first.
+-- One fresh VTV-only PostgreSQL 17 cluster; never a shared/existing app cluster.
+-- Runtime role names are fixed because SECURITY DEFINER functions verify session_user.
+BEGIN;
+DO $$ BEGIN
+ IF current_database()<>'postgres'
+ OR current_setting('server_version_num')::int NOT BETWEEN 170000 AND 179999
+ OR current_setting('cluster_name')<>'vetthevat-production'
+ OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname IN('vtv_web_owner','vtv_saas_owner','vtv_saas_database_owner','vtv_migrator','vtv_web_runtime','vtv_saas_runtime','vtv_saas_document_worker','vtv_saas_provider_runtime','vtv_contact_runtime','vtv_contact_worker','vtv_backup_operator','vtv_restore_operator'))
+ THEN RAISE EXCEPTION 'Fresh dedicated VTV PostgreSQL 17 cluster and unused roles required'; END IF;
+END $$;
+CREATE ROLE vtv_web_owner NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_saas_owner NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_saas_database_owner NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_migrator LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+GRANT vtv_web_owner,vtv_saas_owner TO vtv_migrator;
+CREATE ROLE vtv_web_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_saas_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_saas_document_worker LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_saas_provider_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_contact_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_contact_worker LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE vtv_backup_operator LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT BYPASSRLS;
+CREATE ROLE vtv_restore_operator LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+-- No passwords, schema grants, database grants or database creation here.
+-- Managed bootstrap must preserve FORCE RLS, owner-only definer policies,
+-- SECURITY DEFINER fixed search_path, revoked PUBLIC EXECUTE and narrow functions.
+-- The backup-only BYPASSRLS role is isolated from all application and worker services.
+-- Grant its read access only inside the approved VTV database, never via pg_read_all_data.
+-- Never grant owner membership, CREATE, TEMP, superuser or BYPASSRLS to runtimes.
+COMMIT;

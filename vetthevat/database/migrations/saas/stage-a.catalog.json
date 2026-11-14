@@ -1,0 +1,464 @@
+{
+  "migration": "database/migrations/saas/001_saas_foundation.review.sql",
+  "sha256": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366",
+  "validation": "Offline PostgreSQL 17 grammar parsing only; no catalog/type/grant/function/RLS execution verification",
+  "tables": [
+    {
+      "name": "web_auth.installation",
+      "definition": "CREATE TABLE web_auth.installation(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),version integer NOT NULL CHECK(version=1),created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 1,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.users",
+      "definition": "CREATE TABLE web_auth.users(\n id uuid PRIMARY KEY DEFAULT gen_random_uuid(),full_name text NOT NULL CHECK(length(full_name) BETWEEN 1 AND 120),\n email text NOT NULL UNIQUE CHECK(email=lower(btrim(email)) AND length(email) BETWEEN 3 AND 254),\n password_hash text NOT NULL CHECK(password_hash LIKE '$argon2id$%' AND length(password_hash)<=512),\n email_verified_at timestamptz,status text NOT NULL DEFAULT 'active' CHECK(status IN('active','suspended','disabled')),\n created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 4,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "web_auth.sessions",
+      "definition": "CREATE TABLE web_auth.sessions(\n id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid NOT NULL REFERENCES web_auth.users(id),\n token_hash char(64) NOT NULL UNIQUE CHECK(token_hash ~ '^[a-f0-9]{64}$'),expires_at timestamptz NOT NULL,\n revoked_at timestamptz,created_at timestamptz NOT NULL DEFAULT now(),last_seen_at timestamptz NOT NULL DEFAULT now(),CHECK(expires_at>created_at));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 2,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "web_auth.roles",
+      "definition": "CREATE TABLE web_auth.roles(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text NOT NULL UNIQUE,description text NOT NULL);",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 0,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "web_auth.user_roles",
+      "definition": "CREATE TABLE web_auth.user_roles(user_id uuid NOT NULL REFERENCES web_auth.users(id),role_id uuid NOT NULL REFERENCES web_auth.roles(id),assigned_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(user_id,role_id));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 0,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.companies",
+      "definition": "CREATE TABLE web_auth.companies(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text NOT NULL CHECK(length(name) BETWEEN 1 AND 200),owner_id uuid NOT NULL REFERENCES web_auth.users(id),created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 1,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.company_memberships",
+      "definition": "CREATE TABLE web_auth.company_memberships(user_id uuid NOT NULL REFERENCES web_auth.users(id),company_id uuid NOT NULL REFERENCES web_auth.companies(id),role text NOT NULL CHECK(role IN('Owner','Admin','Finance','Accountant','Procurement','Inventory','Staff','Viewer')),status text NOT NULL CHECK(status IN('active','suspended')),PRIMARY KEY(user_id,company_id));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 2,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.password_reset_tokens",
+      "definition": "CREATE TABLE web_auth.password_reset_tokens(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid NOT NULL REFERENCES web_auth.users(id),token_hash char(64) NOT NULL UNIQUE CHECK(token_hash ~ '^[a-f0-9]{64}$'),expires_at timestamptz NOT NULL,used_at timestamptz,created_at timestamptz NOT NULL DEFAULT now(),CHECK(expires_at>created_at));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 2,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "web_auth.email_verification_tokens",
+      "definition": "CREATE TABLE web_auth.email_verification_tokens(LIKE web_auth.password_reset_tokens INCLUDING ALL);",
+      "primaryKey": false,
+      "foreignKeys": 0,
+      "checks": 0,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.audit_logs",
+      "definition": "CREATE TABLE web_auth.audit_logs(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),actor_user_id uuid REFERENCES web_auth.users(id),company_id uuid REFERENCES web_auth.companies(id),action text NOT NULL CHECK(length(action)<=100),metadata jsonb NOT NULL DEFAULT '{}',created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 1,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.rate_limits",
+      "definition": "CREATE TABLE web_auth.rate_limits(key char(64) PRIMARY KEY CHECK(key ~ '^[a-f0-9]{64}$'),count integer NOT NULL CHECK(count>=0),expires_at timestamptz NOT NULL);",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 2,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.notification_outbox",
+      "definition": "CREATE TABLE web_auth.notification_outbox(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid NOT NULL REFERENCES web_auth.users(id),kind text NOT NULL CHECK(kind IN('verify_email','reset_password')),ciphertext text NOT NULL,iv char(24) NOT NULL,tag char(32) NOT NULL,state text NOT NULL DEFAULT 'pending' CHECK(state IN('pending','accepted','review')),attempts integer NOT NULL DEFAULT 0,available_at timestamptz NOT NULL DEFAULT now(),lease_id uuid,lease_until timestamptz,provider_id text,created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 2,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "web_auth.bootstrap_once",
+      "definition": "CREATE TABLE web_auth.bootstrap_once(id boolean PRIMARY KEY DEFAULT true CHECK(id),user_id uuid NOT NULL REFERENCES web_auth.users(id),created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 1,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "saas.schema_version",
+      "definition": "CREATE TABLE saas.schema_version(version integer PRIMARY KEY CHECK(version=1),installation_id uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 1,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.permissions",
+      "definition": "CREATE TABLE saas.permissions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),code text NOT NULL UNIQUE CHECK(length(code) BETWEEN 3 AND 80));",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 1,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.company_roles",
+      "definition": "CREATE TABLE saas.company_roles(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),code text NOT NULL UNIQUE);",
+      "primaryKey": true,
+      "foreignKeys": 0,
+      "checks": 0,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.role_permissions",
+      "definition": "CREATE TABLE saas.role_permissions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),role_id uuid NOT NULL REFERENCES saas.company_roles(id),permission_id uuid NOT NULL REFERENCES saas.permissions(id),UNIQUE(role_id,permission_id));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 0,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.billing_accounts",
+      "definition": "CREATE TABLE saas.billing_accounts(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),owner_id uuid NOT NULL REFERENCES web_auth.users(id),status text NOT NULL DEFAULT 'pending' CHECK(status IN('pending','active','suspended','closed')),created_at timestamptz NOT NULL DEFAULT now(),version bigint NOT NULL DEFAULT 1 CHECK(version>0));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 2,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "saas.billing_memberships",
+      "definition": "CREATE TABLE saas.billing_memberships(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),account_id uuid NOT NULL REFERENCES saas.billing_accounts(id),user_id uuid NOT NULL REFERENCES web_auth.users(id),role text NOT NULL CHECK(role IN('Owner','BillingAdmin','Member')),status text NOT NULL CHECK(status IN('active','suspended')),UNIQUE(account_id,user_id));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 2,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.subscription_entitlements",
+      "definition": "CREATE TABLE saas.subscription_entitlements(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),account_id uuid NOT NULL UNIQUE REFERENCES saas.billing_accounts(id),plan text CHECK(plan IN('Basic','Starter','Growth')),status text NOT NULL DEFAULT 'pending' CHECK(status IN('pending','active','past_due','cancelled')),invoices_per_month integer CHECK(invoices_per_month>0),company_limit integer CHECK(company_limit>0),seat_limit integer CHECK(seat_limit>0),history_days integer CHECK(history_days>0),ors_enabled boolean NOT NULL DEFAULT false,verified_at timestamptz,source_reference text,version bigint NOT NULL DEFAULT 1 CHECK(version>0),CHECK(status<>'active' OR (verified_at IS NOT NULL AND source_reference IS NOT NULL AND length(source_reference) BETWEEN 1 AND 200 AND plan IS NOT NULL AND invoices_per_month IS NOT NULL AND company_limit IS NOT NULL AND seat_limit IS NOT NULL AND ((plan='Basic' AND invoices_per_month=30 AND company_limit=2 AND seat_limit=2 AND history_days IS NOT NULL AND history_days=90) OR (plan='Starter' AND invoices_per_month=100 AND company_limit=2 AND seat_limit=4 AND history_days IS NOT NULL AND history_days=180 AND ors_enabled) OR (plan='Growth' AND invoices_per_month=300 AND company_limit=3 AND seat_limit=6 AND history_days IS NULL AND ors_enabled)))));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 8,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.company_profiles",
+      "definition": "CREATE TABLE saas.company_profiles(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL UNIQUE REFERENCES web_auth.companies(id),account_id uuid NOT NULL REFERENCES saas.billing_accounts(id),currency text NOT NULL CHECK(currency IN('GBP','EUR','USD')),status text NOT NULL DEFAULT 'pending' CHECK(status IN('pending','active','suspended','archived')),version bigint NOT NULL DEFAULT 1 CHECK(version>0),UNIQUE(account_id,company_id));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 3,
+      "uniqueConstraints": 2
+    },
+    {
+      "name": "saas.company_selections",
+      "definition": "CREATE TABLE saas.company_selections(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),session_id uuid NOT NULL UNIQUE REFERENCES web_auth.sessions(id),company_id uuid NOT NULL REFERENCES web_auth.companies(id),updated_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 0,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.documents",
+      "definition": "CREATE TABLE saas.documents(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL REFERENCES web_auth.companies(id),original_name text NOT NULL CHECK(length(original_name) BETWEEN 1 AND 200),mime_type text NOT NULL CHECK(mime_type IN('application/pdf','image/jpeg','image/png','image/webp')),byte_size bigint NOT NULL CHECK(byte_size BETWEEN 1 AND 10485760),sha256 char(64) NOT NULL CHECK(sha256 ~ '^[a-f0-9]{64}$'),object_key text NOT NULL UNIQUE,object_version text CHECK(length(object_version) BETWEEN 1 AND 1024 AND object_version<>'null'),state text NOT NULL DEFAULT 'awaiting_upload' CHECK(state IN('awaiting_upload','quarantined','clean','rejected','missing')),created_by uuid NOT NULL REFERENCES web_auth.users(id),created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(company_id,id),UNIQUE(company_id,sha256),CHECK(object_key='companies/'||company_id::text||'/documents/'||id::text||'/'||sha256::text),CHECK(state='awaiting_upload' OR object_version IS NOT NULL));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 8,
+      "uniqueConstraints": 3
+    },
+    {
+      "name": "saas.document_inspections",
+      "definition": "CREATE TABLE saas.document_inspections(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL,document_id uuid NOT NULL,object_version text NOT NULL,sha256 char(64) NOT NULL CHECK(sha256 ~ '^[a-f0-9]{64}$'),verdict text NOT NULL CHECK(verdict IN('clean','infected','error')),scanner text NOT NULL CHECK(length(scanner) BETWEEN 1 AND 200),policy_version text NOT NULL CHECK(length(policy_version) BETWEEN 1 AND 100),created_at timestamptz NOT NULL DEFAULT now(),FOREIGN KEY(company_id,document_id) REFERENCES saas.documents(company_id,id));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 4,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "saas.document_jobs",
+      "definition": "CREATE TABLE saas.document_jobs(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL,document_id uuid NOT NULL,kind text NOT NULL CHECK(kind IN('inspect','extract')),state text NOT NULL DEFAULT 'queued' CHECK(state IN('queued','processing','completed','failed')),attempts integer NOT NULL DEFAULT 0 CHECK(attempts BETWEEN 0 AND 20),lease_id uuid,lease_until timestamptz,available_at timestamptz NOT NULL DEFAULT now(),created_at timestamptz NOT NULL DEFAULT now(),FOREIGN KEY(company_id,document_id) REFERENCES saas.documents(company_id,id),UNIQUE(company_id,document_id,kind));",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 3,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.idempotency_keys",
+      "definition": "CREATE TABLE saas.idempotency_keys(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL REFERENCES web_auth.companies(id),user_id uuid NOT NULL REFERENCES web_auth.users(id),operation text NOT NULL CHECK(length(operation) BETWEEN 1 AND 100),key_hash char(64) NOT NULL CHECK(key_hash ~ '^[a-f0-9]{64}$'),payload_hash char(64) NOT NULL CHECK(payload_hash ~ '^[a-f0-9]{64}$'),response jsonb,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(company_id,user_id,operation,key_hash));",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 3,
+      "uniqueConstraints": 1
+    },
+    {
+      "name": "saas.audit_events",
+      "definition": "CREATE TABLE saas.audit_events(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL REFERENCES web_auth.companies(id),actor_id uuid NOT NULL REFERENCES web_auth.users(id),action text NOT NULL CHECK(length(action) BETWEEN 1 AND 100),entity_id uuid NOT NULL,request_id uuid NOT NULL,created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 2,
+      "checks": 1,
+      "uniqueConstraints": 0
+    },
+    {
+      "name": "saas.notification_outbox",
+      "definition": "CREATE TABLE saas.notification_outbox(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),company_id uuid NOT NULL REFERENCES web_auth.companies(id),kind text NOT NULL CHECK(length(kind) BETWEEN 1 AND 100),ciphertext text NOT NULL,iv char(24) NOT NULL,tag char(32) NOT NULL,state text NOT NULL DEFAULT 'pending' CHECK(state IN('pending','accepted','review')),attempts integer NOT NULL DEFAULT 0 CHECK(attempts>=0),available_at timestamptz NOT NULL DEFAULT now(),lease_id uuid,lease_until timestamptz,provider_id text,created_at timestamptz NOT NULL DEFAULT now());",
+      "primaryKey": true,
+      "foreignKeys": 1,
+      "checks": 3,
+      "uniqueConstraints": 0
+    }
+  ],
+  "indexes": [
+    {
+      "name": "sessions_user_live",
+      "table": "web_auth.sessions",
+      "definition": "CREATE INDEX sessions_user_live ON web_auth.sessions(user_id,expires_at) WHERE revoked_at IS NULL;"
+    },
+    {
+      "name": "companies_owner",
+      "table": "web_auth.companies",
+      "definition": "CREATE INDEX companies_owner ON web_auth.companies(owner_id);"
+    },
+    {
+      "name": "memberships_company",
+      "table": "web_auth.company_memberships",
+      "definition": "CREATE INDEX memberships_company ON web_auth.company_memberships(company_id,user_id) WHERE status='active';"
+    },
+    {
+      "name": "reset_user_live",
+      "table": "web_auth.password_reset_tokens",
+      "definition": "CREATE INDEX reset_user_live ON web_auth.password_reset_tokens(user_id,expires_at) WHERE used_at IS NULL;"
+    },
+    {
+      "name": "audit_actor_date",
+      "table": "web_auth.audit_logs",
+      "definition": "CREATE INDEX audit_actor_date ON web_auth.audit_logs(actor_user_id,created_at DESC);"
+    },
+    {
+      "name": "auth_outbox_pending",
+      "table": "web_auth.notification_outbox",
+      "definition": "CREATE INDEX auth_outbox_pending ON web_auth.notification_outbox(available_at) WHERE state='pending';"
+    },
+    {
+      "name": "company_profiles_account",
+      "table": "saas.company_profiles",
+      "definition": "CREATE INDEX company_profiles_account ON saas.company_profiles(account_id,company_id);"
+    },
+    {
+      "name": "document_jobs_pending",
+      "table": "saas.document_jobs",
+      "definition": "CREATE INDEX document_jobs_pending ON saas.document_jobs(available_at,id) WHERE state='queued';"
+    },
+    {
+      "name": "audit_company_date",
+      "table": "saas.audit_events",
+      "definition": "CREATE INDEX audit_company_date ON saas.audit_events(company_id,created_at DESC,id);"
+    },
+    {
+      "name": "notification_outbox_pending",
+      "table": "saas.notification_outbox",
+      "definition": "CREATE INDEX notification_outbox_pending ON saas.notification_outbox(available_at,id) WHERE state='pending';"
+    }
+  ],
+  "implicitIndexes": "PRIMARY KEY and UNIQUE constraints create additional PostgreSQL indexes automatically; see each complete table definition.",
+  "policies": [
+    {
+      "name": "profiles_read",
+      "table": "saas.company_profiles",
+      "definition": "CREATE POLICY profiles_read ON saas.company_profiles FOR SELECT TO vtv_saas_runtime USING(saas.authorized_company(company_id,'company:read'));"
+    },
+    {
+      "name": "selection_read",
+      "table": "saas.company_selections",
+      "definition": "CREATE POLICY selection_read ON saas.company_selections FOR SELECT TO vtv_saas_runtime USING(session_id=saas.current_session());"
+    },
+    {
+      "name": "selection_insert",
+      "table": "saas.company_selections",
+      "definition": "CREATE POLICY selection_insert ON saas.company_selections FOR INSERT TO vtv_saas_runtime WITH CHECK(session_id=saas.current_session() AND saas.authorized_company(company_id,'company:read'));"
+    },
+    {
+      "name": "selection_update",
+      "table": "saas.company_selections",
+      "definition": "CREATE POLICY selection_update ON saas.company_selections FOR UPDATE TO vtv_saas_runtime USING(session_id=saas.current_session()) WITH CHECK(session_id=saas.current_session() AND saas.authorized_company(company_id,'company:read'));"
+    },
+    {
+      "name": "documents_read",
+      "table": "saas.documents",
+      "definition": "CREATE POLICY documents_read ON saas.documents FOR SELECT TO vtv_saas_runtime USING(saas.authorized_company(company_id,'documents:read'));"
+    },
+    {
+      "name": "documents_reserve",
+      "table": "saas.documents",
+      "definition": "CREATE POLICY documents_reserve ON saas.documents FOR INSERT TO vtv_saas_runtime WITH CHECK(saas.authorized_company(company_id,'documents:write') AND created_by=saas.current_actor() AND state='awaiting_upload' AND object_version IS NULL);"
+    },
+    {
+      "name": "documents_upload",
+      "table": "saas.documents",
+      "definition": "CREATE POLICY documents_upload ON saas.documents FOR UPDATE TO vtv_saas_runtime USING(saas.authorized_company(company_id,'documents:write') AND state='awaiting_upload') WITH CHECK(saas.authorized_company(company_id,'documents:write') AND state='quarantined' AND object_version IS NOT NULL);"
+    },
+    {
+      "name": "inspection_read",
+      "table": "saas.document_inspections",
+      "definition": "CREATE POLICY inspection_read ON saas.document_inspections FOR SELECT TO vtv_saas_runtime USING(saas.authorized_company(company_id,'documents:read'));"
+    },
+    {
+      "name": "jobs_read",
+      "table": "saas.document_jobs",
+      "definition": "CREATE POLICY jobs_read ON saas.document_jobs FOR SELECT TO vtv_saas_runtime USING(saas.authorized_company(company_id,'documents:read'));"
+    },
+    {
+      "name": "jobs_queue",
+      "table": "saas.document_jobs",
+      "definition": "CREATE POLICY jobs_queue ON saas.document_jobs FOR INSERT TO vtv_saas_runtime WITH CHECK(saas.authorized_company(company_id,'documents:write') AND kind='inspect' AND state='queued' AND attempts=0 AND lease_id IS NULL AND lease_until IS NULL);"
+    },
+    {
+      "name": "idempotency_read",
+      "table": "saas.idempotency_keys",
+      "definition": "CREATE POLICY idempotency_read ON saas.idempotency_keys FOR SELECT TO vtv_saas_runtime USING(user_id=saas.current_actor() AND saas.authorized_company(company_id,'documents:write'));"
+    },
+    {
+      "name": "idempotency_insert",
+      "table": "saas.idempotency_keys",
+      "definition": "CREATE POLICY idempotency_insert ON saas.idempotency_keys FOR INSERT TO vtv_saas_runtime WITH CHECK(user_id=saas.current_actor() AND operation='document.upload' AND response IS NULL AND saas.authorized_company(company_id,'documents:write'));"
+    },
+    {
+      "name": "idempotency_complete",
+      "table": "saas.idempotency_keys",
+      "definition": "CREATE POLICY idempotency_complete ON saas.idempotency_keys FOR UPDATE TO vtv_saas_runtime USING(user_id=saas.current_actor() AND saas.authorized_company(company_id,'documents:write')) WITH CHECK(user_id=saas.current_actor() AND saas.authorized_company(company_id,'documents:write'));"
+    },
+    {
+      "name": "audit_insert",
+      "table": "saas.audit_events",
+      "definition": "CREATE POLICY audit_insert ON saas.audit_events FOR INSERT TO vtv_saas_runtime WITH CHECK(actor_id=saas.current_actor() AND saas.authorized_company(company_id,current_setting('app.permission',true)));"
+    },
+    {
+      "name": "audit_read",
+      "table": "saas.audit_events",
+      "definition": "CREATE POLICY audit_read ON saas.audit_events FOR SELECT TO vtv_saas_runtime USING(saas.authorized_company(company_id,'audit:read'));"
+    }
+  ],
+  "dynamicPolicies": [
+    {
+      "name": "owner_lookup",
+      "table": "saas.billing_accounts",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.billing_memberships",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.subscription_entitlements",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.company_profiles",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.company_selections",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.documents",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.document_inspections",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.document_jobs",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.idempotency_keys",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.audit_events",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    },
+    {
+      "name": "owner_lookup",
+      "table": "saas.notification_outbox",
+      "role": "vtv_saas_owner",
+      "command": "SELECT",
+      "using": "true"
+    }
+  ],
+  "forcedRlsTables": [
+    "saas.billing_accounts",
+    "saas.billing_memberships",
+    "saas.subscription_entitlements",
+    "saas.company_profiles",
+    "saas.company_selections",
+    "saas.documents",
+    "saas.document_inspections",
+    "saas.document_jobs",
+    "saas.idempotency_keys",
+    "saas.audit_events",
+    "saas.notification_outbox"
+  ],
+  "securityDefiners": [
+    "saas.current_session()",
+    "saas.current_actor()",
+    "saas.authorized_company(uuid,text)",
+    "saas.lock_authorization(uuid,text)",
+    "saas.company_context(uuid)"
+  ],
+  "immutableHistory": [
+    "saas.audit_events",
+    "saas.document_inspections"
+  ]
+}

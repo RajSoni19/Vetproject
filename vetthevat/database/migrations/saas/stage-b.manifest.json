@@ -1,0 +1,275 @@
+{
+  "status": "REVIEW_ONLY_NOT_EXECUTED",
+  "migration": "database/migrations/saas/003_stage_b_invoices.review.sql",
+  "sha256": "a881b6bd1278f8bdcd0a0ae74739eb5cdd07defb8883c19f89aea79ecfd5887b",
+  "target": {
+    "cluster": "D:/vetthevat.saas-dev/cluster",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "database": "vtv_saas_dev"
+  },
+  "owner": "vtv_saas_owner",
+  "newRole": "vtv_saas_document_worker",
+  "prerequisiteChecksums": {
+    "001_saas_foundation.review.sql": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366",
+    "002_stage_a_authorization_locks.review.sql": "082079c74f4788fa5724a30f86a443c46ed0179c8c0329c756a9323a690d80fd"
+  },
+  "tables": [
+    "business.migrations",
+    "business.counterparties",
+    "business.contact_people",
+    "business.tax_codes",
+    "business.invoices",
+    "business.invoice_lines",
+    "business.invoice_revisions",
+    "business.invoice_attachments",
+    "business.extraction_jobs",
+    "business.extraction_results",
+    "business.review_issues",
+    "business.vat_periods",
+    "business.vat_adjustments",
+    "business.payment_allocations",
+    "business.command_keys",
+    "business.invoice_usage",
+    "business.source_links"
+  ],
+  "forcedRlsTables": [
+    "business.counterparties",
+    "business.contact_people",
+    "business.tax_codes",
+    "business.invoices",
+    "business.invoice_lines",
+    "business.invoice_revisions",
+    "business.invoice_attachments",
+    "business.extraction_jobs",
+    "business.extraction_results",
+    "business.review_issues",
+    "business.vat_periods",
+    "business.vat_adjustments",
+    "business.payment_allocations",
+    "business.command_keys",
+    "business.invoice_usage",
+    "business.source_links"
+  ],
+  "indexes": [
+    {
+      "name": "counterparties_lookup",
+      "table": "business.counterparties",
+      "unique": false
+    },
+    {
+      "name": "invoice_duplicate_identity",
+      "table": "business.invoices",
+      "unique": true
+    },
+    {
+      "name": "invoices_listing",
+      "table": "business.invoices",
+      "unique": false
+    },
+    {
+      "name": "invoices_credit_origin",
+      "table": "business.invoices",
+      "unique": false
+    },
+    {
+      "name": "extraction_pending",
+      "table": "business.extraction_jobs",
+      "unique": false
+    },
+    {
+      "name": "account_invoice_usage",
+      "table": "business.invoice_usage",
+      "unique": false
+    }
+  ],
+  "functions": [
+    "business.scope",
+    "business.invoice_visible",
+    "business.check_invoice",
+    "business.check_draft_child",
+    "business.record_revision",
+    "business.consume_quota",
+    "business.claim_inspection",
+    "business.finish_inspection",
+    "business.claim_extraction",
+    "business.finish_extraction"
+  ],
+  "explicitPolicies": [
+    {
+      "name": "tax_read",
+      "table": "business.tax_codes"
+    },
+    {
+      "name": "invoice_create",
+      "table": "business.invoices"
+    },
+    {
+      "name": "invoice_edit",
+      "table": "business.invoices"
+    },
+    {
+      "name": "lines_insert",
+      "table": "business.invoice_lines"
+    },
+    {
+      "name": "lines_delete",
+      "table": "business.invoice_lines"
+    },
+    {
+      "name": "attachment_insert",
+      "table": "business.invoice_attachments"
+    },
+    {
+      "name": "extraction_queue",
+      "table": "business.extraction_jobs"
+    },
+    {
+      "name": "extraction_document_read",
+      "table": "business.extraction_jobs"
+    },
+    {
+      "name": "results_document_read",
+      "table": "business.extraction_results"
+    },
+    {
+      "name": "keys_read",
+      "table": "business.command_keys"
+    },
+    {
+      "name": "keys_insert",
+      "table": "business.command_keys"
+    },
+    {
+      "name": "keys_update",
+      "table": "business.command_keys"
+    },
+    {
+      "name": "period_read",
+      "table": "business.vat_periods"
+    },
+    {
+      "name": "adjustments_read",
+      "table": "business.vat_adjustments"
+    },
+    {
+      "name": "owner_revision_append",
+      "table": "business.invoice_revisions"
+    },
+    {
+      "name": "owner_usage_append",
+      "table": "business.invoice_usage"
+    },
+    {
+      "name": "owner_contact_lock",
+      "table": "business.counterparties"
+    },
+    {
+      "name": "owner_entitlement_lock",
+      "table": "saas.subscription_entitlements"
+    },
+    {
+      "name": "owner_inspection_append",
+      "table": "saas.document_inspections"
+    },
+    {
+      "name": "owner_inspection_jobs",
+      "table": "saas.document_jobs"
+    },
+    {
+      "name": "owner_inspection_state",
+      "table": "saas.documents"
+    },
+    {
+      "name": "owner_extraction_update",
+      "table": "business.extraction_jobs"
+    },
+    {
+      "name": "owner_extraction_results",
+      "table": "business.extraction_results"
+    },
+    {
+      "name": "owner_extraction_queue",
+      "table": "business.extraction_jobs"
+    }
+  ],
+  "dynamicPolicies": {
+    "owner_lookup": [
+      "business.counterparties",
+      "business.contact_people",
+      "business.tax_codes",
+      "business.invoices",
+      "business.invoice_lines",
+      "business.invoice_revisions",
+      "business.invoice_attachments",
+      "business.extraction_jobs",
+      "business.extraction_results",
+      "business.review_issues",
+      "business.vat_periods",
+      "business.vat_adjustments",
+      "business.payment_allocations",
+      "business.command_keys",
+      "business.invoice_usage",
+      "business.source_links"
+    ],
+    "contactPolicies": [
+      "business.counterparties",
+      "business.contact_people"
+    ],
+    "invoice_read": [
+      "business.invoices",
+      "business.invoice_lines",
+      "business.invoice_revisions",
+      "business.invoice_attachments",
+      "business.extraction_jobs",
+      "business.extraction_results",
+      "business.review_issues",
+      "business.payment_allocations",
+      "business.source_links"
+    ]
+  },
+  "triggers": [
+    {
+      "name": "check_invoice",
+      "table": "business.invoices"
+    },
+    {
+      "name": "draft_line",
+      "table": "business.invoice_lines"
+    },
+    {
+      "name": "draft_attachment",
+      "table": "business.invoice_attachments"
+    },
+    {
+      "name": "clean_extraction",
+      "table": "business.extraction_jobs"
+    },
+    {
+      "name": "invoice_revision",
+      "table": "business.invoices"
+    },
+    {
+      "name": "revision_immutable",
+      "table": "business.invoice_revisions"
+    },
+    {
+      "name": "results_immutable",
+      "table": "business.extraction_results"
+    },
+    {
+      "name": "adjustments_immutable",
+      "table": "business.vat_adjustments"
+    },
+    {
+      "name": "allocations_immutable",
+      "table": "business.payment_allocations"
+    },
+    {
+      "name": "consume_quota",
+      "table": "business.invoices"
+    }
+  ],
+  "existingRecordUpdates": "None during migration. Adds four owner-only RLS policies to four existing Stage A tables; activates no worker or endpoint.",
+  "servicesStarted": false
+}

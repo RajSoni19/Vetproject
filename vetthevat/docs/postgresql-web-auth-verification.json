@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-23",
+  "scope": "Approved isolated PostgreSQL test database only",
+  "identity": "PostgreSQL users and Argon2id",
+  "database": {
+    "version": "17.11",
+    "host": "127.0.0.1",
+    "port": 55439,
+    "name": "vtv_web_auth_test",
+    "migration": "database/migrations/web-auth/001_web_auth.review.sql",
+    "migrationSha256": "19efff1a3945e02fc2936103c6b9ce26536cea87a4eee0d3a85e733da3ae6fd8"
+  },
+  "checks": {
+    "typescript": "passed",
+    "productionBuild": "passed after DOMPurify patch",
+    "unitAndDomain": {
+      "passed": 161,
+      "failed": 0,
+      "transport": "injected where applicable; actual Argon2 crypto"
+    },
+    "postgresHttpsIntegration": {
+      "passedScenarios": 16,
+      "failed": 0,
+      "notificationFailure": "real durable outbox with mocked failing transport, no outbound email"
+    },
+    "durability": "real PostgreSQL process restart followed by logout invalidation passed",
+    "authenticatedChrome": [
+      {
+        "width": 1440,
+        "registration": "real PostgreSQL",
+        "verification": "one-use link from encrypted test outbox",
+        "login": "password",
+        "privateNavigation": "actual business modules rendered after explicit local test-company creation; no financial records",
+        "sessionManagement": "real own-session inventory rendered",
+        "refresh": "passed",
+        "logout": "revoked",
+        "passwordReset": "passed",
+        "revokedRefresh": "denied",
+        "legacyData": "not imported"
+      },
+      {
+        "width": 390,
+        "registration": "real PostgreSQL",
+        "verification": "one-use link from encrypted test outbox",
+        "login": "password",
+        "privateNavigation": "actual business modules rendered after explicit local test-company creation; no financial records",
+        "sessionManagement": "real own-session inventory rendered",
+        "refresh": "passed",
+        "logout": "revoked",
+        "passwordReset": "passed",
+        "revokedRefresh": "denied",
+        "legacyData": "not imported"
+      }
+    ],
+    "unconfiguredRoutingChrome": {
+      "publicRoutes": 9,
+      "privateRoutes": 25,
+      "variants": [
+        "anonymous",
+        "forged session and role with RSC/prefetch",
+        "duplicate cookies"
+      ],
+      "widths": [
+        390,
+        1440
+      ],
+      "result": "passed; marketing gate also checked"
+    },
+    "dependencyAudit": {
+      "production": 0,
+      "fullHigh": 5,
+      "remaining": "Existing Tailwind 3 development dependency chain",
+      "dompurify": "3.4.17 patched"
+    },
+    "compiledClientSecretScan": {
+      "passed": true,
+      "artifacts": 60
+    },
+    "visualInspection": [
+      "mobile login",
+      "authenticated desktop dashboard"
+    ],
+    "browserBuild": "Final production build including DOMPurify 3.4.17"
+  },
+  "notVerified": [
+    "real email delivery",
+    "real administrator bootstrap and positive admin browser access",
+    "removed administrator grant with a real administrator",
+    "production PostgreSQL or managed pooling",
+    "production/Linux deployment",
+    "durable financial commands and frontend integration",
+    "real lead persistence and delivery in this milestone"
+  ],
+  "restrictions": {
+    "realAdministratorCreated": false,
+    "softwareAdministratorUserGrants": 0,
+    "realEmailSent": false,
+    "productionCredentialsUsed": false,
+    "existingDatabaseMigrated": false,
+    "deployed": false,
+    "flutterOrProductionFirebaseModified": false,
+    "immutableBackupModified": false
+  }
+}

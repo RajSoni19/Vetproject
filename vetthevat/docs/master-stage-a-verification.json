@@ -1,0 +1,207 @@
+{
+  "date": "2026-10-23",
+  "status": "COMPLETE: approved isolated Stage A database/authentication/authorization/transaction integration",
+  "scope": "Stage A only; financial persistence and production readiness excluded",
+  "target": {
+    "database": "vtv_saas_dev",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "cluster": "D:/vetthevat.saas-dev/cluster",
+    "database_owner": "vtv_saas_database_owner"
+  },
+  "migrations": [
+    {
+      "file": "database/migrations/saas/001_saas_foundation.review.sql",
+      "sha256": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366",
+      "status": "committed",
+      "record": "private runtime.approvedSqlHash + web_auth.installation and saas.schema_version + verified live catalog"
+    },
+    {
+      "file": "database/migrations/saas/002_stage_a_authorization_locks.review.sql",
+      "sha256": "082079c74f4788fa5724a30f86a443c46ed0179c8c0329c756a9323a690d80fd",
+      "status": "committed",
+      "record": "private authorization-fix-applied.json and both verified live owner_authorization_lock policies"
+    }
+  ],
+  "liveCatalog": {
+    "tables": 28,
+    "roles": 6,
+    "policies": 28,
+    "forcedRlsTables": 11
+  },
+  "checks": {
+    "typecheck": "passed",
+    "automatedTests": {
+      "passed": 179,
+      "failed": 0,
+      "transport": "unit/domain and injected adapters; not all live service tests"
+    },
+    "productionBuild": {
+      "command": "npm run saas:build",
+      "passed": true,
+      "singleWorker": true
+    },
+    "realPostgresHttps": {
+      "results": [
+        {
+          "name": "exact new cluster, backups, migration checksum, 28 tables, indexes/constraints and restricted roles",
+          "result": "passed"
+        },
+        {
+          "name": "new identities register; unverified/wrong password denied; verified opaque sessions accepted",
+          "result": "passed"
+        },
+        {
+          "name": "real company transaction and live membership authorize only their own company",
+          "result": "passed"
+        },
+        {
+          "name": "application account context, session-owned selection, CSRF and anonymous boundaries",
+          "result": "passed"
+        },
+        {
+          "name": "SQL injection selectors rejected and parameterized literal values preserve schema",
+          "result": "passed"
+        },
+        {
+          "name": "document reservation commits, forced RLS hides existing other-company records",
+          "result": "passed"
+        },
+        {
+          "name": "runtime cannot spoof identity, write another company, bypass RLS, mutate schema or grant roles",
+          "result": "passed"
+        },
+        {
+          "name": "approved lock correction permits owner row locks but forbids actual owner UPDATE writes",
+          "result": "passed"
+        },
+        {
+          "name": "quarantine cannot be marked clean or supplied a forged inspection by runtime",
+          "result": "passed"
+        },
+        {
+          "name": "explicit rollback and swallowed database error cannot commit audit records",
+          "result": "passed"
+        },
+        {
+          "name": "session ownership prevents reading or replacing another session selection",
+          "result": "passed"
+        },
+        {
+          "name": "revoked membership and reduced permissions deny the next request",
+          "result": "passed"
+        },
+        {
+          "name": "real database Finance, Procurement, Inventory and Viewer permissions are enforced separately",
+          "result": "passed"
+        },
+        {
+          "name": "permission change during request waits for authorization locks; next request denied",
+          "result": "passed"
+        },
+        {
+          "name": "concurrent same-session company selections commit without duplicate rows",
+          "result": "passed"
+        },
+        {
+          "name": "immutable persistent audit and independent restricted authentication role",
+          "result": "passed"
+        },
+        {
+          "name": "migration reinitialization guard refuses existing state before executing SQL",
+          "result": "passed"
+        },
+        {
+          "name": "actual PostgreSQL restart preserves identity/session/company selection and audit",
+          "result": "passed"
+        },
+        {
+          "name": "real logout revokes session, protected routes and financial/admin APIs stay secure",
+          "result": "passed"
+        }
+      ],
+      "passed": 19
+    },
+    "browser": [
+      {
+        "width": 1440,
+        "registration": "real PostgreSQL",
+        "verification": "one-use link from encrypted test outbox",
+        "login": "password",
+        "privateNavigation": "actual business modules rendered after explicit local test-company creation; no financial records",
+        "sessionManagement": "real own-session inventory rendered",
+        "companySelection": "own company 200, cross-company 403 through real browser fetch",
+        "refresh": "passed",
+        "logout": "revoked",
+        "passwordReset": "passed",
+        "revokedRefresh": "denied",
+        "legacyData": "not imported"
+      },
+      {
+        "width": 390,
+        "registration": "real PostgreSQL",
+        "verification": "one-use link from encrypted test outbox",
+        "login": "password",
+        "privateNavigation": "actual business modules rendered after explicit local test-company creation; no financial records",
+        "sessionManagement": "real own-session inventory rendered",
+        "companySelection": "own company 200, cross-company 403 through real browser fetch",
+        "refresh": "passed",
+        "logout": "revoked",
+        "passwordReset": "passed",
+        "revokedRefresh": "denied",
+        "legacyData": "not imported"
+      }
+    ],
+    "oldAuthenticationDatabase": {
+      "verifiedAt": "2026-10-23T15:05:59.877Z",
+      "readOnly": true,
+      "target": "127.0.0.1:55439/vtv_web_auth_test",
+      "countsMatchInspectedBaseline": true,
+      "counts": {
+        "web_auth.users": "15",
+        "web_auth.sessions": "21",
+        "web_auth.user_roles": "0",
+        "web_auth.companies": "2",
+        "web_business.invoices": "0",
+        "web_business.customers": "0",
+        "web_business.ors_orders": "0"
+      },
+      "restoredToStoppedState": true,
+      "recordWrites": false,
+      "limitation": "Aggregate SQL comparison; not a byte-for-byte physical filesystem comparison"
+    },
+    "compiledClientSecretScan": {
+      "passed": true,
+      "artifacts": 60
+    },
+    "backupIntegrity": {
+      "initialDatabaseAndRolesChecksumsVerified": true,
+      "correctionBackupChecksumVerified": true,
+      "archiveListingsValidated": true,
+      "restoreDrill": false
+    }
+  },
+  "accounts": {
+    "real_admin_accounts": 0,
+    "software_admin_grants": 0
+  },
+  "limitations": [
+    "Private object service/scanner/OCR not configured or live-verified",
+    "Restore drill not run",
+    "Financial/ORS/inventory/banking persistence and frontend migration remain future stages",
+    "Real administrator/email/paid entitlements/MFA/production deployment not verified",
+    "Five existing high development-toolchain dependency findings remain"
+  ],
+  "productionBoundary": {
+    "oldAuthDataMutated": false,
+    "productionCredentialsUsed": false,
+    "productionFirebaseOrMobileDataChanged": false,
+    "dnsOrVercelChanged": false,
+    "immutableBackupChanged": false,
+    "financialApisEnabled": false,
+    "realEmailsSent": false,
+    "stageBMigrationsRun": false,
+    "deployed": false
+  },
+  "stageBPlan": "docs/master-stage-b-implementation-plan.md"
+}

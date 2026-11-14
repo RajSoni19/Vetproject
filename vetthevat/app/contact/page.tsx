@@ -1,0 +1,7 @@
+import {PublicShell} from "@/components/public-shell";
+import {Card} from "@/components/ui/card";
+import {publicSupportEmail} from "@/lib/site-links";
+import {ContactForm} from "@/components/contact-form";
+import {contactFormConfiguration} from "@/lib/server/contact-runtime";
+import {connection} from "next/server";
+export default async function ContactPage(){await connection();const config=contactFormConfiguration();return <PublicShell><main className="container-page py-16"><p className="text-sm font-bold uppercase tracking-wide text-brand-700">Contact</p><h1 className="mt-4 text-4xl font-bold">We're here to help.</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-muted">Contact VET THE VAT about VAT management, ORS or your account.</p><div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"><Card className="min-w-0 p-6"><h2 className="mb-6 text-xl font-bold">Send an enquiry</h2><ContactForm enabled={config.enabled} siteKey={config.siteKey}/></Card><Card className="min-w-0 p-6"><h2 className="text-xl font-bold">Email support</h2><a className="mt-4 inline-flex min-h-11 items-center break-all font-semibold text-brand-700 underline" href={`mailto:${publicSupportEmail}`}>{publicSupportEmail}</a><p className="mt-3 text-sm leading-6 text-muted">This contact address is published on our Google Play listing. Your email application handles messages sent through this link.</p></Card></div></main></PublicShell>;}

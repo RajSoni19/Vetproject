@@ -1,0 +1,203 @@
+{
+  "checked": "2026-10-20",
+  "counts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 2,
+    "high": 6,
+    "critical": 0,
+    "total": 8
+  },
+  "findings": [
+    {
+      "name": "braces",
+      "severity": "high",
+      "direct": false,
+      "versions": [
+        "3.0.3"
+      ],
+      "range": "*",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "via": [
+        {
+          "source": 1240992,
+          "name": "braces",
+          "dependency": "braces",
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "severity": "high",
+          "cwe": [
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=3.0.3"
+        }
+      ]
+    },
+    {
+      "name": "chokidar",
+      "severity": "high",
+      "direct": false,
+      "versions": [
+        "3.6.0"
+      ],
+      "range": "2.0.0 - 3.6.0",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "via": [
+        "braces"
+      ]
+    },
+    {
+      "name": "fast-glob",
+      "severity": "high",
+      "direct": false,
+      "versions": [
+        "3.3.3"
+      ],
+      "range": "*",
+      "fix": true,
+      "via": [
+        "micromatch"
+      ]
+    },
+    {
+      "name": "micromatch",
+      "severity": "high",
+      "direct": false,
+      "versions": [
+        "4.0.8"
+      ],
+      "range": ">=0.2.0",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "via": [
+        "braces"
+      ]
+    },
+    {
+      "name": "postcss-nested",
+      "severity": "moderate",
+      "direct": false,
+      "versions": [
+        "6.2.0"
+      ],
+      "range": "2.0.3 - 6.2.0",
+      "fix": true,
+      "via": [
+        "postcss-selector-parser"
+      ]
+    },
+    {
+      "name": "postcss-selector-parser",
+      "severity": "moderate",
+      "direct": false,
+      "versions": [
+        "6.1.4"
+      ],
+      "range": "<7.1.6",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "via": [
+        {
+          "source": 1241232,
+          "name": "postcss-selector-parser",
+          "dependency": "postcss-selector-parser",
+          "title": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion",
+          "url": "https://github.com/advisories/GHSA-rj75-hqrm-r3gf",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<7.1.6"
+        }
+      ]
+    },
+    {
+      "name": "tailwindcss",
+      "severity": "high",
+      "direct": true,
+      "versions": [
+        "3.4.17"
+      ],
+      "range": "<=0.0.0-oxide-insiders.ff2c25f || 0.5.0 - 3.4.19",
+      "fix": {
+        "name": "tailwindcss",
+        "version": "4.3.3",
+        "isSemVerMajor": true
+      },
+      "via": [
+        "chokidar",
+        "fast-glob",
+        "micromatch",
+        "postcss-nested",
+        "postcss-selector-parser"
+      ]
+    },
+    {
+      "name": "xlsx",
+      "severity": "high",
+      "direct": true,
+      "versions": [
+        "0.18.5"
+      ],
+      "range": "*",
+      "fix": false,
+      "via": [
+        {
+          "source": 1108110,
+          "name": "xlsx",
+          "dependency": "xlsx",
+          "title": "Prototype Pollution in sheetJS",
+          "url": "https://github.com/advisories/GHSA-4r6h-8v6p-xvw6",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7.8,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+          },
+          "range": "<0.19.3"
+        },
+        {
+          "source": 1108111,
+          "name": "xlsx",
+          "dependency": "xlsx",
+          "title": "SheetJS Regular Expression Denial of Service (ReDoS)",
+          "url": "https://github.com/advisories/GHSA-5pgg-2g8v-p4x9",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<0.20.2"
+        }
+      ]
+    }
+  ]
+}

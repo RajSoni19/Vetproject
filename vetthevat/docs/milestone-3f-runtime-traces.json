@@ -1,0 +1,33 @@
+{
+  "traceFilesChecked": 50,
+  "packages": [
+    {
+      "package": "braces",
+      "traces": []
+    },
+    {
+      "package": "chokidar",
+      "traces": []
+    },
+    {
+      "package": "micromatch",
+      "traces": []
+    },
+    {
+      "package": "fast-glob",
+      "traces": []
+    },
+    {
+      "package": "postcss-nested",
+      "traces": []
+    },
+    {
+      "package": "postcss-selector-parser",
+      "traces": []
+    },
+    {
+      "package": "tailwindcss",
+      "traces": []
+    }
+  ]
+}

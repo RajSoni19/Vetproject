@@ -1,0 +1,40 @@
+# Actual code and deployment audit
+
+Audit updated: 27 October 2026. Production target: ServerVerse with same-host PostgreSQL 17; Ubuntu 24.04 AMD64 and Node 22.23.4 Linux x64 remain unverified assumptions. Staging retains the Neon contract in [Neon-specific review](neon.md).
+
+| Actual source | Finding | Package change / remaining gate |
+| --- | --- | --- |
+| `package.json`, lockfile | Next 16.4.2, React 19, Node >=22.15; native Argon2 and platform-specific Next dependencies. | Use a reviewed supported Node 22 patch on Linux for build and runtime; exact Node patch and x64 architecture now pinned in runtime.json and CI; image provenance remains a release gate. Added pinned esbuild 0.28.2 for independent worker compilation. Windows native artifacts are refused by release builder. |
+| `next.config.ts` | Existing standalone opt-in; CSP, dynamic server routes and secure cookies require a real Node server. | Retained `VETTHEVAT_BUILD_STANDALONE=1`. Linux builder copies standalone, public and static assets. No static export. Root-owned release; writable cache is a dedicated service state directory. |
+| `lib/server/saas/config.ts`, `runtime.ts`, `transactions.ts` | Local development remains pinned to 127.0.0.1:55440/vtv_saas_dev, ssl:false, fixed role and installation checks. | Separate managed branch now accepts exact Neon staging or ServerVerse production loopback profile. Local guards are unchanged. Managed runtime requires approved database/port/install ID, CA file and TLS; pinned clients verify actual TLS socket, certificate and hostname before SQL identity/role checks. |
+| `web-auth/config.ts`, `runtime.ts`, `saas/services.ts` | Auth supports only local test origins or its older explicit production auth branch; business services force https://localhost:3444. | Added staging/production managed profile and pinned CA handling; identity and business databases/profiles/origins must agree. Existing local/legacy auth guards remain unchanged. |
+| `providers/runtime-config.ts`, `runtime.ts`, `stripe-worker-runtime.ts` | Provider ingress/worker preflight is local-only, fixed installation and role. | Explicit managed profile + verified client TLS on the pinned connection; execute-only provider role and no direct entitlement writes remain required. |
+| `saas/worker-store.ts` | Document worker is a store contract, not a runnable service; local role/port/install checks. | Added explicit managed store context with TLS/installation checks. Compiled worker calls existing claims/finish functions; no SQL or queue state changed by preparation. |
+| `providers/r2.ts`, `storage-runtime.ts` | R2 accepts only `vtv-web-dev-*`; conditional writes plus SHA/ETag receipts and read-only public-domain/prefix-lock audit. | Separate managed bucket naming `vtv-web-staging-*` / `vtv-web-production-*`; exact account/bucket approval remains mandatory. R2 has no invented native S3 VersionId. Real policy/object acceptance is pending. Local file storage never becomes managed storage. |
+| `providers/clamav.ts`, `document-worker.ts` | Actual ClamAV protocol adapter exists; no hosted bounded decoder/OCR implementation. | Added protected Unix-socket transport plus separate non-root processing process using ClamAV, Poppler, bounded rasterization, ImageMagick policy and Tesseract. Requires actual Linux sandbox/signatures/tool validation; not yet an accepted processing provider. |
+| `web-auth/notifications.ts` | Durable encrypted outbox, leases, SMTP-only delivery; local TLS SMTP already accepted. | Standalone mail worker, graceful stop, redacted state heartbeat; uncertain commit handling retained. This role currently uses the existing auth-runtime credential, so a narrower execute-only mail role remains a future schema review. |
+| `providers/stripe*.ts`, `saas/billing.ts` | Durable Stripe test adapter, ownership reconciliation and retries; live mode intentionally refused. | Standalone provider worker can be configured without a business-runtime credential. Actual Stripe test Checkout/Portal/webhook acceptance still needs private credentials. Production live billing is unsupported. |
+| `contact-config.ts`, `contact-runtime.ts` | Contact runtime still bound to local 55440 and localhost origin. | Managed public contact activation remains blocked; templates keep it off. Needs a managed contact configuration/installation contract and real bot acceptance. Dedicated contact notification claim/delivery functions are not implemented. |
+| `leads/*` | Separate managed intake database, certificate validation and SMTP adapter; disabled. | Keep separate from VAT DB. Requires its own schema/runtime role/origin/bot/privacy review. |
+| `scripts/saas-reviewed-migration.cjs`, 001–021 | Exact-file/checksum approvals, local backups and local privileged target assertions. Some scripts depend on `D:/vetthevat.saas-dev/cluster` and operator privileges absent on many managed providers. | Kept unchanged. Offline inventory verifies accepted source hashes. A fresh managed provider-specific baseline and role bootstrap are still required; do not strip guards or replay local SQL on managed DB. |
+| `scripts/local-real-server.cjs`, `saas-dev-server.cjs` | Windows certificate/config paths and local HTTPS server. | Never use these on the VPS. Standalone Next runs HTTP on loopback; Nginx terminates origin TLS and overwrites forwarded origin headers. |
+| Existing CI / Docker | Standalone build exists, but Docker allowlist omitted scripts/migrations used by tests; local SMTP test required a Windows certificate. | Added secret-free source paths and portable generated test TLS fixture. New CI package job has no deployment/SSH/provider secrets. |
+| No Linux runtime here | Windows host, no usable WSL, Docker, nginx or systemd. | Local tests/build/worker compilation and offline checks can pass; Linux runtime, units and nginx checks are explicitly unexecuted until disposable CI/VM is run. |
+
+## Fail-closed managed profile
+
+`VTV_DEPLOYMENT_PROFILE=staging|production` selects a new configuration branch. It cannot fall back to localhost when incomplete. It requires all of:
+
+- Exact `VTV_PUBLIC_ORIGIN`, HTTPS with a DNS hostname, and matching auth origin/profile.
+- Staging requires the approved Neon London direct endpoint on 5432 (no pooler). Production accepts only `VTV_DATABASE_PROVIDER=serververse`, `127.0.0.1`, PostgreSQL port approved by an installation-bound selector, and PostgreSQL TLS; development ports 55439/55440 are rejected.
+- `VTV_DATABASE_NAME=vtv_saas_staging|vtv_saas_production` and matching approved name; protected local database names/ports refused.
+- Fresh `SAAS_INSTALLATION_ID` and `WEB_AUTH_INSTALLATION_ID` from that environment's approved schema.
+- `VTV_MANAGED_RUNTIME_APPROVED=<profile>:<saas-installation-uuid>` only after independent schema/security review. Production additionally requires `VTV_SERVERVERSE_DATABASE_APPROVED=production:<installation-uuid>:<port>`.
+- PostgreSQL CA PEM under `/etc/vetthevat/<profile>/`; `rejectUnauthorized:true`, TLS >=1.2, no SSL URL parameters that could override TLS options.
+- Separate URLs with exact existing role names. Runtimes must not own schemas/tables, be role members, have CREATE/TEMP, BYPASSRLS, replication or administrative privileges. Use a direct/session-preserving managed connection; transaction-pooling proxies are not accepted without a separate session/identity review.
+
+These selectors are configuration safeguards, not evidence that a provider or migration is approved. Missing managed schema/certificates/credentials must produce unavailable/readiness failure, never demo data.
+
+## No new migration approval
+
+`deploy/postgres/roles.sql.template` is an incomplete DBA design template, not a migration. Provider name/capabilities, fresh target hostname/database, role authority and backup/PITR plan are not yet supplied. Once known, prepare exact executable files and SHA-256s for fresh bootstrap, contact/support/admin functions, history/downgrade enforcement and any narrower mail role; request separate approval for each. No new database SQL was executed here.

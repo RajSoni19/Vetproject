@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-20",
+  "recovery": ".recovery\\frontend-corrections-20261020",
+  "sourceChanges": [
+    {
+      "path": "lib/plan-catalog.ts",
+      "status": "created",
+      "sha256": "11499a46ccf2f7762e34f38d0e19ba05d13e54cdece325cbc36902fe7f920e96",
+      "original": null
+    },
+    {
+      "path": "lib/remove-demo-data.ts",
+      "status": "modified",
+      "sha256": "bbda6fc7ca216dd202fa8e5e7143a4d0d3d9235cd7e13517279ed621959cecfb",
+      "original": ".recovery/frontend-corrections-20261020/lib/remove-demo-data.ts"
+    },
+    {
+      "path": "lib/subscription-preview.ts",
+      "status": "modified",
+      "sha256": "5680ddf9e8b4ac90c0dbeb2711c5ecb2844493a5497ef60a54557af49ccb43d0",
+      "original": ".recovery/frontend-corrections-20261020/lib/subscription-preview.ts"
+    },
+    {
+      "path": "lib/server/account-usage.ts",
+      "status": "modified",
+      "sha256": "33fa0a855fc3a849bae7fa720b5876f717ba5ce427f7c001ec960f856f769110",
+      "original": ".recovery/frontend-corrections-20261020/lib/server/account-usage.ts"
+    },
+    {
+      "path": "lib/server/entitlements.ts",
+      "status": "modified",
+      "sha256": "cc75dab4eeec6556df85fec60e785da3ab21fcd753486dc4618af8b4bcc8f66c",
+      "original": ".recovery/frontend-corrections-20261020/lib/server/entitlements.ts"
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "status": "modified",
+      "sha256": "6d9641a58cae4e6077f683d9807122c8680669de06a2e77a3eb1349a9799cff7",
+      "original": ".recovery/frontend-corrections-20261020/components/app-shell.tsx"
+    },
+    {
+      "path": "components/legacy-data-review.tsx",
+      "status": "created",
+      "sha256": "9ff3df77789606b165103cfea93213a471a367da55f7b86a3b31fb70221ff437",
+      "original": null
+    },
+    {
+      "path": "components/proposed-plan-information.tsx",
+      "status": "modified",
+      "sha256": "813d1db143f808f7559637821675b197c0cdfd2d3597cbb275f629bb90b1985d",
+      "original": ".recovery/frontend-corrections-20261020/components/proposed-plan-information.tsx"
+    },
+    {
+      "path": "components/public-shell.tsx",
+      "status": "modified",
+      "sha256": "145fbd3d97e28d75eea1fda25c3704ef34158ffe69bf3d8152ae17b34f86452a",
+      "original": ".recovery/frontend-corrections-20261020/components/public-shell.tsx"
+    },
+    {
+      "path": "app/pricing/page.tsx",
+      "status": "modified",
+      "sha256": "2a50c8fd9e278f6b26a4e99809a14da04abe25d9f626866712893c8c69a9c270",
+      "original": ".recovery/frontend-corrections-20261020/app/pricing/page.tsx"
+    },
+    {
+      "path": "app/app/subscription/page.tsx",
+      "status": "modified",
+      "sha256": "773c6fb6224f53a6addb8752da86123862ce9f621fc4d812d7291b81453ad518",
+      "original": ".recovery/frontend-corrections-20261020/app/app/subscription/page.tsx"
+    },
+    {
+      "path": "tests/browser-corrections.cjs",
+      "status": "created",
+      "sha256": "bf1749cc360f3b7bb51215854d07c077ca5603720cb711a97807b83c0322c1ac",
+      "original": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "886fcd6941269ec8728eeb6e27e0cafacd2ac3b5eade3f31f383484dd714248c",
+      "original": ".recovery/frontend-corrections-20261020/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "tests/frontend-corrections.test.cjs",
+      "status": "created",
+      "sha256": "ed7a4e11054a4780b709b951dd88189eb1e23080d5765dab60271124fd8bdb11",
+      "original": null
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "391eeb83241012b2825260e97f846f760b38206613df9379bf198ffa2939e793",
+      "original": ".recovery/frontend-corrections-20261020/package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "sha256": "1adf33de990ade99c97e8474327e804501a69f24007e0f6c8f0b08019cf53118",
+      "original": ".recovery/frontend-corrections-20261020/package-lock.json"
+    }
+  ],
+  "protectedFinancialAndExtractionFilesUnchanged": {
+    "lib\\money.ts": true,
+    "lib\\vat-calculations.ts": true,
+    "lib\\invoice-tax-review.ts": true,
+    "lib\\document-extraction.ts": true,
+    "lib\\invoice-parsing.ts": true
+  },
+  "report": "docs/frontend-corrections-results.md",
+  "audit": "docs/frontend-corrections-audit.json",
+  "screenshots": "docs/previews/frontend-corrections",
+  "existingRegressionScreenshotsRefreshed": [
+    "docs/previews/milestone-1",
+    "docs/previews/milestone-2",
+    "docs/previews/frontend-phase",
+    "docs/previews/frontend-batch2"
+  ],
+  "evidenceFiles": [
+    {
+      "path": "docs/frontend-corrections-results.md",
+      "sha256": "f739e91e4f33ba5ef926c3e5f9419189d58172f65af8b017c13985b5a7f3e121",
+      "kind": "new report/audit"
+    },
+    {
+      "path": "docs/frontend-corrections-audit.json",
+      "sha256": "c958124ed02d6530676daceb49fb49869375909ddd99cb123605951ea24e7149",
+      "kind": "new report/audit"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-1440.png",
+      "sha256": "1f0f2d477f2c4f2d9193c06823a647680f17cc7f55d5d76dfeecc1e2d85d666d",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-320.png",
+      "sha256": "d5c79bd28d4e36f3003f5891cdbb23fad52e3c869fb2d027ad78526e9df2dd83",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-390.png",
+      "sha256": "25f1ae2f01daa124b7a9ebe9a6467c279afc7adc16173400634fa00d17f11b4c",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-768.png",
+      "sha256": "17d83a11f6b6a6ac6e95d1a6dc675ac9bcdb817ce02d90fe2785cccf61fd0e02",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-1440.png",
+      "sha256": "c8d79b13fa1e6d0f3aa87539b1b9d81201040a139a8389be37e4549f27a02dda",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-320.png",
+      "sha256": "8b82329b5fa8bc4981557bf67039a193e5c9a1994d1c4c9de0f13f553178217d",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-390.png",
+      "sha256": "918eb25f2018716ba00ab1cdc221ce1fe4ab2f4091a0f2674e386c3100d3547d",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-768.png",
+      "sha256": "073f220178d6da7a92afbb6881e6ffd66647bc752de9e07935be01480ef6ee27",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-dashboard.png",
+      "sha256": "9c7115f737bb4468f33e23f451b09e0df3e371896a31b90deb9f6614724b1518",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "sha256": "3ad192372f11d7dc939ebbca3b9a50ae1e29a22b8e9c405faab563911b4385b6",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "sha256": "9f26c01a725a0d8286b865dd59fd5a93e4409fbb88ed8290dfde73e446265734",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-invoices.png",
+      "sha256": "3e3894b032c51e9ee75ac253942ba4b10b89bd74ab54f736470c6d6da4d543e7",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-new.png",
+      "sha256": "52100737c1d52c4ec6c66d70ab8f8b77266fd8897568daf4caaa340ba46d360f",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-upload.png",
+      "sha256": "34ea496c3ebd3306a6f153a1025de390f2dde58565f9ed048a84546cdaea05f5",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "sha256": "91f0110621375ec5c815178c9bdef5cd9cfbe23a3d1035209697f448a63040e3",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "sha256": "555e5eca7530f25f1f3bd0ab44d7422a79a2ea2d8380988e8a82302bf4d053df",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-banking.png",
+      "sha256": "e111eeb4bef71833cdf1cc44d246e794ba441b75b124e221d8bc44f326d0dfff",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "sha256": "530bd051c149e0677b400153653c0dab5d2aa69835ef9ed892abfc6cf2bf3ec6",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-documents.png",
+      "sha256": "40c571fb456eb9cd50af306efce587664685b643ca731cee8f768405eb17deb4",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-suppliers.png",
+      "sha256": "83a10ef96fa1c666c5417cadaa313790f3c832865b9ed56288958c0cc2c11b78",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-vat.png",
+      "sha256": "6edb139f2a2714e973c4755224ea4bc64bb8668c783e803c02038e123a746f8c",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-phase/dashboard-390.png",
+      "sha256": "f346a7cdae7be1666883a91dd8a6ef60fef0062206e092ac3d47c26591e4ba0c",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-phase/team-320.png",
+      "sha256": "1ed75bd945c8db7e8884a0223228d0d979e84c307d812202a95258f143bdda44",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/activity-390.png",
+      "sha256": "81dc51d05f44e18f4fe409ceb2d1ed1ffb8c4f0e4264575a83e1d6b4d84194cb",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/reports-390.png",
+      "sha256": "4615a41ac93c67416eb9df77ef362d97f9496fa9855b7f8079208d93a88c850c",
+      "kind": "generated/refreshed synthetic screenshot"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/settings-390.png",
+      "sha256": "916c3cf65a0a2b27cc32986469f141830cf91c525c5b5ce77e8748f90aba37f9",
+      "kind": "generated/refreshed synthetic screenshot"
+    }
+  ]
+}

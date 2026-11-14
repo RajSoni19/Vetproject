@@ -1,0 +1,41 @@
+[Unit]
+Description=VET THE VAT @PROFILE@ @KIND@ durable worker
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=vtv-@KIND@-@PROFILE@
+Group=vtv-@KIND@-@PROFILE@
+@PROCESSING_GROUP@
+WorkingDirectory=/srv/vetthevat/@PROFILE@/current/app
+EnvironmentFile=/etc/vetthevat/@PROFILE@/workers/@KIND@.env
+ExecStart=/opt/vetthevat/node/bin/node workers/main.cjs @KIND@
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=110
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/vetthevat-@PROFILE@-@KIND@
+MemoryMax=768M
+TasksMax=128
+LimitNOFILE=1024
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vtv-@KIND@-@PROFILE@
+
+[Install]
+WantedBy=multi-user.target

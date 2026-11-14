@@ -1,0 +1,265 @@
+﻿{
+    "date":  "2026-10-22",
+    "project":  "D:\\vetthevat",
+    "gitCheckout":  false,
+    "inventoryFile":  "docs/permanent-demo-removal-change-inventory.json",
+    "inventorySelfHash":  "omitted",
+    "files":  [
+                  {
+                      "path":  "app/app/admin/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "37368500a851e1d9ec829773cf78fa0203d64e6eb0f431e52c1022e2705e712f"
+                  },
+                  {
+                      "path":  "app/app/subscription/page.tsx",
+                      "status":  "modified",
+                      "sha256":  "d3a1a72dc263beba09da2dacbf8ab6683969db5576cfda9c93a025e36c97c40e"
+                  },
+                  {
+                      "path":  "components/app-shell.tsx",
+                      "status":  "modified",
+                      "sha256":  "4d6123cb4fdf17f3f11fa16525c8ef714f45881ce3b02fc5b3fdafcdce93b46e"
+                  },
+                  {
+                      "path":  "components/app-state.tsx",
+                      "status":  "modified",
+                      "sha256":  "27363e561094bb2689c47b4b0a09d904e7a9d1cad522448ce621b33d3ccbb923"
+                  },
+                  {
+                      "path":  "components/document-viewer.tsx",
+                      "status":  "modified",
+                      "sha256":  "25c153152b384a6a9f6a49c2029c9ee486c542e70768fd645b89e6b35514cade"
+                  },
+                  {
+                      "path":  "components/invoice-review-workflow.tsx",
+                      "status":  "modified",
+                      "sha256":  "ad0e870d52d563b4d5897d804e69b57ca17497b62f06b1a427ff8c1f03dd8b36"
+                  },
+                  {
+                      "path":  "components/ors-workspace.tsx",
+                      "status":  "modified",
+                      "sha256":  "2e7939d368af7b5cd76d827936ebaa4a214da30ac477d52a2bb8283f59e07727"
+                  },
+                  {
+                      "path":  "components/subscription-preview-warning.tsx",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/demo-data.ts",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/invoice-supplier.ts",
+                      "status":  "modified",
+                      "sha256":  "62658f25f7fc87f1a78145e61eb6261b4323a02cc9fa4a2bf16aa02a38577a00"
+                  },
+                  {
+                      "path":  "lib/legacy-review.ts",
+                      "status":  "modified",
+                      "sha256":  "4c5c8ad8cd3dd3f947c2e0a5e2fd7294d960802009d47926b4ebe23c3927291c"
+                  },
+                  {
+                      "path":  "lib/mock-data.ts",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/remove-demo-data.ts",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/services.ts",
+                      "status":  "modified",
+                      "sha256":  "897543dd8f1ff91cac0de94182ec4c741e4ce68e7db00ac2e879efe84fdba94b"
+                  },
+                  {
+                      "path":  "lib/subscription-preview.ts",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/workspace.ts",
+                      "status":  "modified",
+                      "sha256":  "6d51191643883fb6614bcd5626f89d13243b2d86f095ecc5a6eab0c236b7dc37"
+                  },
+                  {
+                      "path":  "lib/ors/contracts.ts",
+                      "status":  "modified",
+                      "sha256":  "405be1e89bb60076e20f7c1507a12edb732b7095b2ca7dbd5751363054035018"
+                  },
+                  {
+                      "path":  "lib/ors/fixtures.ts",
+                      "status":  "deleted",
+                      "sha256":  null
+                  },
+                  {
+                      "path":  "lib/server/config.ts",
+                      "status":  "modified",
+                      "sha256":  "e1981ceaf6ef7a9fd354f4167f67526e6fef986d01dff2f7f1f95b59b0794e7c"
+                  },
+                  {
+                      "path":  "tests/browser-admin-auth.cjs",
+                      "status":  "modified",
+                      "sha256":  "0621433c9a18475db10f03f17b9cb158646c3fe3f7080195f307259b4f5923ee"
+                  },
+                  {
+                      "path":  "tests/browser-corrections.cjs",
+                      "status":  "modified",
+                      "sha256":  "dd045c8968d5760faa05b745ec4e589f56a50cfe72990ec938ee948577c97b94"
+                  },
+                  {
+                      "path":  "tests/browser-invoices.cjs",
+                      "status":  "modified",
+                      "sha256":  "510b8a0da4cdf2f1ffaf804d6cc9ea90a86ea14bc8873305f6d10d97fbb1092b"
+                  },
+                  {
+                      "path":  "tests/browser-release-frontend.cjs",
+                      "status":  "modified",
+                      "sha256":  "ff017ad4ac3f38a63fe42a0be2f75dba3da27db2679fc4c57fcd2ffe3a2220e7"
+                  },
+                  {
+                      "path":  "tests/frontend-corrections.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "a0c592dc77d69eca51399761157dfe34fbcbf83f99bcbe8d8f3ad926f52d0953"
+                  },
+                  {
+                      "path":  "tests/invoice-supplier.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "50cdad752b93d39dc279e1f6e47b79ad63e4b0ee8b13e6b311d4aa9c75de9c46"
+                  },
+                  {
+                      "path":  "tests/invoices.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "f463ea3def7d001b2d8c53e4fefdd70ad2d8f9e2c17faa80a0ae99cc2c4a9028"
+                  },
+                  {
+                      "path":  "tests/legacy-review.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "4780c2ebcb320719211d50ba8b2ff462422231643cd2ca219c2bc08ec00da993"
+                  },
+                  {
+                      "path":  "tests/release-frontend.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "6e49bb39cff7949947c1ec0ec4d025007eec339a68eee188ab38d721d2859910"
+                  },
+                  {
+                      "path":  "tests/remove-demo-data.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "3c4a97b380a39f465145326e7004e58510c1b7f2b9244d4ea64e191f9c4f5b3e"
+                  },
+                  {
+                      "path":  "tests/stage1-ors.test.cjs",
+                      "status":  "modified",
+                      "sha256":  "38f8884223be4fa44833187b8c6252631c0bd6a683893e1569e55deeb7e70126"
+                  },
+                  {
+                      "path":  ".vercelignore",
+                      "status":  "modified",
+                      "sha256":  "c41fb70ad10be032a229a16e004086f909b14f846046e69f8c95a4c3924cfa57"
+                  },
+                  {
+                      "path":  ".gitignore",
+                      "status":  "modified",
+                      "sha256":  "25da462c1cc4f17c383644f9e18f2fb60ec043476079906b560adfae315cba83"
+                  },
+                  {
+                      "path":  "lib/subscription-contracts.ts",
+                      "status":  "added",
+                      "sha256":  "f53789810fe70f62a85d8195c3810a862dac6262d9333cedaa8c22356741c40d"
+                  },
+                  {
+                      "path":  "lib/workspace-bootstrap.ts",
+                      "status":  "added",
+                      "sha256":  "ec0f9bf129e291c220f8f070999954358042c47a8c7464f6b553142492ea8883"
+                  },
+                  {
+                      "path":  "lib/ors/workspace.ts",
+                      "status":  "added",
+                      "sha256":  "6b6a7664d75afd1348e42e2b13b80709091b465f412b145d7f1a1a301e858949"
+                  },
+                  {
+                      "path":  "tests/browser-permanent-cleanup.cjs",
+                      "status":  "added",
+                      "sha256":  "81a9682fdcb64dd6599736c2e29018be303a73efd1fec7c3055c1888c1abec53"
+                  },
+                  {
+                      "path":  "tests/cleanup-component-render.cjs",
+                      "status":  "added",
+                      "sha256":  "9f8d651f41419f55880930e0fdfd8028950f35de41b12946729a051e586215a7"
+                  },
+                  {
+                      "path":  "tests/permanent-cleanup-security.test.cjs",
+                      "status":  "added",
+                      "sha256":  "684b41aa736a2af8096628befeab23055561b438084322bed2aa0b95cf085293"
+                  },
+                  {
+                      "path":  "tests/verify-cleanup-build.cjs",
+                      "status":  "added",
+                      "sha256":  "4d629e9bb391f66a2f7119c9d317bf97d9dd780654c9a11bf512ee1149224047"
+                  },
+                  {
+                      "path":  "tests/fixtures/legacy-workspace.ts",
+                      "status":  "added",
+                      "sha256":  "ca3ce8466ea38884a8c57e7e0769263abcd6e71bee45f9db2442b135be3e02d8"
+                  },
+                  {
+                      "path":  "tests/fixtures/ors-workflow.ts",
+                      "status":  "added",
+                      "sha256":  "d9b78c0a93e5640ae00687b38bcb1303e0881a4987813018850e7217a17555cb"
+                  },
+                  {
+                      "path":  "tests/fixtures/subscription-preview.ts",
+                      "status":  "added",
+                      "sha256":  "8253c693ccdcca977e17982ff4cd3fa18bb695694e27b4546527ce506adf0d28"
+                  },
+                  {
+                      "path":  "docs/permanent-demo-removal-results.md",
+                      "status":  "added",
+                      "sha256":  "c951e19c0c2659101eec474e3e1d67834394230088b7317cf6cdc9fae9ea9d92"
+                  },
+                  {
+                      "path":  "docs/permanent-demo-removal-verification.json",
+                      "status":  "added",
+                      "sha256":  "785f9a3ed2c447c611ff009d7295b3365151d05eeea0bed5e8e5f89a80f70a41"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/fresh-access-blocked-1440.png",
+                      "status":  "added",
+                      "sha256":  "a76296dc1165ff23f2096bc84fb258403cdb042eb9cb2b2e730685e78139b5f8"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/fresh-access-blocked-390.png",
+                      "status":  "added",
+                      "sha256":  "ac57bae823259048ab6191161b999bed141b122959c911f468e00eb59845773a"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/fresh-public-home-1440.png",
+                      "status":  "added",
+                      "sha256":  "bb541fcd6f964fbab2720552ab67c671ad446a740334158dad0d98a69deca4be"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/fresh-public-home-390.png",
+                      "status":  "added",
+                      "sha256":  "45500fa77180b7fdebd0e3a972ea3e1abaa096fc04717c5b22e85af5b01a2ecf"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/ors-empty-component-1440.png",
+                      "status":  "added",
+                      "sha256":  "5e81207b2c2ea74a1e45e5068b4ac755640fde4bcb7d495c6c0d8d557b820e4d"
+                  },
+                  {
+                      "path":  "docs/previews/permanent-cleanup/ors-empty-component-390.png",
+                      "status":  "added",
+                      "sha256":  "964b5570e506cebaf165da4ba60adc46b892fe87318f0873ae5b6c6ee8eb765d"
+                  }
+              ],
+    "verification":  "docs/permanent-demo-removal-verification.json",
+    "notes":  [
+                  "Actual existing user browser profile not inspected; manual verification remains outstanding.",
+                  "Historical test fixtures are isolated from application imports and deployment artifacts.",
+                  "No production system or immutable backup modified."
+              ]
+}

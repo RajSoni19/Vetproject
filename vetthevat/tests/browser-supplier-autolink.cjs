@@ -1,0 +1,9 @@
+const assert=require('node:assert/strict');
+exports.run=async({evaluate,navigate,click,input,until})=>{
+ const records=await evaluate(`(()=>{const s=JSON.parse(localStorage.getItem('vet-the-vat-workspace-v1'));const invoice=s.invoices.find(row=>row.invoiceNumber==='BROWSER-TEST-123');return {invoice,suppliers:s.suppliers.filter(row=>row.companyId===invoice.companyId&&row.id===invoice.supplierId)};})()`);
+ assert.equal(records.suppliers.length,1);assert.equal(records.suppliers[0].name,'Synthetic Supplier');assert.equal(records.suppliers[0].status,'Review');
+ await navigate('/app/suppliers','Suppliers');await input('Search suppliers','Synthetic Supplier');assert.ok(await evaluate('document.body.innerText.includes("Synthetic Supplier")'));
+ await click('Add Supplier');assert.equal(await evaluate('document.querySelector(\'[role=dialog] a[href="https://www.gov.uk/check-uk-vat-number"]\').target'),'_blank');assert.ok(await evaluate('[...document.querySelectorAll("[role=dialog] button")].some(button=>button.textContent.includes("Automatic HMRC")&&button.disabled)'));await click('Cancel');
+ await navigate('/app/invoices/new','Invoice details');await input('Supplier name','Synthetic Supplier');await input('Invoice number','SUPPLIER-REUSE-TEST');await click('Save Draft');await until('!location.pathname.endsWith("/new")','supplier reuse draft');const saved=await evaluate(`(()=>{const s=JSON.parse(localStorage.getItem('vet-the-vat-workspace-v1'));return {invoice:s.invoices.find(row=>row.invoiceNumber==='SUPPLIER-REUSE-TEST'),suppliers:s.suppliers.filter(row=>row.companyId===s.selectedCompanyId&&row.name==='Synthetic Supplier')};})()`);assert.equal(saved.suppliers.length,1);assert.equal(saved.invoice.supplierId,records.invoice.supplierId);
+ console.log('PASS auto supplier creation survives reload, repeated saves reuse its company record and supplier form exposes honest GOV.UK manual checking');
+};

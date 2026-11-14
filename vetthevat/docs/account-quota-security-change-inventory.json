@@ -1,0 +1,150 @@
+{
+  "clientDate": "2026-10-20",
+  "baseline": ".recovery/quota-security-20261020-202839",
+  "changes": [
+    {
+      "path": ".dockerignore",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "9b9e017d4787f5b65428ca86c0515807952b4055e5c2faaa4b73e5138c00e65b",
+      "recoverableOriginal": null
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "4fceb9663a498ba5d93eabb79197a4f4af636c04b4d5bd30d7e53484fa36ea7d",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "Dockerfile",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "fd800d67ae38ff51f6163e2d60453df435cd8dd9de3c0a57be1eab49c3e5906c",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "compose.yaml",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "3394de388ab67dcf0eb9dbd2ad59a8aa486f17cd3e4a98f2b6e3957191a85d28",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/account-quota-security-foundation.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "e9d87cc465e8943717e521248356e25112796c12ebadad5d33bc1744e66c2752",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "change": "modified",
+      "beforeSha256": "ce67a637fd8a251866014495ad9f744f1cd105c4af8daeac71d6b1210320a120",
+      "afterSha256": "b9a76f9363b161c53f5c89d352d3122e34544aeaa5047e423474400c8da8ff40",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/docs/previews/milestone-1/desktop-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "change": "modified",
+      "beforeSha256": "475d744da3261f5de964ab5d3feec9a892eaa291bcc674e8cb56ab4e10ac125b",
+      "afterSha256": "fb2383902ac3166714211b32ff01930a1b1f5724a8af805c591e5d552b3882cd",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/docs/previews/milestone-1/mobile-dashboard.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "change": "modified",
+      "beforeSha256": "769f0915e853172cc32423809b68058b1af3781e1df3dc2684aa038644377491",
+      "afterSha256": "ccf1dba40e36054bf0691bbe409a3115fc546664b159049ebfd445d0d2b7b2b9",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/docs/previews/milestone-2/mobile-companies.png"
+    },
+    {
+      "path": "infra/nginx.review.conf",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "ff91e733d0cc37df6cc044711c152a741f59338617a70e31e423e5ccb3e6a1d9",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/account-usage.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "b855eb89b47d92231cc657e2317c0ce9e2a9cfb2ff8c733261171d2216594b55",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/api-v1.ts",
+      "change": "modified",
+      "beforeSha256": "b9cd51b83d37a59a21cc3256688a92ecc14e011cda0af06dc93f6934deee1f0b",
+      "afterSha256": "b8634a10596a8a0ae7e266dfdd3851ef6cd7b2ef6e33430053d069e96571de6c",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/lib/server/api-v1.ts"
+    },
+    {
+      "path": "lib/server/request-limits.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "cebe740c4d536ceb41a5825ec2c43f4df32707225a9152b243f5fbbd0779a580",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/usage-services.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "38cc5ad76a7a9c18aece47f4e9198ca0f2766e19bfac97e5de91035a6aad43ad",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "next.config.ts",
+      "change": "modified",
+      "beforeSha256": "fef1260a56ff84a1f9a032b5ba4e3868e3338a1ac31080d6d4db7f6d2d53245e",
+      "afterSha256": "36572894de7bd617be4e089c5ddb0e68034fdfb3cbdf237dc8e38e3d877d131a",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/next.config.ts"
+    },
+    {
+      "path": "tests/account-security.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "85b710a0b4a8188d5fe6f095386631daa07f3be4fd5404623ffb8506233126fc",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "40bf4cf3df5fe3bdd7253789d3fade69125c5d0efa05073a402e416d10770c3e",
+      "afterSha256": "0b34cbb4661134bea868025b67301c66d93a4878e1b51ffc6b5d955296659ef5",
+      "recoverableOriginal": ".recovery/quota-security-20261020-202839/tests/browser-invoices.cjs"
+    }
+  ],
+  "protectedFinancialFilesUnchanged": {
+    "lib/money.ts": true,
+    "lib/vat-calculations.ts": true,
+    "lib/invoice-rules.ts": true
+  },
+  "verification": {
+    "unitTests": {
+      "passed": 65,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "build": "passed",
+    "supplierBrowser": "passed",
+    "fullFrontendBrowser": "passed",
+    "yamlParsing": "passed",
+    "dependencyAudit": {
+      "high": 6,
+      "moderate": 2,
+      "critical": 0
+    },
+    "docker": "unavailable/not executed",
+    "ci": "not connected/not executed"
+  },
+  "notConnectedOrExecuted": [
+    "PostgreSQL",
+    "Firebase",
+    "migration scripts",
+    "Docker build/start",
+    "GitHub Actions",
+    "deployment"
+  ],
+  "inventoryFile": "docs/account-quota-security-change-inventory.json (self hash omitted)"
+}

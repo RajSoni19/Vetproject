@@ -1,0 +1,30 @@
+"use client";
+import {useState} from "react";
+import {useAppState} from "@/components/app-state";
+import {legacySelectionKey,type LegacySelection} from "@/lib/legacy-review";
+import {Button} from "@/components/ui/button";
+import {Dialog} from "@/components/ui/dialog";
+
+export function LegacyDataReview(){
+ const {legacyReviewRows:rows,legacyReviewBackups:backups,deleteLegacyRecords,restoreLegacyRecords,exportLegacyRecords,storageReady}=useAppState();
+ const [selected,setSelected]=useState<LegacySelection[]>([]),[confirm,setConfirm]=useState(false),[ack,setAck]=useState(false),[error,setError]=useState(""),[message,setMessage]=useState("");
+ if(!rows.length&&!backups.length)return null;
+ function download(key?:string){try{
+  const data=exportLegacyRecords(key),url=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+  const link=document.createElement("a");link.href=url;link.download=key?`${key}.json`:"vet-the-vat-before-legacy-review.json";link.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setMessage("Private all-company metadata download requested. Store it securely; original file bytes are not included.");setError("");
+ }catch{setError("The recovery export could not be prepared. No records were removed.");}}
+ return <aside className="mx-4 mt-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950" aria-label="Legacy data review">
+  <h2 className="font-semibold">{rows.length?"Legacy records need your review":"Legacy review recovery"}</h2>
+  <p className="mt-2">{rows.length} records use identities from the former sample workspace. They may contain genuine edits or support your own records and are included in local figures. Nothing is selected or deleted automatically.</p>
+  <details className="mt-3"><summary className="cursor-pointer font-semibold">Review retained record references</summary>
+   <p className="mt-3">Review names and links in the relevant screens first. Select only records you intend to remove. Linked records and payment history are protected; company deletion is excluded.</p>
+   <ul className="mt-2 max-h-64 space-y-2 overflow-auto">{rows.map(row=>{const key=legacySelectionKey(row);return <li key={key} className="rounded border border-amber-200 p-2"><label className="flex min-h-11 items-start gap-3"><input type="checkbox" className="mt-1" disabled={row.kind==="companies"} checked={selected.some(item=>legacySelectionKey(item)===key)} onChange={event=>setSelected(current=>event.target.checked?[...current,row]:current.filter(item=>legacySelectionKey(item)!==key))}/><span className="min-w-0 break-words"><strong>{row.kind}: {row.label}</strong><span className="mt-1 block break-all text-xs">{row.id}{row.companyId?` · company ${row.companyId}`:""}{row.kind==="companies"?" · use company archive instead":""}</span></span></label></li>;})}</ul>
+   <p className="mt-3">Exports include private metadata for every company in this browser. Store them securely. Original document bytes are not included.</p>
+   <div className="mt-4 flex flex-wrap gap-3"><Button variant="outline" onClick={()=>download()}>Export metadata before review</Button><Button variant="outline" disabled={!storageReady||!selected.length} onClick={()=>{setAck(false);setError("");setConfirm(true);}}>Review selected deletion ({selected.length})</Button></div>
+  </details>
+  {backups.length?<details className="mt-4"><summary className="cursor-pointer font-semibold">Recovery snapshots ({backups.length})</summary><p className="mt-2">Private browser-local metadata snapshots only. Clearing site data removes them. Export a copy to keep it outside this browser. Restoring merges the selected records and never overwrites an existing record.</p><ul className="mt-3 space-y-3">{backups.map(backup=><li key={backup.key} className="rounded border border-amber-200 p-3"><p>{backup.count} selected record(s) · {backup.at}{backup.restored?" · restored":""}</p><div className="mt-2 flex flex-wrap gap-2"><Button variant="outline" onClick={()=>download(backup.key)}>Export recovery metadata</Button><Button variant="outline" disabled={backup.restored||!storageReady} onClick={()=>{try{if(restoreLegacyRecords(backup.key)){setMessage("Selected records restored. Newer records were preserved.");setError("");}}catch(reason){setError(reason instanceof Error?reason.message:"Recovery failed; existing records were preserved.");}}}>Restore selected records</Button></div></li>)}</ul></details>:null}
+  {message?<p role="status" className="mt-3">{message}</p>:null}{error&&!confirm?<p role="alert" className="mt-3 font-semibold">{error}</p>:null}
+  {confirm?<Dialog title="Confirm selected legacy deletion" onClose={()=>setConfirm(false)}><div className="p-5 text-ink"><p>Remove exactly {selected.length} selected record(s)? They may contain genuine user edits. No related records will be deleted automatically.</p><ul className="mt-3 max-h-40 space-y-2 overflow-auto">{selected.map(row=><li key={legacySelectionKey(row)} className="break-all">{row.kind}: {row.id}</li>)}</ul><p className="mt-3">A private all-company metadata recovery snapshot must save successfully before deletion. Original file bytes are not backed up. Export metadata first if you need an independent copy.</p><label className="mt-4 flex min-h-11 items-center gap-3"><input type="checkbox" checked={ack} onChange={event=>setAck(event.target.checked)}/>I reviewed these records and understand the recovery limits.</label>{error?<p role="alert" className="mt-3 text-red-800">{error}</p>:null}<div className="mt-4 flex flex-wrap gap-3"><Button variant="outline" onClick={()=>setConfirm(false)}>Cancel deletion</Button><Button disabled={!ack||!storageReady} onClick={()=>{try{if(deleteLegacyRecords(selected)){setSelected([]);setConfirm(false);setMessage("Selected records removed locally. Use Recovery snapshots to restore them.");setError("");}}catch(reason){setError(reason instanceof Error?reason.message:"Deletion failed; existing records were preserved.");}}}>Delete reviewed records</Button></div></div></Dialog>:null}
+ </aside>;
+}

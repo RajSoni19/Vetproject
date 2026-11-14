@@ -1,0 +1,79 @@
+{
+  "clientDate": "2026-10-20",
+  "baseline": ".recovery/supplier-billing-20261020-201841",
+  "changes": [
+    {
+      "path": "components/app-state.tsx",
+      "change": "modified",
+      "beforeSha256": "7c159770d86a546854a3a8ab3ca7bc4188218ac9b9f6dcc22a68b3df68a3c5a6",
+      "afterSha256": "4544134426747f022f73602d5ca146a7a0609b789f0736f6b47246cec69e36ca",
+      "recoverableOriginal": ".recovery/supplier-billing-20261020-201841/components/app-state.tsx"
+    },
+    {
+      "path": "components/entity-fields.ts",
+      "change": "modified",
+      "beforeSha256": "3f4b390b82906a161201428adcfea1543233cc0688c765d37d400ee94d857908",
+      "afterSha256": "d8bc7f9d89635fd1ec73527a0e078ed8334d96e6ea13a3ceabef5a7ae8ef106e",
+      "recoverableOriginal": ".recovery/supplier-billing-20261020-201841/components/entity-fields.ts"
+    },
+    {
+      "path": "components/record-form-dialog.tsx",
+      "change": "modified",
+      "beforeSha256": "58bcc0ed0d99c217934249c8762e169a9d6c494290d49033595c2ffb9ae56e13",
+      "afterSha256": "de96a82d4b509ab12fcaae285405d372c0840f44860cf7b9464a7fb732592b83",
+      "recoverableOriginal": ".recovery/supplier-billing-20261020-201841/components/record-form-dialog.tsx"
+    },
+    {
+      "path": "lib/invoice-supplier.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "ccc87852db06dac4e887d82cfe63ab1af78cceeea17379e5c5f875f3f1512893",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "3a3d8f2e9db9d992c32e16e16265c9ff4369b12ca17edfc40c9f03a592d92dfd",
+      "afterSha256": "40bf4cf3df5fe3bdd7253789d3fade69125c5d0efa05073a402e416d10770c3e",
+      "recoverableOriginal": ".recovery/supplier-billing-20261020-201841/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "tests/browser-supplier-autolink.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "a3b6a2edd1e36a6a5160ee46c214d93528b0864cfbaa821e16fc4ff82e24885b",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/invoice-supplier.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "c2dbb569e4e9da3f369f22ba1735d20450f8a552bbee80866d682d4775f173d3",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/subscription-supplier-vat-integration.md",
+      "change": "created",
+      "afterSha256": "604aa3386a731097ae351bb109c80c477467de6afe40ed79b80cfcb8e20fce8c"
+    }
+  ],
+  "inventoryFile": "docs/subscription-supplier-change-inventory.json",
+  "checks": {
+    "unitTests": 60,
+    "typecheck": "passed",
+    "build": "passed",
+    "fullBrowser": "passed",
+    "supplierBrowser": "passed"
+  },
+  "ownerRequirements": {
+    "reminders": "in-app and email",
+    "autopay": "card and Direct Debit"
+  },
+  "limitations": [
+    "Live web site shell responded HTTP 200 and identifies Flutter; services/subscription screens and prices not verified.",
+    "No emails sent, reminders scheduled, payment provider configured or automatic HMRC check performed.",
+    "Supplier persistence remains browser-local.",
+    "No database, Firebase, Flutter, immutable backup, deployment or package changes.",
+    "Existing synthetic preview screenshots may be refreshed by regression suites."
+  ]
+}

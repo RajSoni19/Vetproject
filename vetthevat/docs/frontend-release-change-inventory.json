@@ -1,0 +1,321 @@
+{
+  "clientDate": "2026-10-20",
+  "baseline": ".recovery/frontend-release-20261020-205935",
+  "changes": [
+    {
+      "path": ".dockerignore",
+      "change": "modified",
+      "beforeSha256": "9b9e017d4787f5b65428ca86c0515807952b4055e5c2faaa4b73e5138c00e65b",
+      "afterSha256": "fbd30261b70eb473359fe1bea1dbc0e7521fa86c181ec762dc8aa0b5b2803e3c",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/.dockerignore"
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "change": "modified",
+      "beforeSha256": "4fceb9663a498ba5d93eabb79197a4f4af636c04b4d5bd30d7e53484fa36ea7d",
+      "afterSha256": "4e222fe6fbed2ed878dd62b945caea49d61b6752d16dc26f18321eff78cd6ed4",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/.github/workflows/verify.yml"
+    },
+    {
+      "path": "app/app/customers/[id]/page.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "5540094c6ac7da26f950551bead50f20f55b16ae42bcad2c96751f7ef47e353e",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "app/app/customers/page.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "e2a061c1575f33591b2d2207575d05eea5b598dfca2b2cde27a82d60a41509d0",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "app/app/documents/page.tsx",
+      "change": "modified",
+      "beforeSha256": "dae2e688f6af6672285acbf1c2e5ef2b38f9d12690bbe290605515dbbb3613bc",
+      "afterSha256": "f97f1b9f19dda6c5cdb4e687273f309fc04de1f46c9bde94d3d81b32a6608dd7",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/documents/page.tsx"
+    },
+    {
+      "path": "app/app/invoices/[id]/page.tsx",
+      "change": "modified",
+      "beforeSha256": "72034bdf90033f5ce32aa5f6592883d7b5c04e09f880594cc938d30d1d2cbbd0",
+      "afterSha256": "86356c57755fec3ac5895d36baae3824871301cad9de6d2acdfd2e25b1b7ed83",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/invoices/[id]/page.tsx"
+    },
+    {
+      "path": "app/app/invoices/new/page.tsx",
+      "change": "modified",
+      "beforeSha256": "7426a4bd6b4497cf85938d8a43c6b8c5c32452815e3060d539ec4472bae7c9b5",
+      "afterSha256": "da54cc4cc40ef71be321903bdc5792c8cb81c5a7ab2ba4493809c38a67a22bfc",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/invoices/new/page.tsx"
+    },
+    {
+      "path": "app/app/invoices/page.tsx",
+      "change": "modified",
+      "beforeSha256": "3df66e6180082fdc445f6ba3efc6ed7d22a613181732ad167117e421d43b9f62",
+      "afterSha256": "03f065518fd453b662b889c34b05aad845497968057e68777d786d36811007ab",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/invoices/page.tsx"
+    },
+    {
+      "path": "app/app/subscription/page.tsx",
+      "change": "modified",
+      "beforeSha256": "f8907c2c5891bb41642ca056851332edb6e2648e3977e1b502ea49b3add48842",
+      "afterSha256": "c252a963a72bbdb177964b5d73ef156da4100a8e0cdfe1ab81c2171f9c980e63",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/subscription/page.tsx"
+    },
+    {
+      "path": "app/app/suppliers/page.tsx",
+      "change": "modified",
+      "beforeSha256": "e00a3c3346cfafeec8c09af43e98ef0fdadb7d7f72480ab00354a621c365d7f9",
+      "afterSha256": "0d2886272a0da33469f2c5e25aef9859bd600ebcd18ac4f3a1df5211fba2da85",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/app/app/suppliers/page.tsx"
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "change": "modified",
+      "beforeSha256": "a695c2b8bd981a69fab513d81cfbe6c1a2629f8528665492946f69f67a410584",
+      "afterSha256": "692f7100512645b7938158d48ce76ba51708bfbf7cc33c588a5b280350d57bf1",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/components/app-shell.tsx"
+    },
+    {
+      "path": "components/app-state.tsx",
+      "change": "modified",
+      "beforeSha256": "75ca0fc2f06bcd1b78ec3944fc635bf1c15cff7efed9f81b6494201719bc2a93",
+      "afterSha256": "894c43d5578a02e45c0b70cc91830172f9ceeaa93e6d8c1da72bdeaf895d364e",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/components/app-state.tsx"
+    },
+    {
+      "path": "components/customer-workspace.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "a1724f5d3319dd3d1772da9c8bac719c81da041850c4bd4d40ef923fdeaedb88",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "components/invoice-editor.tsx",
+      "change": "modified",
+      "beforeSha256": "3a9a5372cf0ae8ef1c13e097f7dc338a47e1cad603be2c0f1c2bda53fa934515",
+      "afterSha256": "345ee92ff2969309b42c84cf08483bc40e5b5dcf49b86a41dbf105d2564de052",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/components/invoice-editor.tsx"
+    },
+    {
+      "path": "components/proposed-plan-information.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "a1a4fd325ad0a4bb169f8bfadc8b79056865d9ed226cf14befebc78c5190ba0c",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "components/subscription-preview-warning.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "0c7f96ee2144b5ac37254b2f018bb2b628f600b9ab9faa77b878bf50d591b6cd",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "components/ui/collection-pagination.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "eee42ea6822569262cfef86050581e3df74ecb194108a721955e8fbb0bf8b579",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/frontend-release-readiness.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "3858c81683ee5bec0a7483e6d8fcfc0a6f211f47167a6ae7ed244e51635bf26a",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-dashboard.png",
+      "change": "modified",
+      "beforeSha256": "a6547701d079122f8e5a2b9e5f58a587fdcf96339fd90d9f3fa01e0f70bca8ae",
+      "afterSha256": "2d8eaacbe054d31d9048746c3c9bb0379c38c7c7b73598e16bebc89fc4774fb9",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/docs/previews/milestone-1/desktop-dashboard.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "change": "modified",
+      "beforeSha256": "af977b71107ee6afae1b6b4a94d7a78b1d7717fd2282026c5ebdf32c515f582c",
+      "afterSha256": "040608d814ba83f9ecf0c3961ee5bec923db8012f7331994e014dd3218aac5a3",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/docs/previews/milestone-1/desktop-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-invoices.png",
+      "change": "modified",
+      "beforeSha256": "df74d53190dc44dd21345998000225238d63ef0daf9605fa3982564c6f1a2933",
+      "afterSha256": "7f3bac3c0e7cd64f832bd496b9f8afc00fa5c2e4a430e005d377bf9d0592e389",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/docs/previews/milestone-1/mobile-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "change": "modified",
+      "beforeSha256": "ffc46322be150ee5c26c602bd03b160b2546852b31b28de6069dda34aeacd6f3",
+      "afterSha256": "375ac7e3498a6168c3a04a43b93d996974c0c07b713854b7ef84e035773f9d06",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/docs/previews/milestone-2/desktop-banking.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "change": "modified",
+      "beforeSha256": "81e7012fc9b06c1119009a775c9b904505e9c9bc7ee5275c786155146370edd2",
+      "afterSha256": "943cb69a64fbc9b7bcb602d26f5c241f262432cb1bb3ef640e8a87a7dafd58af",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/docs/previews/milestone-2/desktop-supplier.png"
+    },
+    {
+      "path": "docs/release-dependency-audit.json",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "5f1af77b30824437e676079d13115ffcd0a7474278de714b1069278263096e5c",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/customers.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "2c4ca64032d405d2e060f3973f9fe0e1a6119f4dcdab23e974cf25eebefaa4e7",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/domain.ts",
+      "change": "modified",
+      "beforeSha256": "4be5e0e78684a98b80f2476a2cc33a46ee874d42142f403aab3ebcb2949b02ee",
+      "afterSha256": "c53595bb810606d1e9860c63f4c156fd3b852f037a65a753762030d61e85d194",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/domain.ts"
+    },
+    {
+      "path": "lib/invoice-filters.ts",
+      "change": "modified",
+      "beforeSha256": "9250269c8dc053356f5da572dec5c465e21955e629353429b1751d9192a1ebb1",
+      "afterSha256": "b012df3144923acf940606ba6d1038193a397afba86e7ba903fc0fdc13df8692",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/invoice-filters.ts"
+    },
+    {
+      "path": "lib/invoice-rules.ts",
+      "change": "modified",
+      "beforeSha256": "2bbee62ba5cc3f60177ef8e24bb8810710710b8884f62d64bf01ec1d6421b96e",
+      "afterSha256": "85e9157ea4e496130b82fbd7dc9ca17dd718e65db2b403c1a0064fc388dfc74f",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/invoice-rules.ts"
+    },
+    {
+      "path": "lib/remove-demo-data.ts",
+      "change": "modified",
+      "beforeSha256": "772c06c2adf7b3f5d00ae85da52956cebc219be087f76d655abbfe85fcd19a0f",
+      "afterSha256": "bf73efb9d9115046f7daf12bda91b07f981cb1f7a6da560a8893519944532cd1",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/remove-demo-data.ts"
+    },
+    {
+      "path": "lib/report-exports.ts",
+      "change": "modified",
+      "beforeSha256": "944e763f529cc281a1db4d16155aa512c8c8efe6625c0f2dc9f657c18812d8e7",
+      "afterSha256": "f7434f80066d24f13a9e9adfec72aa4a26f01d16889ab532719e504c5254f2f9",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/report-exports.ts"
+    },
+    {
+      "path": "lib/server/account-usage.ts",
+      "change": "modified",
+      "beforeSha256": "b855eb89b47d92231cc657e2317c0ce9e2a9cfb2ff8c733261171d2216594b55",
+      "afterSha256": "61173dd73407b10e8ff3125b6cce9ea1033b84b415639d3c6bf9c3f05b6b1933",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/server/account-usage.ts"
+    },
+    {
+      "path": "lib/server/request-limits.ts",
+      "change": "modified",
+      "beforeSha256": "cebe740c4d536ceb41a5825ec2c43f4df32707225a9152b243f5fbbd0779a580",
+      "afterSha256": "57567e6e78d592ce37931aa5d58131b7643ab8cca467417952a51cd140595ebb",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/server/request-limits.ts"
+    },
+    {
+      "path": "lib/subscription-preview.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "5f7da70e59a18c6f8c627b9b322828e274c3a15ac708559505443fa008d60ead",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/workspace-navigation.ts",
+      "change": "modified",
+      "beforeSha256": "627c7764413c3911b48125dd266b8101357ab65b6b73e0ca6cf02aa83344c030",
+      "afterSha256": "b2d3ee4da0fe3e978a16df1582e542d017f59b052476a3ec9474f9d3bc8cdbc5",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/workspace-navigation.ts"
+    },
+    {
+      "path": "lib/workspace.ts",
+      "change": "modified",
+      "beforeSha256": "821410a4cf802ee6c9e8a06f7db16642f9bbbe238a126bc76f638d2bc4461226",
+      "afterSha256": "83eae0ce485904f9975a939cb899a290348f0f02d81d8caccd41ff19f9cf9593",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/lib/workspace.ts"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "8aab1e028bdca33483422396095ee208e54437150e19f31fb7e3c9f2877e37ec",
+      "afterSha256": "bb86fa96de8ee3305e0096ac7cda28348f5ee5db1d059779f9ebf008983c7f14",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "tests/browser-milestone1-flows.cjs",
+      "change": "modified",
+      "beforeSha256": "91cb73897e728d468dacd3b5808db49576a9b4e68998c69b8402f4c3ac7e777e",
+      "afterSha256": "6fc833129a4da59176787609a2b07d94f5ca7010ff23161ff1e20fb7f0f0e574",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/tests/browser-milestone1-flows.cjs"
+    },
+    {
+      "path": "tests/browser-release-frontend.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "9723ba0c785b5e6e1e6a2fba483deceef8d6e67c46e4ffe9201cb93021719e3a",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-stage3-flows.cjs",
+      "change": "modified",
+      "beforeSha256": "82b2bb5b7f15874d1ebdbe81506e31a16489ad098bd822986e2b79d095c0d317",
+      "afterSha256": "5c28e5ee3811d6c5c81bef95571d4830211f550936991a3690dcfc82065cf03e",
+      "recoverableOriginal": ".recovery/frontend-release-20261020-205935/tests/browser-stage3-flows.cjs"
+    },
+    {
+      "path": "tests/release-frontend.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "747fb855d771629c0c0955e79618860facaec02bc04c0b8fad42816ed180d7f3",
+      "recoverableOriginal": null
+    }
+  ],
+  "protectedModulesUnchanged": {
+    "lib/money.ts": true,
+    "lib/vat-calculations.ts": true,
+    "lib/invoice-tax-review.ts": true,
+    "lib/document-extraction.ts": true,
+    "lib/invoice-parsing.ts": true
+  },
+  "verification": {
+    "unitTests": {
+      "passed": 73,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "productionBuild": "passed; 43 static pages plus dynamic routes",
+    "focusedFrontendBrowser": "passed at 320/390/768/1440 widths",
+    "fullFrontendBrowser": "passed; full existing suite, no uncaught page exceptions",
+    "yamlParsing": "passed; not workflow/container execution",
+    "dependencyAudit": {
+      "critical": 0,
+      "high": 6,
+      "moderate": 2
+    },
+    "docker": "unavailable; not executed",
+    "ci": "inactive; not executed"
+  },
+  "noOperationsPerformed": [
+    "database connection/migration",
+    "production access",
+    "Firebase/Flutter changes",
+    "payment/email processing",
+    "dependency installation",
+    "deployment",
+    "immutable backup modifications"
+  ],
+  "inventoryFile": "docs/frontend-release-change-inventory.json (self hash omitted)"
+}

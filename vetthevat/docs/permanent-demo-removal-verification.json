@@ -1,0 +1,33 @@
+{
+  "privatePagesChecked": 25,
+  "apiDenials": 12,
+  "freshHydration": "empty, no storage writes",
+  "existingSyntheticData": "exact raw bytes preserved after navigation, reload, logout denial and Chrome restart",
+  "export": "exact raw metadata",
+  "signedInWorkflows": "blocked; no bypass",
+  "userExistingProfile": "not inspected; manual verification outstanding",
+  "screenshots": [
+    "fresh-access-blocked-1440.png",
+    "fresh-access-blocked-390.png",
+    "fresh-public-home-1440.png",
+    "fresh-public-home-390.png",
+    "ors-empty-component-1440.png",
+    "ors-empty-component-390.png"
+  ],
+  "date": "2026-10-22",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "automatedTests": {
+    "passed": 137,
+    "failed": 0
+  },
+  "productionArtifacts": {
+    "inspected": 889,
+    "result": "passed",
+    "scope": "served server/client artifacts and server dependency traces"
+  },
+  "freshProfileRestart": "passed",
+  "existingSyntheticProfileRestart": "passed",
+  "realUserProfile": "not inspected; manual verification outstanding",
+  "deployment": "not performed"
+}

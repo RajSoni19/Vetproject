@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-23T16:12:10.756Z",
+  "baselineAt": "2026-10-23T16:00:29.232Z",
+  "scope": "Local real-login/contact task only; excludes private secrets/evidence/dependencies/build",
+  "changes": [
+    {
+      "path": "app/api/public/contact/route.ts",
+      "status": "added"
+    },
+    {
+      "path": "app/contact/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "components/contact-form.tsx",
+      "status": "added"
+    },
+    {
+      "path": "database/migrations/saas/004_public_contact.review.sql",
+      "status": "added"
+    },
+    {
+      "path": "database/migrations/saas/contact.manifest.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/local-real-login-change-inventory.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/local-real-login-results.md",
+      "status": "added"
+    },
+    {
+      "path": "lib/contact-contracts.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/contact-postgres.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/contact-providers.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/contact.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/leads/providers.ts",
+      "status": "modified"
+    },
+    {
+      "path": "package.json",
+      "status": "modified"
+    },
+    {
+      "path": "proxy.ts",
+      "status": "modified"
+    },
+    {
+      "path": "scripts/local-entry.cjs",
+      "status": "added"
+    },
+    {
+      "path": "scripts/local-real-server.cjs",
+      "status": "added"
+    },
+    {
+      "path": "scripts/saas-dev-server.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-local-real.cjs",
+      "status": "added"
+    },
+    {
+      "path": "tests/browser-saas-flow.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "tests/local-real-contact.test.cjs",
+      "status": "added"
+    },
+    {
+      "path": ".gitignore",
+      "status": "modified"
+    },
+    {
+      "path": ".vercelignore",
+      "status": "modified"
+    }
+  ]
+}

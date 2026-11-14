@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-23T16:26:58.655Z",
+  "recommendation": "NO-GO",
+  "scope": "isolated development only",
+  "server": {
+    "pid": 21808,
+    "httpsPid": 34184,
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "workingDirectory": "D:\\vetthevat",
+    "project": "D:\\vetthevat",
+    "build": "oXvK38Tn5sAevruskqw2p",
+    "nodeEnvironment": "production",
+    "identityEnvironment": "test",
+    "environment": "isolated test; real PostgreSQL authentication",
+    "entry": "http://localhost:3000/login",
+    "application": "https://localhost:3444/login",
+    "database": "127.0.0.1:55440/vtv_saas_dev",
+    "emailEnabled": false,
+    "financialApisEnabled": false,
+    "at": "2026-10-23T16:24:00.568Z"
+  },
+  "checks": {
+    "typeScript": "passed",
+    "automated": {
+      "passed": 223,
+      "failed": 0,
+      "kind": "unit/golden/injected plus offline syntax; separate from live scenarios"
+    },
+    "foundationPostgresHttps": {
+      "passed": 19,
+      "confirmed": true
+    },
+    "passwordChangePostgresHttps": {
+      "at": "2026-10-23T16:26:57.340Z",
+      "passed": 4,
+      "results": [
+        {
+          "name": "new disposable identity verifies and opens two real sessions",
+          "result": "passed"
+        },
+        {
+          "name": "missing CSRF and incorrect current password reject without revoking sessions",
+          "result": "passed"
+        },
+        {
+          "name": "confirmed password change revokes every session and clears secure cookie",
+          "result": "passed"
+        },
+        {
+          "name": "old password fails; new password authenticates; audit and Argon2id persist",
+          "result": "passed"
+        }
+      ],
+      "complete": true
+    },
+    "browser": {
+      "results": [
+        {
+          "width": 1440,
+          "registration": "real PostgreSQL",
+          "verification": "one-use link from encrypted test outbox",
+          "login": "password",
+          "privateNavigation": "unverified financial modules explicitly blocked; no browser-local provider mounted",
+          "sessionManagement": "real own-session inventory and password-change form rendered",
+          "companySelection": "own company 200, cross-company 403 through real browser fetch",
+          "refresh": "passed",
+          "logout": "revoked",
+          "passwordReset": "passed",
+          "revokedRefresh": "denied",
+          "legacyData": "not imported"
+        },
+        {
+          "width": 390,
+          "registration": "real PostgreSQL",
+          "verification": "one-use link from encrypted test outbox",
+          "login": "password",
+          "privateNavigation": "unverified financial modules explicitly blocked; no browser-local provider mounted",
+          "sessionManagement": "real own-session inventory and password-change form rendered",
+          "companySelection": "own company 200, cross-company 403 through real browser fetch",
+          "refresh": "passed",
+          "logout": "revoked",
+          "passwordReset": "passed",
+          "revokedRefresh": "denied",
+          "legacyData": "not imported"
+        }
+      ],
+      "entry": "http://localhost:3000",
+      "secureOrigin": "https://localhost:3444",
+      "demoUiAbsent": true,
+      "contact": {
+        "fields": 6,
+        "configured": false,
+        "status": 503,
+        "received": false
+      },
+      "passed": true
+    },
+    "publicRoutes": {
+      "at": "2026-10-23T16:25:54.515Z",
+      "passed": 15,
+      "availabilityDisclosure": true
+    },
+    "productionBuild": {
+      "passed": true,
+      "servedBuildId": "oXvK38Tn5sAevruskqw2p"
+    },
+    "npmAudit": {
+      "runtime": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "full": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      }
+    }
+  },
+  "database": {
+    "at": "2026-10-23T16:22:42.546Z",
+    "database": "vtv_saas_dev",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "cluster": "D:/vetthevat.saas-dev/cluster",
+    "intended_admin_accounts": 0,
+    "software_admin_grants": 0,
+    "stage_b_installed": false,
+    "contact_installed": false,
+    "installationMatched": true,
+    "readOnly": true,
+    "oldAuthenticationDatabaseConnected": false
+  },
+  "administrator": {
+    "executed": false,
+    "reviewCommand": "npm run saas:admin:preview",
+    "script": "scripts/saas-admin-bootstrap.cjs",
+    "sha256": "3c0d95e835a552f208095ed0a23ccb95ce13687348523ac52cb9ef8be6c3c40d"
+  },
+  "migrations": {
+    "executedThisIncrement": [],
+    "stageAUnchanged": true,
+    "stageB003": "not approved/executed",
+    "contact004": "not approved/executed"
+  },
+  "productionServicesTouched": false,
+  "deployment": false,
+  "financialApisEnabled": false
+}

@@ -1,0 +1,311 @@
+{
+  "clientDate": "2026-10-20",
+  "baseline": ".recovery/milestone-4a-20261020-212740",
+  "changes": [
+    {
+      "path": "app/app/subscription/page.tsx",
+      "change": "modified",
+      "beforeSha256": "c252a963a72bbdb177964b5d73ef156da4100a8e0cdfe1ab81c2171f9c980e63",
+      "afterSha256": "33267d399a1e2f24d01388aa005e8ea2efdf836e83058100df1482c2b8638b7f",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/app/app/subscription/page.tsx"
+    },
+    {
+      "path": "components/bank-import.tsx",
+      "change": "modified",
+      "beforeSha256": "9ccd844642dcc7c8089bcef276634aaab4af1ed30e44c3aaa9598c206fa9bd03",
+      "afterSha256": "bb5fcdeda35c1068dcdb932fed277d0936175fb4eac3ccee68bf8b5458919a2b",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/components/bank-import.tsx"
+    },
+    {
+      "path": "components/proposed-plan-information.tsx",
+      "change": "modified",
+      "beforeSha256": "a1a4fd325ad0a4bb169f8bfadc8b79056865d9ed226cf14befebc78c5190ba0c",
+      "afterSha256": "0c5abc9b4ad09bb67f74edb4f33f5e92f787603dd65720915342206cba4590c9",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/components/proposed-plan-information.tsx"
+    },
+    {
+      "path": "database/drafts/milestone-4a/001_atomic_vat.review.sql",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "fec9255f06cf4c8329f985e1f078ddad56218586f239a0b179d350a1b75b1b3b",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "database/drafts/milestone-4a/README.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "09c8e39022cc09d115055af8054515036b953b13acd5abef4ae03b0fb91eafff",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/milestone-4a-auth-api-plan.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "cfa5d0c18963fd11ca8fe478d1ffed39793543a2800cc4a8bb89dad641b344f2",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/milestone-4a-dependencies.json",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "2d89f371d7566474105b35e0b8333496c7370fd87177e1ddddea309516a2a9c3",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/milestone-4a-results.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "d335387f30ecca7670735bd56bc6b3c6f5bed1c8dc914b01f092dcabb74f3af2",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/frontend-batch2/activity-390.png",
+      "change": "modified",
+      "beforeSha256": "38a3faeef5729be39637e3af21e7eb9386b8c41b1855120cfd9effe8e9066860",
+      "afterSha256": "206c2bedc856ae4257f7f956524e5cd5f7dd24f06e0185a623a7632b2892a43a",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/frontend-batch2/activity-390.png"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/reports-390.png",
+      "change": "modified",
+      "beforeSha256": "dd6c1398ff8ef608c991cbc08ad9a4d4560f9d4e66c5ca218301b44cb643f7a1",
+      "afterSha256": "c6c238052f8fd39a29ae9f12e009ca2fcf0bf2357ee42d6623d97d0cceba53c2",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/frontend-batch2/reports-390.png"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/settings-390.png",
+      "change": "modified",
+      "beforeSha256": "4405c31912488c6ce6553a005acba77faa8da7d1d34c38ffba0f1e4872490787",
+      "afterSha256": "b79cb360e7405d403413620b4ba7b978292e10538860a398eb8a7c2a977310ba",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/frontend-batch2/settings-390.png"
+    },
+    {
+      "path": "docs/previews/frontend-phase/dashboard-390.png",
+      "change": "modified",
+      "beforeSha256": "bc4897a1d7029f96bebd6d63b0aee205e5e71450b9cc7157324bcb5dda71bbc3",
+      "afterSha256": "127fe5fc36370cbb4f726309c28bac897f6b1435df4754d2f3ad1644ebb1d581",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/frontend-phase/dashboard-390.png"
+    },
+    {
+      "path": "docs/previews/frontend-phase/team-320.png",
+      "change": "modified",
+      "beforeSha256": "f1bbc0d95c7a9acec0d1781619b0550a49fa9fc1bce3711040331bad9450443b",
+      "afterSha256": "2916102a8d3430613d9f0bd4f05141c4e42c3fa19166c49773a41c177f49b6e6",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/frontend-phase/team-320.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-dashboard.png",
+      "change": "modified",
+      "beforeSha256": "2d8eaacbe054d31d9048746c3c9bb0379c38c7c7b73598e16bebc89fc4774fb9",
+      "afterSha256": "ea51acda5985fb942e937d6b58d6004c3a34987ec91e762140fed86a2573a991",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/desktop-dashboard.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "change": "modified",
+      "beforeSha256": "040608d814ba83f9ecf0c3961ee5bec923db8012f7331994e014dd3218aac5a3",
+      "afterSha256": "3e752b1fa7a20e8d672f7c830e86c4b6e09d6b966e29ad34fecb3fbf34947cbb",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/desktop-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "change": "modified",
+      "beforeSha256": "a9bec8d98a88e2c82d7182dc45fe4e3d7389a57eb1019e6797c369444efc6aaf",
+      "afterSha256": "8eecd9619a246517108f90e1de0f6134cf1318b9e1210992730f5034707376ca",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/mobile-dashboard.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-invoices.png",
+      "change": "modified",
+      "beforeSha256": "7f3bac3c0e7cd64f832bd496b9f8afc00fa5c2e4a430e005d377bf9d0592e389",
+      "afterSha256": "f1921dff6c1608ced64a3cc97ffb3315de0d739e2231aa067c368e7bfe431c0b",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/mobile-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-new.png",
+      "change": "modified",
+      "beforeSha256": "93084fbacfb4ee2cc84ea420ec70fa8ba4c99924b937ad0674980e428366c127",
+      "afterSha256": "ab7602b45444d33d441cf6700d4fbd8cda18686fbe430e91c5b9c98412578c7f",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/mobile-new.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-upload.png",
+      "change": "modified",
+      "beforeSha256": "6565c0d1618aa4f41c04816f2b448927f660e8730db89d02d9986455bdf4724c",
+      "afterSha256": "e26698627e3b26e650d57598de20f354cfaaa631d2d0e6a69089b4c7377315bc",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-1/mobile-upload.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "change": "modified",
+      "beforeSha256": "375ac7e3498a6168c3a04a43b93d996974c0c07b713854b7ef84e035773f9d06",
+      "afterSha256": "f29f7e241a762430156aeef13fd91e41b5e8068853ff7b0a88b082df86f5f409",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/desktop-banking.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "change": "modified",
+      "beforeSha256": "943cb69a64fbc9b7bcb602d26f5c241f262432cb1bb3ef640e8a87a7dafd58af",
+      "afterSha256": "8a339905ca8627a050ae7a8838ec2e9ac69dc0db5362503974d72c5c595a5cc3",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/desktop-supplier.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-banking.png",
+      "change": "modified",
+      "beforeSha256": "5557e03245e3d9093a06fe78a406b6704ccf68254751849ba029016d37601c73",
+      "afterSha256": "fce5cffff9c5ae0d689b044e8c03701b850acc5fdf7d3f8431c738f42d31f2fc",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/mobile-banking.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "change": "modified",
+      "beforeSha256": "e800e7ee47937788e324fee875d95dc1540832f557a39fed84cbece19a1d26a2",
+      "afterSha256": "c4adf70727885db599111707958d52a1c7f47a1cbe1a40d371ba5d6985003ef6",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/mobile-companies.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-documents.png",
+      "change": "modified",
+      "beforeSha256": "b3d7413ecf6f924c818efad2ff679d6d604c46dca506dcaf88f2831f55090236",
+      "afterSha256": "15e6dd05a20eaa4b78c07aa8a03298ad00777b4bd04774e5e752fc17b9c93385",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/mobile-documents.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-suppliers.png",
+      "change": "modified",
+      "beforeSha256": "ffdc04604b59802c9f91c8c4ea40a285186bf9b278b62947343dddd5569d0dd2",
+      "afterSha256": "e093e80c3fe2be34cabe32f605facd12db136f6704dd4d065ed2d411d2f5af37",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/mobile-suppliers.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-vat.png",
+      "change": "modified",
+      "beforeSha256": "af99d7874fc9110b809846690999792ddbfe124e8e864f221d1ffe3a56d5a2c7",
+      "afterSha256": "6fa6269bff39139ca8eb8dbfa76c72974294ea99a6d13cbc0b5cf34532e05514",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/docs/previews/milestone-2/mobile-vat.png"
+    },
+    {
+      "path": "lib/server/account-usage.ts",
+      "change": "modified",
+      "beforeSha256": "61173dd73407b10e8ff3125b6cce9ea1033b84b415639d3c6bf9c3f05b6b1933",
+      "afterSha256": "6e2502995fac2d9201fc4f880c1ad314d3ff6c8b07da06ff2382950ce6ddfe00",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/lib/server/account-usage.ts"
+    },
+    {
+      "path": "lib/server/auth-preparation.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "b92a2a18a84263c8f6f2a95201e56312d2e6c7976b86dfbd4c188cbd60281159",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/business-contracts.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "6dddd3c8e0c5cc73126d316ee82071a974ba4890e9d18e1bfda9b538f6a3f20c",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/command-protocol.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "44e60ff7abcbe0f4453467b4b7354d70003b920d5c0e68bf475f584f368107e4",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/entitlements.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "95df4580070ea1e83b7690451b3206aa5e08c73e6b5e70446f6664922d64382a",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/preparation.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "59834a52a07a19d094d01b337f72f987701c275747aeb22e5fe0b2bcf0035cff",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/telemetry.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "6bf2780b8f14d577fe4f4861208dfde1aef4e422c5ac4cb675f27890823b1620",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/spreadsheet.worker.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "06809efcf4c91a7225a68ba8ca72916fe2da59f55d001d35dd402d5dde57576c",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/statement-csv.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "c44e5892faa21dca559541c993fddd1b135d6be9b5f21c67c0f9582fa932cf13",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/statement-reader.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "7f761da44e0f879048d22f14fbcf890793f03df3ff108d3d4d8a5b66577606f0",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/account-security.test.cjs",
+      "change": "modified",
+      "beforeSha256": "85b710a0b4a8188d5fe6f095386631daa07f3be4fd5404623ffb8506233126fc",
+      "afterSha256": "89255d96cdebd223b12045dd6595f83daab596749a5de33d25df9377325181a7",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/tests/account-security.test.cjs"
+    },
+    {
+      "path": "tests/milestone4a.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "f3a3d4c5bd886bda65ec4a73a6be22076cca79d9b03ec1eec4e09af43bed4064",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/release-frontend.test.cjs",
+      "change": "modified",
+      "beforeSha256": "747fb855d771629c0c0955e79618860facaec02bc04c0b8fad42816ed180d7f3",
+      "afterSha256": "bf1c374ca733ca3101632c73ae662ee212be8cca9e9018fc805e8f960c9d1d82",
+      "recoverableOriginal": ".recovery/milestone-4a-20261020-212740/tests/release-frontend.test.cjs"
+    }
+  ],
+  "protectedPathsUnchanged": {
+    "lib/money.ts": true,
+    "lib/vat-calculations.ts": true,
+    "lib/invoice-tax-review.ts": true,
+    "lib/document-extraction.ts": true,
+    "lib/invoice-parsing.ts": true,
+    "database/drafts/001_vat_core.review.sql": true,
+    "database/drafts/002_read_isolation.review.sql": true,
+    "package.json": true,
+    "package-lock.json": true
+  },
+  "validation": {
+    "automatedTests": {
+      "passed": 83,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "build": "passed",
+    "fullBrowser": "passed; synthetic profiles",
+    "focusedFrontendBrowser": "passed; synthetic profiles",
+    "yaml": "parsed only",
+    "docker": "unavailable/not executed",
+    "ci": "not configured/not executed",
+    "sql": "static review only; no execution",
+    "dependencyAudit": {
+      "high": 6,
+      "moderate": 2,
+      "critical": 0
+    }
+  },
+  "boundaries": "No DB/service connection, migration, production/Firebase/Flutter change, payment/email action, dependency installation, Git initialization, deployment or immutable backup modification.",
+  "inventorySelfHash": "omitted"
+}

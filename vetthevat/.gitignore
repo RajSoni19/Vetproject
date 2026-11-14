@@ -1,0 +1,64 @@
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+dist/
+out/
+coverage/
+*.tsbuildinfo
+
+# Vercel
+.vercel/
+
+# Database dumps and binaries
+*.dump
+*.sql
+*.exe
+db-backups/
+
+# Automated test preview screenshots
+docs/previews/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Internal development, recovery, and stage directories
+.stage1-private/
+.stage1/
+.cleanup/
+.leads/
+.auth-restoration/
+.auth-dev/
+.recovery/
+.release/
+.auth-pg/
+.master-stage-a/
+.saas-dev/
+.master-stage-b/
+.local-login/
+.go-live/
+.local-private-originals/
+.launch-acceptance/
+.deployment-review/
+.release-workers/
+.local-demo/
+.uat/
+.dev-auth.json
+.local-document-health.json
+
+# OS files
+.DS_Store
+Thumbs.db

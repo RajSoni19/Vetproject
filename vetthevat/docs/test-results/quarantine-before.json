@@ -1,0 +1,107 @@
+{
+  "jobs": [
+    {
+      "kind": "inspect",
+      "state": "completed",
+      "attempts": 1,
+      "count": 1,
+      "oldest": "2026-10-30 19:34:24.951703+05:30",
+      "newest": "2026-10-30 19:34:24.951703+05:30"
+    },
+    {
+      "kind": "inspect",
+      "state": "failed",
+      "attempts": 5,
+      "count": 2,
+      "oldest": "2026-10-30 08:03:40.165561+05:30",
+      "newest": "2026-10-30 08:06:03.095802+05:30"
+    },
+    {
+      "kind": "inspect",
+      "state": "queued",
+      "attempts": 0,
+      "count": 85,
+      "oldest": "2026-10-26 06:07:56.329019+05:30",
+      "newest": "2026-10-30 20:13:15.428272+05:30"
+    },
+    {
+      "kind": "inspect",
+      "state": "queued",
+      "attempts": 2,
+      "count": 1,
+      "oldest": "2026-10-27 20:16:14.529715+05:30",
+      "newest": "2026-10-27 20:16:14.529715+05:30"
+    }
+  ],
+  "extraction": [
+    {
+      "state": "completed",
+      "attempts": 1,
+      "error_code": null,
+      "count": 1
+    }
+  ],
+  "documents": [
+    {
+      "id": "73c979ca-af64-490b-933f-7929f55c79fb",
+      "state": "quarantined",
+      "created_at": "2026-10-30 20:13:15.3389+05:30",
+      "object_key": "companies/b13fb27c-396c-4708-973e-8861f18772bd/documents/73c979ca-af64-490b-933f-7929f55c79fb/87d71ab10f4486ee929b19657bbd6580f718b2a0724f441ef8fc7e3e77ee8ae4",
+      "object_version": "87d71ab10f4486ee929b19657bbd6580f718b2a0724f441ef8fc7e3e77ee8ae4",
+      "sha256": "87d71ab10f4486ee929b19657bbd6580f718b2a0724f441ef8fc7e3e77ee8ae4",
+      "byte_size": "120000",
+      "job_state": "queued",
+      "attempts": 0
+    },
+    {
+      "id": "768d5ca2-c4b4-4922-b90b-dce8b80b4c4f",
+      "state": "clean",
+      "created_at": "2026-10-30 19:34:24.809598+05:30",
+      "object_key": "companies/b13fb27c-396c-4708-973e-8861f18772bd/documents/768d5ca2-c4b4-4922-b90b-dce8b80b4c4f/379ef1b2a6738491d7415aaebf6218690f95ed005017bc5242328a5d18dd01c9",
+      "object_version": "379ef1b2a6738491d7415aaebf6218690f95ed005017bc5242328a5d18dd01c9",
+      "sha256": "379ef1b2a6738491d7415aaebf6218690f95ed005017bc5242328a5d18dd01c9",
+      "byte_size": "6753331",
+      "job_state": "completed",
+      "attempts": 1
+    },
+    {
+      "id": "e4977d67-5d3c-46b8-a6e2-7d159bc186d9",
+      "state": "quarantined",
+      "created_at": "2026-10-30 08:06:03.024363+05:30",
+      "object_key": "companies/c8d71091-3d2a-4fb9-a92a-90890c10ca6d/documents/e4977d67-5d3c-46b8-a6e2-7d159bc186d9/70cb3fbc7ec2b770b6c0c825f986d820a9003eb95e5ee5d794d7f7cf18b4fe74",
+      "object_version": "70cb3fbc7ec2b770b6c0c825f986d820a9003eb95e5ee5d794d7f7cf18b4fe74",
+      "sha256": "70cb3fbc7ec2b770b6c0c825f986d820a9003eb95e5ee5d794d7f7cf18b4fe74",
+      "byte_size": "6753331",
+      "job_state": "failed",
+      "attempts": 5
+    },
+    {
+      "id": "9854d9c5-1485-4fa4-b1cf-ef5e4bba503f",
+      "state": "quarantined",
+      "created_at": "2026-10-30 08:03:40.071021+05:30",
+      "object_key": "companies/c8d71091-3d2a-4fb9-a92a-90890c10ca6d/documents/9854d9c5-1485-4fa4-b1cf-ef5e4bba503f/25ce2dec5826b2a5bb7d5eaa36175f71ff33e59d6349003c66c62541fe266d2b",
+      "object_version": "25ce2dec5826b2a5bb7d5eaa36175f71ff33e59d6349003c66c62541fe266d2b",
+      "sha256": "25ce2dec5826b2a5bb7d5eaa36175f71ff33e59d6349003c66c62541fe266d2b",
+      "byte_size": "6753331",
+      "job_state": "failed",
+      "attempts": 5
+    },
+    {
+      "id": "f59d55ee-3025-41c5-a034-a41bf98ecd29",
+      "state": "quarantined",
+      "created_at": "2026-10-30 05:09:35.977517+05:30",
+      "object_key": "companies/87885b62-e4ef-4e3f-8c5a-d491a4ab44a3/documents/f59d55ee-3025-41c5-a034-a41bf98ecd29/2dbe1dc4e179ddfde88abb0c9a501f2886b945d93d289bc9693df1a927683733",
+      "object_version": "2dbe1dc4e179ddfde88abb0c9a501f2886b945d93d289bc9693df1a927683733",
+      "sha256": "2dbe1dc4e179ddfde88abb0c9a501f2886b945d93d289bc9693df1a927683733",
+      "byte_size": "3185",
+      "job_state": "queued",
+      "attempts": 0
+    }
+  ],
+  "schemas": [
+    {
+      "supplier_reviews": null,
+      "scoped_worker": null
+    }
+  ]
+}

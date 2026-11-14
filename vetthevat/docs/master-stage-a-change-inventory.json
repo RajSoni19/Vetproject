@@ -1,0 +1,275 @@
+{
+  "scope": "All project changes relative to the preserved master implementation task-start SHA256 baseline; private state, approved external PostgreSQL cluster, temporary Chrome profile and generated .next cache excluded",
+  "summary": {
+    "added": 44,
+    "modified": 9,
+    "removed": 0
+  },
+  "files": [
+    {
+      "path": ".env.example",
+      "status": "modified",
+      "sha256": "13eb3364b860863ba8fcb1f46d2480c3ab6dd5c56a012990e7c06aeef953436f"
+    },
+    {
+      "path": ".gitignore",
+      "status": "modified",
+      "sha256": "e9d947072b2b710bc9d4f3052335c766a1ec589a788a4ac80875547fa1a02c82"
+    },
+    {
+      "path": ".vercelignore",
+      "status": "modified",
+      "sha256": "eaf3121f3a01e4345b45ac305957ac990d6e8983829dfdb429958ec9b312ba0f"
+    },
+    {
+      "path": "app/api/account/company-context/route.ts",
+      "status": "added",
+      "sha256": "8d7ab44a793576d6db696c34d35a99257e0d111cab7d8732ca79e3ed95442833"
+    },
+    {
+      "path": "app/api/account/company-selection/route.ts",
+      "status": "added",
+      "sha256": "445a40c856c428c49ab0136bafd74ef325a2c773da88b51341c78521f527e652"
+    },
+    {
+      "path": "database/migrations/saas/001_saas_foundation.review.sql",
+      "status": "added",
+      "sha256": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366"
+    },
+    {
+      "path": "database/migrations/saas/002_stage_a_authorization_locks.review.sql",
+      "status": "added",
+      "sha256": "082079c74f4788fa5724a30f86a443c46ed0179c8c0329c756a9323a690d80fd"
+    },
+    {
+      "path": "database/migrations/saas/README.md",
+      "status": "added",
+      "sha256": "0bd768944dd25d66bdc4fbc30a3e3209cef8fb31af8c0d669d9c6e08b6c060b9"
+    },
+    {
+      "path": "database/migrations/saas/stage-a.catalog.json",
+      "status": "added",
+      "sha256": "cc0bb85c5cf2bc5cfdee44a2b64fe9bb86ce0aa919d26986fba2fb0a1f2c1295"
+    },
+    {
+      "path": "database/migrations/saas/stage-a.manifest.json",
+      "status": "added",
+      "sha256": "ff203874406237a122b01199da65db801575a8459ecfe0d2467685c50454693f"
+    },
+    {
+      "path": "docs/master-implementation-map.md",
+      "status": "added",
+      "sha256": "e01198c8af2429677c17919ac1d57d3de8ded2d54a67b6f724aabe3cf624f920"
+    },
+    {
+      "path": "docs/master-stage-a-change-inventory.json",
+      "status": "added",
+      "note": "Self hash omitted"
+    },
+    {
+      "path": "docs/master-stage-a-completion-results.md",
+      "status": "added",
+      "sha256": "a3c6c6cc820c9336fcfca0fc52a76e125d7e2985eb9a20dea70dd2496c7f4b34"
+    },
+    {
+      "path": "docs/master-stage-a-live-catalog.json",
+      "status": "added",
+      "sha256": "b8f7536c4fd4095ca2b096bbe59e69aa42dfcff9c84dc6666319d8ed09eb4795"
+    },
+    {
+      "path": "docs/master-stage-a-preparation-results.md",
+      "status": "added",
+      "sha256": "e7aace242517cd09a4dc7d5d7182da6d0487a9dc9092198cd1a071131fe24f84"
+    },
+    {
+      "path": "docs/master-stage-a-verification.json",
+      "status": "added",
+      "sha256": "0eabe153ce0803fa99a8a24c11ee67fe7ba6cb465a3b80bfb81c6fa78abaceeb"
+    },
+    {
+      "path": "docs/master-stage-b-implementation-plan.md",
+      "status": "added",
+      "sha256": "4daf30487d3483c14a46d5712aa1effe2b08e8654d198f25fcdaa3b5803f0f06"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-1440.png",
+      "status": "added",
+      "sha256": "533a546af986154270a882ef040a04f1af37a38047b3faf586e6496eddff522e"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-390.png",
+      "status": "added",
+      "sha256": "6239b7e99fc6e106c64244e84ce87fa71e9f76d477eeed47cb346e1f06d66bfc"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/login-1440.png",
+      "status": "added",
+      "sha256": "c47c022cb2b7e850a5909bda7c7109f20ee3182525503473ad39a746b7d35929"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/login-390.png",
+      "status": "added",
+      "sha256": "fdbab8e71ddb202221a0668c1a2cf70ded5873e457a0b2e335cd8e9cd781c0a5"
+    },
+    {
+      "path": "lib/server/private-routing.ts",
+      "status": "modified",
+      "sha256": "472f07b48839b001374b2b3f3bcf99449b553130098cfe897c64d50975f3b514"
+    },
+    {
+      "path": "lib/server/saas/account-http.ts",
+      "status": "added",
+      "sha256": "1425caf8d4170cb199822af87c942b908f50b50bba95acdaa28dcf7746fa998b"
+    },
+    {
+      "path": "lib/server/saas/companies.ts",
+      "status": "added",
+      "sha256": "822c565810c1947e0d563555069f742624b74eb03f8a9dd645416e2f3fbea806"
+    },
+    {
+      "path": "lib/server/saas/config.ts",
+      "status": "added",
+      "sha256": "580b263804170599716054d71f06df72eaff6467716607e663c64720204413d9"
+    },
+    {
+      "path": "lib/server/saas/documents.ts",
+      "status": "added",
+      "sha256": "038a932c8b932d131d12b95c05b6e09be3175ae68af89925b6aa78333ae2349e"
+    },
+    {
+      "path": "lib/server/saas/object-storage.ts",
+      "status": "added",
+      "sha256": "7d6948ba8236fba5b2785b8d5c2ac4646224ef931efebce4322b24b8a0c9239c"
+    },
+    {
+      "path": "lib/server/saas/permissions.ts",
+      "status": "added",
+      "sha256": "8bc213828b69ef94b444ba401d2821b8c73782b595098187f42a6c3671e69311"
+    },
+    {
+      "path": "lib/server/saas/request-context.ts",
+      "status": "added",
+      "sha256": "01c70757e8b92a99800bb694f7eac30b8377d73673b7e8d6d8ba19c44e189382"
+    },
+    {
+      "path": "lib/server/saas/runtime.ts",
+      "status": "added",
+      "sha256": "950c5ba454a09e7e2d820d14cb8ae196259ba095c821d1c14e73e7919ef6cbc6"
+    },
+    {
+      "path": "lib/server/saas/s3-config.ts",
+      "status": "added",
+      "sha256": "5d5c8e7998e7f54d92abad8c37b6420d052b83737242ce3c23e11f3d0ee9e7d2"
+    },
+    {
+      "path": "lib/server/saas/s3-storage.ts",
+      "status": "added",
+      "sha256": "c755846e81285a1849151e2df5d414ef05a1c5f12f8ee5cfa53e20d2ef0eac39"
+    },
+    {
+      "path": "lib/server/saas/services.ts",
+      "status": "added",
+      "sha256": "c23823b95f181bf2dddbc081ad3e597506499909c54833ace9b8ca5c74d32003"
+    },
+    {
+      "path": "lib/server/saas/storage-runtime.ts",
+      "status": "added",
+      "sha256": "aac128519c7e941e6b5e76cffc83acc6c36a600d4a54646e94215412aaf632d9"
+    },
+    {
+      "path": "lib/server/saas/transactions.ts",
+      "status": "added",
+      "sha256": "5c69e7abbda1321f935c05016e39416f4a976e21836ad1b1057dfc3e73e543cc"
+    },
+    {
+      "path": "lib/server/web-auth/config.ts",
+      "status": "modified",
+      "sha256": "d2021772251a4209a85a365bdd203a06cfcda5cbc309c7889ff91f01389cb39f"
+    },
+    {
+      "path": "next.config.ts",
+      "status": "modified",
+      "sha256": "79793d8f51ecbe75dd3695971c4a5ee055bb5265a198cf6702382339e1e6ed74"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "sha256": "65fb39d26d653869ed274c16f27f9a47805aa8c11a9703f286063a40b07955e9"
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "4b1e0add77a736dfcbf3c0cd589514a2e16673f944e2e80731a1c9a1f9ffc22a"
+    },
+    {
+      "path": "scripts/saas-dev-authorization-fix.cjs",
+      "status": "added",
+      "sha256": "3852863b375e0e8a7ec5863dc0f9ffc3d4cc5b4171edc45f5fec14322fbee81a"
+    },
+    {
+      "path": "scripts/saas-dev-build.cjs",
+      "status": "added",
+      "sha256": "4568589644f4e990ac6d1bc7622505170dbff2d940237a0553462f4d0a73f9c6"
+    },
+    {
+      "path": "scripts/saas-dev-common.cjs",
+      "status": "added",
+      "sha256": "a7b0ce6ee8d6c6caff00feb1767464b198763eda09d8f913263cc3267b3da224"
+    },
+    {
+      "path": "scripts/saas-dev-evidence.cjs",
+      "status": "added",
+      "sha256": "6118ce1c7b7eb5f624fe7bd38ba25d0e34a201c8a24fedc2e7497ca729fd59c1"
+    },
+    {
+      "path": "scripts/saas-dev-migration.cjs",
+      "status": "added",
+      "sha256": "24d9700184413b1985337acd75a9d3b0d90a049fefcedfd42d650f6c36d8dc33"
+    },
+    {
+      "path": "scripts/saas-dev-permissions.ps1",
+      "status": "added",
+      "sha256": "891a310d75f23b935304097b56dd489b435945cdb5f947e5121140aa4cdff04d"
+    },
+    {
+      "path": "scripts/saas-dev-resume-approved.cjs",
+      "status": "added",
+      "sha256": "7e87fbbf8b553e210252587004c62d4d4b8c6681e8fb20712ffc5dcdbeadcaf1"
+    },
+    {
+      "path": "scripts/saas-dev-server.cjs",
+      "status": "added",
+      "sha256": "648087f06ae844b578cfa6adb7521f32e1b81bcb937374eeb493b556824ae1bb"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "4f5daba9af10c67755b46d7d72b3ce3a7fe809793d5a0321980dfaffb1fc3935"
+    },
+    {
+      "path": "tests/browser-saas-auth.cjs",
+      "status": "added",
+      "sha256": "dd89afcf142b24515f6f43edb7f33008574d5b477dc7d48ad747d3992a25056c"
+    },
+    {
+      "path": "tests/browser-saas-flow.cjs",
+      "status": "added",
+      "sha256": "b988ce01eb9559119473995ba3956c80ddab155ec222dd90ac1900f13c14b48f"
+    },
+    {
+      "path": "tests/saas-postgres-integration.cjs",
+      "status": "added",
+      "sha256": "570883577de0150c784f3ddbae99d18ef9b04a8a45f808eb97b03a1fb1c9d7a5"
+    },
+    {
+      "path": "tests/saas-services.cjs",
+      "status": "added",
+      "sha256": "b42d84278fda36467ee65386a60a5db8dc33213e4453817f48b98bcf3e2bc86d"
+    },
+    {
+      "path": "tests/saas-stage-a.test.cjs",
+      "status": "added",
+      "sha256": "7de49b89a874337c8a1671f53a48e3ac3fb8241ccdd942e07ae6b41812c2831a"
+    }
+  ]
+}

@@ -1,0 +1,514 @@
+{
+  "scope": "Source/config/tests and delivery documents relative to task-start SHA256 baseline; private credentials, retired source copies, local database and generated .next excluded; inventory self hash intentionally omitted",
+  "summary": {
+    "added": 43,
+    "modified": 42,
+    "removed": 20
+  },
+  "files": [
+    {
+      "path": ".env.example",
+      "status": "modified",
+      "sha256": "03ac4ca683b4d3eb336933f88f8b757fae9a8c8fb5c573839b4abace0df1e070"
+    },
+    {
+      "path": ".gitignore",
+      "status": "modified",
+      "sha256": "7a56a8f222d10832f156a6bced9650aadb20b39a4b3a2813e59a6f93629334e9"
+    },
+    {
+      "path": ".vercelignore",
+      "status": "modified",
+      "sha256": "3894911fc8849b1d83cf8963ed5269931c8a8b46de17eb66ec6d13cf5bf8c4ee"
+    },
+    {
+      "path": "app/api/account/companies/route.ts",
+      "status": "added",
+      "sha256": "d398418f7b069f59c1c9f1d402c1d9a2908d1b71a7cae1d81cae42b074e9c8d2"
+    },
+    {
+      "path": "app/api/auth/forgot-password/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/logout/route.ts",
+      "status": "modified",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/register/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/reset-password/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/revoke-session/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/session/route.ts",
+      "status": "modified",
+      "sha256": "d398418f7b069f59c1c9f1d402c1d9a2908d1b71a7cae1d81cae42b074e9c8d2"
+    },
+    {
+      "path": "app/api/auth/sessions/route.ts",
+      "status": "added",
+      "sha256": "e24690f9c9488fc2699934be5115b5ac2c5a5c51042a40cd012c8338100a7bd5"
+    },
+    {
+      "path": "app/api/auth/verification/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/auth/verify-email/route.ts",
+      "status": "added",
+      "sha256": "005d88255a7d42bd57c4122dfd76883ca46608649138f479c21cf1e397e83a4c"
+    },
+    {
+      "path": "app/api/internal/auth-notifications/route.ts",
+      "status": "added",
+      "sha256": "58f57cce64ee9f9f754038df583e9fee421a707fb827414c33b40a2fc5114884"
+    },
+    {
+      "path": "app/app/admin/layout.tsx",
+      "status": "added",
+      "sha256": "a515f872ae22d9bab3218d9f4f34e188c9afea40109b129eb184ea8f2f08cd1a"
+    },
+    {
+      "path": "app/app/admin/leads/page.tsx",
+      "status": "modified",
+      "sha256": "87a6bfa88ec45fc6129cca3817f95462f40b51d3592367f0baca2acf409e3a1a"
+    },
+    {
+      "path": "app/app/layout.tsx",
+      "status": "modified",
+      "sha256": "f4b31a6043982ccd76faf0dafd0ecd38ef64983bafdbd6e9430d1953fcf00596"
+    },
+    {
+      "path": "app/forgot-password/page.tsx",
+      "status": "modified",
+      "sha256": "70cac7734a746840bb96994b1e5086a425db1f91d061761e30bb5e96b1ebf9d7"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "status": "modified",
+      "sha256": "00ce6279b7497184f86ce77c3a5aedc94ebeacb057036b3e945ce9c1343eff93"
+    },
+    {
+      "path": "app/register/page.tsx",
+      "status": "modified",
+      "sha256": "20c13d2b2f389490d85aa4ae7316e30c0499802cd798bb503073effc9476f922"
+    },
+    {
+      "path": "app/reset-password/page.tsx",
+      "status": "modified",
+      "sha256": "614536bd74dabe59cb767f6e5e82c4263bdf34734ab0c9a3be5b983ecabcdafa"
+    },
+    {
+      "path": "app/verify-email/page.tsx",
+      "status": "modified",
+      "sha256": "1c5593b5f040769fc57a39d144bab5b0ec83b2dbf7a5a23a10272bdb085159a8"
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "status": "modified",
+      "sha256": "b8980dd40a87f7bed0daad301409d20bd31d4c16d545f778e68b35f3bccef1fa"
+    },
+    {
+      "path": "components/authenticated-session.tsx",
+      "status": "modified",
+      "sha256": "8eb90816a06b467adb07ab43ef26ef5dea57d24a6ae3074071d7a8758f32df14"
+    },
+    {
+      "path": "components/development-login.tsx",
+      "status": "removed"
+    },
+    {
+      "path": "components/settings-availability.tsx",
+      "status": "modified",
+      "sha256": "af041e53b9d4c7d8bc2bafd311596403cc4a45e7a02916085d4a8c3a5376a127"
+    },
+    {
+      "path": "components/web-auth-form.tsx",
+      "status": "added",
+      "sha256": "af605e30aefef6aeb99db2de5edd82b1b068c27c983d7646de9406754bdb7372"
+    },
+    {
+      "path": "components/web-sessions.tsx",
+      "status": "added",
+      "sha256": "34a397842455b283f5ca4e7d0c3847d4923816c8c06d787e9d9c9e23d06a8ef8"
+    },
+    {
+      "path": "database/migrations/web-auth/001_web_auth.review.sql",
+      "status": "added",
+      "sha256": "19efff1a3945e02fc2936103c6b9ce26536cea87a4eee0d3a85e733da3ae6fd8"
+    },
+    {
+      "path": "database/migrations/web-auth/README.md",
+      "status": "added",
+      "sha256": "641b1810a6c28b1d7ddb35abd19104e3866ee6982d17333fc8273688975f9ab2"
+    },
+    {
+      "path": "docs/application-auth-restoration-results.md",
+      "status": "modified",
+      "sha256": "36512c85b1f1069a5605a94bf5b8b2516fa9050e14f04ee65b29754b06afbc2f"
+    },
+    {
+      "path": "docs/milestone-4a-development-auth-results.md",
+      "status": "modified",
+      "sha256": "e6e2f0ccc4b059788bb5b2a35e0c09221707b4605bee4e24fdf0815de955b667"
+    },
+    {
+      "path": "docs/postgresql-web-auth-change-inventory.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/postgresql-web-auth-results.md",
+      "status": "added",
+      "sha256": "41a3c2093f8e81e1209f60d142978544045e83a7791eca53c201937b26334a00"
+    },
+    {
+      "path": "docs/postgresql-web-auth-verification.json",
+      "status": "added",
+      "sha256": "fb388e21da09366e0414c71d19845eaa1d6a736f4c77db3bb8ddb1a2b7b61abb"
+    },
+    {
+      "path": "docs/previews/auth-restoration/login-1440.png",
+      "status": "regenerated",
+      "sha256": "ed0cef38658b33339f4aecd1a85a2ce3224d8d41107ffadcc567967ee5ffd7a3"
+    },
+    {
+      "path": "docs/previews/auth-restoration/login-390.png",
+      "status": "regenerated",
+      "sha256": "19177ed8ea3b55eaae48496d7c50528ddc72d06467b3541bafdf368bbf409164"
+    },
+    {
+      "path": "docs/previews/postgresql-auth/authenticated-1440.png",
+      "status": "added",
+      "sha256": "5325a614078d740522a0a7c9741458088fdb1bc556ed07f92ea9d6986e08beb9"
+    },
+    {
+      "path": "docs/previews/postgresql-auth/authenticated-390.png",
+      "status": "added",
+      "sha256": "d66e6660c445bf3a4328370a248324aaa23a237d99d264938bae8898d70dd974"
+    },
+    {
+      "path": "docs/previews/postgresql-auth/login-1440.png",
+      "status": "added",
+      "sha256": "c47c022cb2b7e850a5909bda7c7109f20ee3182525503473ad39a746b7d35929"
+    },
+    {
+      "path": "docs/previews/postgresql-auth/login-390.png",
+      "status": "added",
+      "sha256": "fdbab8e71ddb202221a0668c1a2cf70ded5873e457a0b2e335cd8e9cd781c0a5"
+    },
+    {
+      "path": "infra/dev-auth/firebase.json",
+      "status": "removed"
+    },
+    {
+      "path": "lib/scoped-workspace-storage.ts",
+      "status": "modified",
+      "sha256": "dc55d554f4509d93257297df54e1411dfdb6c7ea66e71f9502b53a3f24e9a4d0"
+    },
+    {
+      "path": "lib/server/admin-auth-core.ts",
+      "status": "removed"
+    },
+    {
+      "path": "lib/server/admin-auth.ts",
+      "status": "modified",
+      "sha256": "f358c549cb8253a54a6f2a46b9e805fe05341419a00a2b6ffb4f1bc3865585d3"
+    },
+    {
+      "path": "lib/server/admin-leads.ts",
+      "status": "modified",
+      "sha256": "4dfe88352de94620d804bde2883839530b5730a99944022eafd6e54a8e5cacf0"
+    },
+    {
+      "path": "lib/server/admin-services.ts",
+      "status": "modified",
+      "sha256": "84e418ecffd7d67bae6203af6155b0481b0ed20429cc0c3c1ac817f469683a03"
+    },
+    {
+      "path": "lib/server/admin-session.ts",
+      "status": "removed"
+    },
+    {
+      "path": "lib/server/auth-preparation.ts",
+      "status": "modified",
+      "sha256": "54dde08f1d7ea7b039c13f461b95bbb3895f563a53fd3f9a1c252a13f4081fc7"
+    },
+    {
+      "path": "lib/server/config-validation.ts",
+      "status": "modified",
+      "sha256": "fdcf407440bd1d2e8f8357b24fce5ceb13bcea5b61a8b53e12c9e2468d902f8f"
+    },
+    {
+      "path": "lib/server/dev-auth-config.ts",
+      "status": "removed"
+    },
+    {
+      "path": "lib/server/dev-auth-store.ts",
+      "status": "removed"
+    },
+    {
+      "path": "lib/server/identity.ts",
+      "status": "modified",
+      "sha256": "28baa96ccf31c10264cd9c202beaa83b5a4f3cf8c55e5579a914cff8b7edca98"
+    },
+    {
+      "path": "lib/server/preparation.ts",
+      "status": "modified",
+      "sha256": "8d93daa2a7e75cd52913349ebacf77286649ae713085b6ec3c4dd4aafbb1a06b"
+    },
+    {
+      "path": "lib/server/private-routing.ts",
+      "status": "modified",
+      "sha256": "0d8bd51086c8d4a4def54bf2eca54d8cdc57f9bd656f9e6cc6fa531837c3c4d9"
+    },
+    {
+      "path": "lib/server/stage1/security.ts",
+      "status": "modified",
+      "sha256": "2df5c3b33cce55927a70da792698b017704cc05447f491ed23e8b093d118bd1d"
+    },
+    {
+      "path": "lib/server/web-auth/config.ts",
+      "status": "added",
+      "sha256": "48da2ffdea8269b548a7c2d0df3665c6b557a83dacbe5486f6b2814856bc5e8d"
+    },
+    {
+      "path": "lib/server/web-auth/core.ts",
+      "status": "added",
+      "sha256": "19bec11b8e2726a9a267317fa726bdc9a33109e312d13bebe17cec7d8c081ed3"
+    },
+    {
+      "path": "lib/server/web-auth/crypto.ts",
+      "status": "added",
+      "sha256": "a2e110043c9c1f801882698876b38cde3f4f7f1807c3aba40d432b1b004dbab9"
+    },
+    {
+      "path": "lib/server/web-auth/http.ts",
+      "status": "added",
+      "sha256": "99d05e5582f88bce9db1cfb6ee17a508790518c75c56bfdf36e14a64d6df8fa2"
+    },
+    {
+      "path": "lib/server/web-auth/notifications.ts",
+      "status": "added",
+      "sha256": "0aeb9a09ba075a2b702eed40f8d7a394b982a72e9b569b0536626a736eefde2e"
+    },
+    {
+      "path": "lib/server/web-auth/repositories.ts",
+      "status": "added",
+      "sha256": "f234cd7abd203e4326e49227f1da8b61a7ee7c07063a533c123ebd0c271677ba"
+    },
+    {
+      "path": "lib/server/web-auth/runtime.ts",
+      "status": "added",
+      "sha256": "f37ecefb11113ad7f1f3d95a5fb54a8f65a4b6af3398ac3c284724ba9e375a2f"
+    },
+    {
+      "path": "lib/server/web-auth/store.ts",
+      "status": "added",
+      "sha256": "3664c8af35300086a3ebde6b79edb60630a322ccfadb7c3b08bc3c31350e3396"
+    },
+    {
+      "path": "next.config.ts",
+      "status": "modified",
+      "sha256": "89c94a1394ffa85c9b63a4210ab8095ff45ca5cd5842ca5493473f422d579398"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "sha256": "94c1cd290c72abc14747f0d2e832312092641d3fa61813b60eeb15a11678b486"
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "55b1791e4e009f10e78a1054d6d9467643ebcea81c1c04ce4e942d64e95bd9d3"
+    },
+    {
+      "path": "proxy.ts",
+      "status": "modified",
+      "sha256": "a1e8434a25fa90eba8f200bc36970300e426f230ea8bb61b5e4e2d34c38986ce"
+    },
+    {
+      "path": "scripts/dev-auth-account.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-build.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-common.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-emulator.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-init.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-permissions.ps1",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/dev-auth-server.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "scripts/pg-auth-bootstrap.cjs",
+      "status": "added",
+      "sha256": "f7b424a3fa71467409449065479eee989da0f5b0a1d09e10d731287b88ccbc06"
+    },
+    {
+      "path": "scripts/pg-auth-build.cjs",
+      "status": "added",
+      "sha256": "09481b2b31f054ea37c7c4f3ccb41be02d1c821c60af7487e9b75e61dee7c2a9"
+    },
+    {
+      "path": "scripts/pg-auth-common.cjs",
+      "status": "added",
+      "sha256": "0a4af048000a9753304801de1b4cb1221abf803079fcdca9be2dcf6e15649276"
+    },
+    {
+      "path": "scripts/pg-auth-database.cjs",
+      "status": "added",
+      "sha256": "41304059dd8acfe5efd29c386623ebfc8bec92b82f8ccfcee3dbbc0df7992507"
+    },
+    {
+      "path": "scripts/pg-auth-init.cjs",
+      "status": "added",
+      "sha256": "1bedff35cdefbfc91093207b116a73ddd478d2c55b684ca0975a30402059e63d"
+    },
+    {
+      "path": "scripts/pg-auth-permissions.ps1",
+      "status": "added",
+      "sha256": "9465fa49f667596007d42b3fd5c0c5406e2dd72dcddee5f8a72ca4f4c7099a9b"
+    },
+    {
+      "path": "scripts/pg-auth-recover-initialization.cjs",
+      "status": "added",
+      "sha256": "46e6e9299c1da0dfc6fd124cabfb788d1dc825c11b5665468d7ffaafd0b2f5da"
+    },
+    {
+      "path": "scripts/pg-auth-server.cjs",
+      "status": "added",
+      "sha256": "080c82d04acbf24832019085542bd0a2d921807a624bdabe394a31be50e69d3b"
+    },
+    {
+      "path": "tests/admin-auth.test.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/auth-restoration.test.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/backend-foundation.test.cjs",
+      "status": "modified",
+      "sha256": "bfe3d86602756c9347b2125263fbf5583f4a409808cf08677ec3672c58b46b74"
+    },
+    {
+      "path": "tests/browser-admin-auth.cjs",
+      "status": "modified",
+      "sha256": "532d1c6935b999e89b1bdc93c0f5f2eb2d7b04661f4fadde23d37d80e21360a5"
+    },
+    {
+      "path": "tests/browser-auth-restoration.cjs",
+      "status": "modified",
+      "sha256": "9d70b30dad443c723635bdc19183ad6755fdf599a38f7fbd5eaadffc691d01d4"
+    },
+    {
+      "path": "tests/browser-dev-auth.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "afeb79c119eff035b237e66adedd5ce8335bc0edbcbde387bbf5fe2d1c1ca268"
+    },
+    {
+      "path": "tests/browser-permanent-cleanup.cjs",
+      "status": "modified",
+      "sha256": "6fea43e4cfc122acea65b6cca21700ddf8b92c2734144b412e55ec61b0dbb454"
+    },
+    {
+      "path": "tests/browser-pg-auth-flow.cjs",
+      "status": "added",
+      "sha256": "fc6c8209a1ac64a9bceba9a640316ce24b2e54a22b3f86a5f9d67653bbfac9fe"
+    },
+    {
+      "path": "tests/browser-pg-auth.cjs",
+      "status": "added",
+      "sha256": "0996a8ae74e44afc13e21d0a381eb4388befbcda91944b4fb82a23156c14c1b2"
+    },
+    {
+      "path": "tests/database-infrastructure.test.cjs",
+      "status": "modified",
+      "sha256": "24d4148e2f07ae3d37f8b91a51b0af94d05c53f58d2e2e84fce9c2e9df8156ed"
+    },
+    {
+      "path": "tests/dev-auth-integration.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/dev-auth-restart-check.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/dev-auth-services.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/dev-auth-store.test.cjs",
+      "status": "removed"
+    },
+    {
+      "path": "tests/leads.test.cjs",
+      "status": "modified",
+      "sha256": "4706d9e8f4d2401a88f44f073f840f18fee61d05e17dad2f770fb1319494a2bc"
+    },
+    {
+      "path": "tests/milestone4a.test.cjs",
+      "status": "modified",
+      "sha256": "c573d4ff70a00fe683d98515cf13502d9e7cc27c3b8b24066ac66dea23613622"
+    },
+    {
+      "path": "tests/pg-auth-durability.cjs",
+      "status": "added",
+      "sha256": "df5d26dd3b3704c8aeef6a00fd5fca6b0729193330e830bcaaaf8a091af608c2"
+    },
+    {
+      "path": "tests/pg-auth-integration.cjs",
+      "status": "added",
+      "sha256": "1ff31055fe075cd19a311020e2893c1d230d3c39dec35b229c10b2d9d3b4978b"
+    },
+    {
+      "path": "tests/pg-auth-services.cjs",
+      "status": "added",
+      "sha256": "60b100c3c900b5deaa61b64a02b23c51495166d343b456f547819f877f9dc79b"
+    },
+    {
+      "path": "tests/pg-web-auth.test.cjs",
+      "status": "added",
+      "sha256": "b625173886bb33fb7044e17030f309ab953506f5cebb1dd3cbcff15e70fb2dfa"
+    },
+    {
+      "path": "tests/stage1-backend.test.cjs",
+      "status": "modified",
+      "sha256": "e7e94f73d048b4e69c597de4de30ad48d2f87b857696940b86c0f41df521e093"
+    }
+  ]
+}

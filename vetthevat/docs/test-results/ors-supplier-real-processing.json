@@ -1,0 +1,22 @@
+[
+  {
+    "file": "supplier-multipage.pdf",
+    "pages": 2,
+    "clean": true,
+    "scanner": "ClamAV 1.5.4/28175",
+    "rows": 3,
+    "repeatedProducts": 2,
+    "mismatchedTotalDetected": true,
+    "unknownConfidencePreserved": true
+  },
+  {
+    "file": "supplier-lines.png",
+    "pages": 1,
+    "clean": true,
+    "scanner": "ClamAV 1.5.4/28175",
+    "rows": 3,
+    "repeatedProducts": 2,
+    "mismatchedTotalDetected": true,
+    "unknownConfidencePreserved": true
+  }
+]

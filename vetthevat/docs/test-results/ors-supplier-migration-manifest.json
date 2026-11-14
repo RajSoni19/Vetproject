@@ -1,0 +1,20 @@
+{
+  "migrationsExecuted": false,
+  "target": {
+    "database": "vtv_saas_dev",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "operator": "vtv_saas_operator",
+    "dataDirectory": "D:/vetthevat.saas-dev/cluster"
+  },
+  "files": [
+    {
+      "path": "database/migrations/saas/036_ors_supplier_invoice_lines.review.sql",
+      "sha256": "1e513c9f8bb2a73613c9365537d04b67581906aab3c5b970ed371134118588cd"
+    },
+    {
+      "path": "database/migrations/saas/036_ors_supplier_invoice_lines.rollback.review.sql",
+      "sha256": "d03ad92c5c67d9d0004567e6417245940d5a673a832b6f52538a65599ed61967"
+    }
+  ]
+}

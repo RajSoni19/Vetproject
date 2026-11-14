@@ -1,0 +1,14 @@
+# REVIEW TEMPLATE ONLY. The PostgreSQL listener must also bind only to 127.0.0.1.
+local   all                         vtv_cluster_admin                       peer map=vtv_cluster_admin
+local   all                         all                                     reject
+hostssl vtv_saas_production          vtv_web_runtime                         127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_saas_runtime                        127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_saas_document_worker                127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_saas_provider_runtime                127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_contact_runtime                     127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_contact_worker                      127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_migrator                            127.0.0.1/32 scram-sha-256
+hostssl vtv_saas_production          vtv_backup_operator                     127.0.0.1/32 scram-sha-256
+hostssl /^vtv_restore_drill_[a-z0-9_]+$/ vtv_restore_operator                 127.0.0.1/32 scram-sha-256
+host    all                         all                                     0.0.0.0/0 reject
+host    all                         all                                     ::/0 reject

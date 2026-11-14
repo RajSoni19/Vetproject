@@ -1,0 +1,15 @@
+{
+  "hostIdentityVerified": false,
+  "existingApplicationsPreserved": false,
+  "auditedAt": null,
+  "os": null,
+  "architecture": null,
+  "availableVtvMemoryMiB": null,
+  "availableVtvVcpu": null,
+  "availableVtvDiskGiB": null,
+  "databaseGiB": 0,
+  "originalsGiB": 0,
+  "applicationPort": 3200,
+  "postgresPort": null,
+  "listeningPorts": null
+}

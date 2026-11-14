@@ -1,0 +1,22 @@
+"use client";
+import {useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Card} from "@/components/ui/card";
+import {subscriptionPlans,trialTerms,vatPlanFeatures,planMonthlyPrice,type PlanCode} from "@/lib/plan-catalog";
+export function ProposedPlanInformation(){
+ const [selected,setSelected]=useState<PlanCode|null>(null),[basicOrs,setBasicOrs]=useState(false);
+ return <>
+ <div className="mb-6"><p className="text-sm font-semibold text-brand-700">Plans &amp; Subscription</p><h2 className="mt-2 text-3xl font-bold tracking-tight">A plan for your business.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-muted">Monthly allowances are shared across all companies in one billing account. Owner-approved prices; applicable VAT and commercial terms remain to be confirmed.</p></div>
+ <Card className="mb-6 p-5"><h3 className="font-semibold">Billing unavailable</h3><p className="mt-2 text-sm text-muted">Current subscription, billing period, trial end date and verified usage: unavailable. Comparing plans does not activate a subscription or grant ORS access.</p></Card>
+ <div className="grid items-stretch gap-5 xl:grid-cols-3">{Object.values(subscriptionPlans).map(plan=><Card key={plan.code} className={`relative flex min-w-0 flex-col p-6 ${plan.recommended?"border-2 border-brand-700 bg-green-50/30":""}`}>
+ <div className="mb-4 min-h-6">{plan.recommended?<span className="rounded-full bg-brand-700 px-3 py-1 text-xs font-semibold text-white">Recommended</span>:null}</div>
+ <h3 className="text-xl font-bold">{plan.code}</h3><p className="mt-4"><span className="text-4xl font-bold tracking-tight">£{Number(plan.monthlyPrice)}</span><span className="text-sm text-muted"> / month</span></p>
+ <dl className="my-6 divide-y divide-line text-sm">{[["Invoices / month",plan.invoices],["Companies",plan.companies],["Team",`Owner + ${plan.membersIncludingOwner-1} team member${plan.membersIncludingOwner>2?"s":""}`],["History access",plan.historyDays===null?"Unlimited":`${plan.historyDays} days`],["ORS",plan.orsIncluded?"Included":`Optional · £${Number(plan.orsOptionalMonthlyPrice)}/month`]].map(([label,value])=><div key={label} className="flex flex-wrap justify-between gap-2 py-3"><dt className="text-muted">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl>
+ <ul className="mb-5 space-y-3 text-sm">{vatPlanFeatures.map(feature=><li key={feature} className="flex gap-2"><span aria-hidden="true" className="font-bold text-brand-700">✓</span>{feature}</li>)}{plan.prioritySupport?<li className="font-semibold">Priority support</li>:null}</ul>
+ {plan.code==="Basic"?<div className="mb-5 rounded-lg border border-line bg-white p-3 text-sm"><label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={basicOrs} onChange={event=>setBasicOrs(event.target.checked)}/>Compare Basic with ORS (+£{Number(plan.orsOptionalMonthlyPrice)}/month)</label><p className="mt-2 font-semibold">Basic + ORS: £{Number(planMonthlyPrice("Basic",true))}/month</p>{basicOrs?<p role="status" className="mt-2">Comparison total: £{Number(planMonthlyPrice("Basic",true))}/month. No access activated.</p>:null}</div>:null}
+ <Button variant={plan.recommended?"primary":"outline"} className="mt-auto w-full" onClick={()=>setSelected(plan.code)}>View {plan.code} details</Button>
+ </Card>)}</div>
+ <Card className="mt-6 p-5"><h3 className="font-semibold">Free trial · {trialTerms.days} days, no payment card</h3><p className="mt-2 text-sm leading-6 text-muted">The first successfully onboarded company starts a {trialTerms.days}-day trial with the Starter allowance of up to {trialTerms.invoices} invoice creations per month and ORS included. The signed-in subscription page shows the database-recorded start, expiry and current status. No automatic charge occurs; expiry blocks new writes while authorized read and export access remains.</p></Card>
+ {selected?<Card className="mt-5 p-6" role="region" aria-label={`${selected} plan details`}><h3 className="text-xl font-bold">{selected} plan information</h3><p className="mt-3 text-sm text-muted">£{Number(subscriptionPlans[selected].monthlyPrice)}/month · {subscriptionPlans[selected].invoices} invoice creations shared across the account. Uploads and manual invoices count; editing and duplicate retries must not count again. History access is a future entitlement rule, not deletion of your records. No purchase or renewal is available.</p><Button variant="ghost" className="mt-4" onClick={()=>setSelected(null)}>Close details</Button></Card>:null}
+ </>;
+}

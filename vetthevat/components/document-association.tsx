@@ -1,0 +1,11 @@
+"use client";
+import {useState} from "react";
+import {useAppState} from "@/components/app-state";
+import {useUnsavedChanges} from "@/components/navigation-guard";
+import {Button} from "@/components/ui/button";
+import {SelectField} from "@/components/ui/field";
+import {Card} from "@/components/ui/card";
+import type {StoredDocument} from "@/lib/domain";
+export function DocumentAssociation({document}:{document:StoredDocument}){const state=useAppState();const [invoiceId,setInvoice]=useState(document.associatedInvoiceId||""),[supplierId,setSupplier]=useState(document.associatedSupplierId||""),[message,setMessage]=useState(""),[error,setError]=useState("");const guard=useUnsavedChanges(invoiceId!==(document.associatedInvoiceId||"")||supplierId!==(document.associatedSupplierId||""));
+ return <Card className="grid gap-4 p-5"><h2 className="font-semibold">Document association</h2><SelectField label="Linked invoice" value={invoiceId} onChange={event=>{setInvoice(event.target.value);const invoice=state.invoices.find(row=>row.id===event.target.value);setSupplier(invoice?.supplierId||"");}}><option value="">No invoice selected</option>{state.invoices.filter(row=>row.companyId===state.selectedCompany.id&&(!row.documentId||row.documentId===document.id)).map(row=><option key={row.id} value={row.id}>{row.invoiceNumber||"Untitled draft"} · {row.supplierName}</option>)}</SelectField><SelectField label="Supplier folder" value={supplierId} disabled={Boolean(invoiceId)} onChange={event=>setSupplier(event.target.value)}><option value="">Unassigned inbox</option>{state.suppliers.map(row=><option key={row.id} value={row.id}>{row.name}</option>)}</SelectField><p className="text-xs text-muted">Existing originals cannot be reassigned silently. Supplier correction on a linked invoice belongs in invoice editing. Folder assignment alone does not verify a document.</p><Button onClick={()=>{try{state.linkDocument(document.id,invoiceId,supplierId);guard.clear();setError("");setMessage("Association saved locally. File bytes remain session-only.");}catch(reason){setMessage("");setError(reason instanceof Error?reason.message:"Association failed.");}}}>Save document association</Button>{error?<p role="alert" className="text-sm text-red-700">{error}</p>:message?<p role="status" className="text-sm text-brand-700">{message}</p>:null}</Card>;
+}

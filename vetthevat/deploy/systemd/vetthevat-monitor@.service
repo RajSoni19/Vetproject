@@ -1,0 +1,22 @@
+[Unit]
+Description=VET THE VAT %i read-only health and recovery monitoring
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Root reads only VTV private heartbeat/backup metadata. No database credentials.
+User=root
+EnvironmentFile=/etc/vetthevat/%i/monitor.env
+ExecStart=/opt/vetthevat/node/bin/node /srv/vetthevat/%i/current/deploy/ubuntu/monitor.cjs %i
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadOnlyPaths=/srv/vetthevat/%i /var/lib /etc/vetthevat/%i
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+TimeoutStartSec=30
+MemoryMax=128M
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vtv-monitor-%i

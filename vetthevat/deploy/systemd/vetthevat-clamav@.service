@@ -1,0 +1,26 @@
+[Unit]
+Description=VET THE VAT %i isolated ClamAV
+After=local-fs.target
+
+[Service]
+Type=simple
+User=vtv-clamav-%i
+Group=vtv-scan-%i
+ExecStart=/usr/sbin/clamd --foreground=true --config-file=/etc/vetthevat/%i/clamd.conf
+RuntimeDirectory=vetthevat-clamav-%i
+RuntimeDirectoryMode=0750
+Restart=on-failure
+RestartSec=10
+UMask=0007
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX
+IPAddressDeny=any
+MemoryMax=3G
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

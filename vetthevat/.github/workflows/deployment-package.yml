@@ -1,0 +1,71 @@
+name: Ubuntu deployment package (no deployment)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'deploy/**'
+      - 'workers/**'
+      - 'lib/server/**'
+      - 'scripts/deployment/**'
+      - 'scripts/build-workers.cjs'
+      - 'package*.json'
+      - 'next.config.ts'
+      - 'app/**'
+      - 'components/**'
+      - 'tests/**'
+      - '.github/workflows/deployment-package.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '22.23.4'
+      - name: Install verification tools on disposable runner only
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends nginx shellcheck openssl python3 clamav clamav-daemon clamav-freshclam poppler-utils tesseract-ocr tesseract-ocr-eng imagemagick
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm audit --audit-level=high
+      - name: Render environment configurations without credentials
+        run: |
+          node scripts/deployment/render.cjs staging staging.vetthevat.com .deployment-review/staging
+          node scripts/deployment/render.cjs production app.vetthevat.com .deployment-review/production
+          node scripts/deployment/migration-inventory.cjs --write
+      - name: Build Linux release; never upload secrets or deploy
+        run: |
+          release="ci-${GITHUB_SHA:0:12}"
+          echo "RELEASE_ID=$release" >> "$GITHUB_ENV"
+          node scripts/deployment/build-release.cjs "$release"
+          node scripts/deployment/scan-browser-assets.cjs
+      - name: Isolated non-root web and nginx acceptance
+        env:
+          VTV_DISPOSABLE_ACCEPTANCE: 'YES'
+        run: bash deploy/ci/linux-acceptance.sh "$RELEASE_ID"
+      - name: Real systemd identities and native scanner/OCR on disposable runner
+        env:
+          VTV_DISPOSABLE_ACCEPTANCE: 'YES'
+        run: bash deploy/ci/systemd-acceptance.sh "$RELEASE_ID"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ubuntu-release-review
+          path: |
+            dist/*.tar.gz
+            dist/*.tar.gz.sha256
+            .deployment-review/linux-acceptance.json
+            .deployment-review/migration-inventory.json
+            .deployment-review/systemd-acceptance.json
+            .deployment-review/native-processing.json
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error

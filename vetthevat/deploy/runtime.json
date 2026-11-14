@@ -1,0 +1,10 @@
+{
+  "os": "ubuntu-24.04",
+  "architecture": "x64",
+  "node": "22.23.4",
+  "databaseProvider": "serververse",
+  "databaseRegion": "same-vps-loopback",
+  "stagingOrigin": "https://staging.vetthevat.com",
+  "productionOrigin": "https://vetthevat.com",
+  "deploymentApproved": false
+}

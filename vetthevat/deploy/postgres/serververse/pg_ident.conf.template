@@ -1,0 +1,2 @@
+# Fresh VTV-only cluster administrator; never an application login.
+vtv_cluster_admin vtv-postgres-production vtv_cluster_admin

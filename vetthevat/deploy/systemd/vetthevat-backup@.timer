@@ -1,0 +1,11 @@
+[Unit]
+Description=VET THE VAT %i daily encrypted backup
+
+[Timer]
+OnCalendar=*-*-* 02:15:00 UTC
+RandomizedDelaySec=900
+Persistent=true
+Unit=vetthevat-backup@%i.service
+
+[Install]
+WantedBy=timers.target

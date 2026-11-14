@@ -1,0 +1,26 @@
+{
+  "status": "REVIEW_ONLY_NOT_EXECUTED",
+  "migration": "database/migrations/saas/004_public_contact.review.sql",
+  "sha256": "a8d47899caec449f7ec4be000a043952e8fd1eba73a7bfd2ea7e72d8f7d087a1",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 55440,
+    "database": "vtv_saas_dev",
+    "cluster": "D:/vetthevat.saas-dev/cluster"
+  },
+  "dependsOn": [
+    1,
+    2
+  ],
+  "requiresPendingStageB": false,
+  "tables": [
+    "contact_intake.enquiries",
+    "contact_intake.submission_keys",
+    "contact_intake.rate_buckets",
+    "contact_intake.notification_outbox"
+  ],
+  "schemaOwner": "vtv_saas_owner",
+  "restrictedRole": "vtv_contact_runtime",
+  "financialApiActivation": false,
+  "emailDelivery": false
+}

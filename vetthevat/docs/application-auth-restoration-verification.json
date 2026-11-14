@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-22",
+  "status": "prepared, blocked pending approved real identity/session/authorization integration",
+  "automatedTests": {
+    "command": "npm test",
+    "passed": 162,
+    "failed": 0,
+    "realProviderSuccess": false
+  },
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "artifactScan": {
+    "passed": true,
+    "servedArtifacts": 927
+  },
+  "routingBrowser": {
+    "publicRoutes": [
+      "/",
+      "/about",
+      "/features",
+      "/pricing",
+      "/contact",
+      "/support",
+      "/get-started",
+      "/privacy",
+      "/terms"
+    ],
+    "privateRoutesChecked": 25,
+    "privateVariants": [
+      "no cookie",
+      "forged cookie and role + RSC/prefetch",
+      "duplicate cookies"
+    ],
+    "widths": [
+      390,
+      1440
+    ],
+    "publicSignInNavigation": "desktop and mobile passed",
+    "login": "setup page reachable; no credential collection",
+    "privatePages": "redirect to setup; no workspace rendered",
+    "privateApis": "401 in app mode; 404 in marketing mode",
+    "sessionPost": "503 with unconfigured services; no cookie",
+    "logoutPost": "503 with unconfigured services; no cookie",
+    "localAuthBypass": "rejected",
+    "demoData": "none created",
+    "marketingLogin": "200",
+    "realFirebase": "not connected",
+    "authenticatedBrowserFlow": "blocked, no approved identity/session store",
+    "financialDataPublic": "not exposed by checked routes"
+  },
+  "leadBrowser": {
+    "publicPagesChecked": 15,
+    "widths": [
+      390,
+      1440
+    ],
+    "ctaNavigation": "desktop and mobile menu clicks passed",
+    "keyboard": "Tab moves through labelled form inputs",
+    "defaultSubmission": "503, disabled UI",
+    "publicLeadList": "405",
+    "clientValidation": "passed",
+    "providerCalls": "CDP-intercepted synthetic only",
+    "successAndFailureUI": "passed",
+    "duplicateClick": "single POST",
+    "idempotencyRetry": "same key",
+    "confirmation": "signed cookie; direct/cleared-cookie access redirects",
+    "adminAccess": "denied",
+    "worker": "disabled without approval; GET denied",
+    "marketingMode": "lead page accessible; intake disabled without config; admin denied",
+    "browserPersistence": "no localStorage/sessionStorage",
+    "realPersistence": "not verified",
+    "realEmail": "not sent or verified"
+  },
+  "realFirebaseConnected": false,
+  "realIdentityVerified": false,
+  "realDurableSessionStorageVerified": false,
+  "authenticatedBrowserRoutesVerified": [],
+  "logoutRealProviderVerified": false,
+  "successfulSessionLifecycle": "isolated SDK/store doubles only",
+  "productionServicesModified": false,
+  "migrationsExecuted": false,
+  "deployed": false,
+  "immutableBackupModified": false,
+  "emailsSent": false,
+  "remainingBlockers": [
+    "Approved Firebase SDK/configuration and safe isolated test environment",
+    "Real durable web session, administrator grant and shared limiter adapters",
+    "Real login client and logout UI integrated with reviewed provider, CSP and lifecycle tests",
+    "Verified UID/company ownership for browser-local records and server company permissions",
+    "Wired financial DAL and private API dependencies",
+    "Real ORS, subscriptions and private document services",
+    "Real authenticated browser and isolated end-to-end tests before deployment approval"
+  ]
+}

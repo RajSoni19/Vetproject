@@ -1,0 +1,122 @@
+{
+  "at": "2026-10-23T16:26:22.609Z",
+  "scope": "Files explicitly edited/created by this production-readiness increment; excludes prior Stage B/contact work, private evidence, secrets and generated build output",
+  "files": [
+    {
+      "path": "app/api/auth/change-password/route.ts",
+      "status": "added"
+    },
+    {
+      "path": "app/service-status/page.tsx",
+      "status": "added"
+    },
+    {
+      "path": "components/password-change.tsx",
+      "status": "added"
+    },
+    {
+      "path": "components/server-workspace.tsx",
+      "status": "added"
+    },
+    {
+      "path": "scripts/saas-admin-bootstrap.cjs",
+      "status": "added"
+    },
+    {
+      "path": "scripts/release-readiness.cjs",
+      "status": "added"
+    },
+    {
+      "path": "tests/account-hardening.test.cjs",
+      "status": "added"
+    },
+    {
+      "path": "tests/account-postgres-integration.cjs",
+      "status": "added"
+    },
+    {
+      "path": "docs/go-live-implementation-results.md",
+      "status": "added"
+    },
+    {
+      "path": "docs/production-release-gates.md",
+      "status": "added"
+    },
+    {
+      "path": "docs/go-live-readiness.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/go-live-change-inventory.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/go-live-verification.json",
+      "status": "added"
+    },
+    {
+      "path": ".gitignore",
+      "status": "modified"
+    },
+    {
+      "path": ".vercelignore",
+      "status": "modified"
+    },
+    {
+      "path": "app/app/layout.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "components/public-shell.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "components/product-mockups.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "lib/server/web-auth/core.ts",
+      "status": "modified"
+    },
+    {
+      "path": "lib/server/web-auth/http.ts",
+      "status": "modified"
+    },
+    {
+      "path": "lib/server/private-routing.ts",
+      "status": "modified"
+    },
+    {
+      "path": "package.json",
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-saas-flow.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-1440.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-390.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/login-1440.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/login-390.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    },
+    {
+      "path": "docs/previews/local-real/contact-1440.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    },
+    {
+      "path": "docs/previews/local-real/contact-390.png",
+      "status": "regenerated browser artifact; may be byte-identical"
+    }
+  ]
+}

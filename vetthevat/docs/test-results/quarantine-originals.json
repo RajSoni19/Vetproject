@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-30T15:45:11.462Z",
+  "originals": [
+    {
+      "documentId": "73c979ca-af64-490b-933f-7929f55c79fb",
+      "state": "quarantined",
+      "readable": true,
+      "sha256Verified": true
+    },
+    {
+      "documentId": "768d5ca2-c4b4-4922-b90b-dce8b80b4c4f",
+      "state": "clean",
+      "readable": true,
+      "sha256Verified": true
+    },
+    {
+      "documentId": "e4977d67-5d3c-46b8-a6e2-7d159bc186d9",
+      "state": "quarantined",
+      "readable": false,
+      "error": "ENOENT"
+    },
+    {
+      "documentId": "9854d9c5-1485-4fa4-b1cf-ef5e4bba503f",
+      "state": "quarantined",
+      "readable": false,
+      "error": "ENOENT"
+    },
+    {
+      "documentId": "f59d55ee-3025-41c5-a034-a41bf98ecd29",
+      "state": "quarantined",
+      "readable": false,
+      "error": "ENOENT"
+    }
+  ],
+  "workerConfiguredInWebEnvironment": false,
+  "migrationsExecuted": false,
+  "jobsClaimed": 0
+}

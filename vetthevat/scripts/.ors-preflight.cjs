@@ -1,0 +1,3 @@
+const s=require('./saas-dev-common.cjs');
+const {Client}=require('pg');
+(async()=>{const db=new Client(s.connection('vtv_saas_operator'));await db.connect();try{await db.query('BEGIN READ ONLY');const row=(await db.query("SELECT current_database() AS database,host(inet_server_addr()) AS host,inet_server_port() AS port,current_setting('data_directory') AS directory,current_user AS role,session_user AS session_role,to_regclass('operations.materials') AS operations_table,to_regclass('saas.provider_events') AS provider_events")).rows[0];console.log(JSON.stringify(row));await db.query('ROLLBACK');}finally{await db.end();}})().catch(error=>{console.error(error);process.exitCode=1});

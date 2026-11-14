@@ -1,0 +1,80 @@
+{
+  "browser": "Installed Chrome headless",
+  "component": "Actual OrsProductMarketplace",
+  "httpBoundary": "synthetic; PostgreSQL and RLS not exercised",
+  "results": [
+    {
+      "name": "Product grid and always-visible comparison at 1440px",
+      "status": "passed"
+    },
+    {
+      "name": "Product grid and always-visible comparison at 390px",
+      "status": "passed"
+    },
+    {
+      "name": "VAT-aware lowest comparable price; unknown price shown honestly",
+      "status": "passed"
+    },
+    {
+      "name": "Supplier selection immediately updates card price",
+      "status": "passed"
+    },
+    {
+      "name": "Pack selection updates pricing and equivalent-pack comparison",
+      "status": "passed"
+    },
+    {
+      "name": "Add to cart with two selected suppliers and badge",
+      "status": "passed"
+    },
+    {
+      "name": "Supplier-wise grouping and refresh persistence",
+      "status": "passed"
+    },
+    {
+      "name": "Cart increase and decrease controls",
+      "status": "passed"
+    },
+    {
+      "name": "VAT-inclusive cart subtotal, VAT and total",
+      "status": "passed"
+    },
+    {
+      "name": "Invalid supplier phone blocks checkout",
+      "status": "passed"
+    },
+    {
+      "name": "Checkout rejects changed prices and creates no draft",
+      "status": "passed"
+    },
+    {
+      "name": "Separate multi-supplier drafts and encoded WhatsApp actions; status pending",
+      "status": "passed"
+    },
+    {
+      "name": "Draft order history survives refresh (synthetic storage)",
+      "status": "passed"
+    },
+    {
+      "name": "Dedicated order detail snapshots and WhatsApp actions survive refresh",
+      "status": "passed"
+    },
+    {
+      "name": "Single-supplier click saves draft then opens encoded WhatsApp action",
+      "status": "passed"
+    },
+    {
+      "name": "Remove final cart item",
+      "status": "passed"
+    },
+    {
+      "name": "Foreign-company response handled at synthetic HTTP boundary",
+      "status": "passed"
+    }
+  ],
+  "failed": 0,
+  "blocked": [
+    "This synthetic harness does not exercise the live authenticated API or PostgreSQL; see the live marketplace acceptance evidence",
+    "No real supplier WhatsApp messages sent by design"
+  ]
+}

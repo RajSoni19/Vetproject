@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Next.js build output
+.next/
+*/.next/
+dist/
+*/dist/
+out/
+*/out/
+
+# Environment files & secrets (DO NOT COMMIT SECRETS)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+vetthevat/.env*
+!vetthevat/.env.example
+
+# Database backups & local dumps
+db-backups/
+*.dump
+*.sql
+
+# Binaries & executable tools
+*.exe
+cloudflared.exe
+
+# Automated test preview screenshots (bloatware)
+docs/previews/
+*/docs/previews/
+vetthevat/docs/previews/
+
+# Internal recovery, stages, and local cache
+.recovery/
+*/.recovery/
+.stage1*/
+*/.stage1*/
+.saas-dev/
+*/.saas-dev/
+.master-stage*/
+*/.master-stage*/
+.auth-*/
+*/.auth-*/
+.local-*/
+*/.local-*/
+.launch-acceptance/
+*/.launch-acceptance/
+.deployment-review/
+*/.deployment-review/
+.release*/
+*/.release*/
+.cleanup/
+*/.cleanup/
+.leads/
+*/.leads/
+.uat/
+*/.uat/
+*.dev-auth.json
+*.local-document-health.json
+
+# Vercel & TypeScript
+.vercel/
+*/.vercel/
+*.tsbuildinfo
+
+# Logs & OS artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+*.url
+start-*.bat
+start-*.ps1
+

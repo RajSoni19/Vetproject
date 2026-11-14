@@ -1,0 +1,27 @@
+# Procurement intelligence implementation boundary
+
+Company price calculations in `lib/server/procurement/prices.ts` are implemented and tested against synthetic evidence. They use integer/rational arithmetic; quantities and money are never compared using floating-point prices. Supported initial units are g/kg, ml/l and integral items; supported currencies GBP/EUR/USD are kept separate. Invoice-date comparisons use 28 inclusive UTC calendar dates ending at the supplied as-of date. This is explicitly a date window, not a claim about the invoice's unknown time of purchase.
+
+Verified product ID, exact variant, unit dimension, currency, net/gross basis and delivery attribution define a comparable group. Similar names never authorize a match. Discounts and verified attributable delivery affect costs. Unknown delivery must be excluded explicitly and cannot be mixed with attributed costs. No implicit FX conversion, brand/grade equivalence or VAT recoverability is assumed. Weighted averages use total cost divided by normalized quantity. Savings compare the lowest observation to that company's quantity-weighted baseline; they are estimates, not guaranteed purchasing savings. Confidence labels describe evidence coverage, not statistical certainty. Superseded/cancelled observations are excluded.
+
+This calculation layer is not yet connected to a PostgreSQL canonical catalog, reviewed procurement invoice ingestion, correction events or a Supplier Price Intelligence page. Unit tests do not establish market intelligence acceptance. The routing metadata migration 025 is separately reviewable and does not pretend to implement observation ingestion or create module records. Existing ORS and VAT financial modules remain authoritative for their own records.
+
+## Required next database contract
+
+- One company-owned original and routing identity; independent reviewed ORS/VAT module links, with unique supplier/invoice/date identity and composite company foreign keys. Duplicate uploads must reuse the original and observation identity.
+- Canonical product variants with immutable comparison attributes, GTIN validation and a company alias table. A reviewed alias records actor, time, source description and confidence; ambiguous descriptions remain unmatched. Catalog corrections version mappings instead of rewriting financial audit history.
+- Verified procurement invoice revisions and immutable matched lines, with explicit quantities, discounts, delivery allocation and tax basis. Approval requires a clean original, manual review and procurement approval. It creates purchase-price observations, never stock receipts.
+- Idempotent affected-product refresh jobs in the same transaction as review approval. Cancellations/corrections invalidate prior observations and enqueue replacements. Workers need leased claims, stale-lease denial and crash tests.
+- Company-only API under live procurement read permission and FORCE RLS. Bounded search, date filters, supplier location/delivery context, exact unit-price tables, accessible history charts and historical-price explanations require database/browser acceptance before activation.
+
+## Cross-company sharing: disabled
+
+There is no sharing API, raw cross-company SELECT grant, aggregation worker or publication path in this implementation. No consent is inferred from invoice uploads or normal product matching. A future consent table must default OFF and record the exact policy version, consenting company owner, timestamp and withdrawal event. Activation requires a privacy impact assessment, UK GDPR/legal review, threat modelling and independent security review; this document is an engineering proposal, not legal clearance.
+
+A future aggregation worker must use narrowly scoped functions to read eligible minimized facts and publish only approved cells. Users must never query other companies' invoice rows. Hashing company IDs is not anonymization. Exclude negotiated/private contracts, direct identifiers, invoice numbers, free text and addresses before aggregation.
+
+Proposed publication rules for review: fixed weekly release epochs; a predefined product/variant, broad region and supplier taxonomy; no arbitrary filter endpoints; at least 10 independent consenting businesses and 20 independent invoices per cell; one capped contribution per business per epoch; dominance and uniqueness suppression; complementary suppression across overlapping cells; and no exact contributor counts, minima or individual observations. These thresholds alone do not prove resistance to inference. A reviewed disclosure budget, historical release registry, overlap/differencing tests and a composition policy are required before any publication.
+
+Withdrawal must prevent new claims immediately, invalidate unpublished contributions and suppress affected publications before serving another response. Previously exported reports cannot simply be recalled; document that limitation and approve retention/deletion rules before enabling sharing. Audit consent decisions without retaining raw invoice content in recommendation logs. No retention duration is silently selected here.
+
+Outstanding acceptance includes real database isolation, consent withdrawal, small/unique cohort and complementary suppression, repeated-filter/epoch differencing, malicious contributor collusion, concurrent correction/withdrawal, and desktop/mobile workflows. Until those pass, market insights remain unavailable.

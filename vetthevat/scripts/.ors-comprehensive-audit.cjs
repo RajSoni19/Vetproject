@@ -1,0 +1,8 @@
+const s=require('./saas-dev-common.cjs'),{Client}=require('pg');
+(async()=>{const db=new Client(s.connection('vtv_saas_operator'));await db.connect();try{await db.query('BEGIN READ ONLY');const [functions,policies,grants,triggers,constraints]=await Promise.all([
+ db.query("SELECT p.proname,pg_get_function_identity_arguments(p.oid) AS args,p.prosecdef,p.proconfig,has_function_privilege('vtv_saas_runtime',p.oid,'EXECUTE') AS runtime_execute FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='operations' ORDER BY p.proname"),
+ db.query("SELECT tablename,policyname,cmd,roles,qual,with_check FROM pg_policies WHERE schemaname='operations' ORDER BY tablename,policyname"),
+ db.query("SELECT table_name,privilege_type FROM information_schema.role_table_grants WHERE grantee='vtv_saas_runtime' AND table_schema='operations' ORDER BY table_name,privilege_type"),
+ db.query("SELECT c.relname AS table_name,t.tgname,pg_get_triggerdef(t.oid) AS definition FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='operations' AND NOT t.tgisinternal ORDER BY c.relname,t.tgname"),
+ db.query("SELECT conrelid::regclass::text AS table_name,conname,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE connamespace='operations'::regnamespace ORDER BY conrelid::regclass::text,conname")
+]);console.log(JSON.stringify({functions:functions.rows,policies:policies.rows,grants:grants.rows,triggers:triggers.rows,constraints:constraints.rows},null,2));await db.query('ROLLBACK');}finally{await db.end();}})().catch(e=>{console.error(e);process.exitCode=1});

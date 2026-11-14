@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-20",
+  "recovery": "D:/vetthevat/.recovery/admin-auth-20261020-223817",
+  "sourceChanges": [
+    {
+      "path": "lib/server/admin-auth-core.ts",
+      "status": "created",
+      "sha256": "3f7c08512645cb6481bfb0ff4d9b2cb474f54112d7035d293a5bda1e6ec7b4de",
+      "original": null
+    },
+    {
+      "path": "lib/server/admin-auth.ts",
+      "status": "created",
+      "sha256": "11c995a116c91af5e1ca4f172f41634bfb6c57ee973f205ccdeafddddb393456",
+      "original": null
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "status": "modified",
+      "sha256": "bf87d532604735fd7ca80f6d1d99dcbe3367b48ba6b1ecb6edd3c4c2a2a59327",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/components/app-shell.tsx"
+    },
+    {
+      "path": "components/auth-form-page.tsx",
+      "status": "modified",
+      "sha256": "e5ad3389689518e9e4ab670b4dff193faa9d5682a7dc25b542c418b1b247af2d",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/components/auth-form-page.tsx"
+    },
+    {
+      "path": "components/auth-setup-notice.tsx",
+      "status": "created",
+      "sha256": "3f5ea78e3ffa3759271bbecde951d719e9b785d9cc3c6ae0d18ad2da47e17943",
+      "original": null
+    },
+    {
+      "path": "app/app/layout.tsx",
+      "status": "modified",
+      "sha256": "938a16b00dfa87c65430de9396a205fd3f0df137b5059a199a5fb3dc28b1dfde",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/app/layout.tsx"
+    },
+    {
+      "path": "app/forgot-password/page.tsx",
+      "status": "modified",
+      "sha256": "c098be711a0efc36cfc5f1733ea367197b28fe11ced379d4897d8b54148fab76",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/forgot-password/page.tsx"
+    },
+    {
+      "path": "app/login/page.tsx",
+      "status": "modified",
+      "sha256": "e4040085805dd8e3263f571e4c2031987d1ddc1b3fd1ddeb66a7ee506fb4fc89",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/login/page.tsx"
+    },
+    {
+      "path": "app/onboarding/page.tsx",
+      "status": "modified",
+      "sha256": "56de374f9693feb73a66714251308b5165bb0ebcff869039c78bb6ac22252918",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/onboarding/page.tsx"
+    },
+    {
+      "path": "app/plan-information/page.tsx",
+      "status": "created",
+      "sha256": "be5a359058a5c3a851d6e83fded006d266d88c5a47dbd1bdfcaa38677e5beba0",
+      "original": null
+    },
+    {
+      "path": "app/register/page.tsx",
+      "status": "modified",
+      "sha256": "e3eec1da48f232b4b7344eee2f6ec388636c0740146464c0ecf6e3e2f412c9ae",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/register/page.tsx"
+    },
+    {
+      "path": "app/reset-password/page.tsx",
+      "status": "modified",
+      "sha256": "e00bc2bc6a288ffe287bc5c2b74baad0bba5994082f12d6067087306f6050a38",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/reset-password/page.tsx"
+    },
+    {
+      "path": "app/verify-email/page.tsx",
+      "status": "modified",
+      "sha256": "1c959df4ae035b25253d6296f3dc95c583226fe7930042b3714bf0a16469aaa5",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/verify-email/page.tsx"
+    },
+    {
+      "path": "app/app/documents/[id]/page.tsx",
+      "status": "modified",
+      "sha256": "0c3f248ad390bf21126ef11b6cd5a659cc0e14a793f54423313c412ceaed30fb",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/app/app/documents/[id]/page.tsx"
+    },
+    {
+      "path": "tests/admin-auth.test.cjs",
+      "status": "created",
+      "sha256": "c552947ce0df8e9cc8f8cb615d9a287428c328b41a02026c9979489324bd17f3",
+      "original": null
+    },
+    {
+      "path": "tests/browser-admin-auth.cjs",
+      "status": "created",
+      "sha256": "24601b73d7a5fe2f0cf7814aa01d35061eb0de2ce9fc1d6aa20b2c4cdbe4bbac",
+      "original": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "e7321da722623f4bffb5ede74f2e91e7464d14246051c462bcdd41797274bee0",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "proxy.ts",
+      "status": "created",
+      "sha256": "98f98c720aaf7b722dde43f9c968f72e10fa8a445661ce0cadbfe125b8cd1336",
+      "original": null
+    },
+    {
+      "path": ".dockerignore",
+      "status": "modified",
+      "sha256": "29e600b8967386f7cca864f362ff9299043c9330685d16f7c968497b9fdd9248",
+      "original": "D:/vetthevat/.recovery/admin-auth-20261020-223817/.dockerignore"
+    }
+  ],
+  "protectedFilesUnchanged": {
+    "lib/money.ts": true,
+    "lib/vat-calculations.ts": true,
+    "lib/invoice-tax-review.ts": true,
+    "lib/document-extraction.ts": true,
+    "lib/invoice-parsing.ts": true,
+    "lib/plan-catalog.ts": true,
+    "lib/workspace.ts": true,
+    "lib/remove-demo-data.ts": true,
+    "package.json": true,
+    "package-lock.json": true
+  },
+  "report": "docs/admin-authentication-results.md",
+  "immutableBackupModified": false,
+  "evidenceFiles": [
+    {
+      "path": "docs/admin-authentication-results.md",
+      "sha256": "a08777687a1d2739b9505e63cda8fb8028a167132b92abd0e4ef028b360d0bef",
+      "kind": "new report"
+    },
+    {
+      "path": "docs/previews/admin-auth/plans-1440.png",
+      "sha256": "b894cb364aabab318ecf69c9c73319ba009232cbf0cadc78496c022c7effbb3f",
+      "kind": "synthetic/public setup screenshot"
+    },
+    {
+      "path": "docs/previews/admin-auth/plans-390.png",
+      "sha256": "023ecf3a6809f1906e2fe98fddac5769a3b4eaba26ab30e210c677321160888a",
+      "kind": "synthetic/public setup screenshot"
+    },
+    {
+      "path": "docs/previews/admin-auth/pricing-1440.png",
+      "sha256": "1f0f2d477f2c4f2d9193c06823a647680f17cc7f55d5d76dfeecc1e2d85d666d",
+      "kind": "synthetic/public setup screenshot"
+    },
+    {
+      "path": "docs/previews/admin-auth/pricing-390.png",
+      "sha256": "25f1ae2f01daa124b7a9ebe9a6467c279afc7adc16173400634fa00d17f11b4c",
+      "kind": "synthetic/public setup screenshot"
+    },
+    {
+      "path": "docs/previews/admin-auth/setup-1440.png",
+      "sha256": "a76296dc1165ff23f2096bc84fb258403cdb042eb9cb2b2e730685e78139b5f8",
+      "kind": "synthetic/public setup screenshot"
+    },
+    {
+      "path": "docs/previews/admin-auth/setup-390.png",
+      "sha256": "ac57bae823259048ab6191161b999bed141b122959c911f468e00eb59845773a",
+      "kind": "synthetic/public setup screenshot"
+    }
+  ],
+  "workspaceBrowserRegressionStatus": "Blocked by intentional auth gate; no approved synthetic identity/provider/session adapter. Not passed."
+}

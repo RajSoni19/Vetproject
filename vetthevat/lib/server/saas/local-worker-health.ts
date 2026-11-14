@@ -1,0 +1,6 @@
+import {localUat} from "@/lib/server/local-uat";
+import {readFileSync,lstatSync} from 'node:fs';
+import {join} from 'node:path';
+export function localWorkerHealth(){
+ try{const file=join(process.cwd(),localUat(process.env)?'.uat/worker-health.json':'.local-document-health.json'),stat=lstatSync(file);if(!stat.isFile()||stat.isSymbolicLink()||stat.size>10000)throw Error();const value=JSON.parse(readFileSync(file,'utf8'));const uat=localUat(process.env);if(uat&&value.database!==uat.database)throw Error();if(!['ready','starting','stopped','approval-required','unavailable','error'].includes(value.state)||!Number.isFinite(Date.parse(value.at)))throw Error();const fresh=Date.now()-Date.parse(value.at)<45000,state=fresh?value.state:'stopped';return {state,ready:state==='ready',message:state==='ready'?'Secure inspection and OCR are available.':'Secure processing is unavailable. Ask your workspace administrator to start the document service. Your original remains protected.',checkedAt:value.at};}catch{return {state:'unavailable',ready:false,message:'Secure processing is unavailable. Ask your workspace administrator to start the document service. Your original remains protected.',checkedAt:null};}
+}

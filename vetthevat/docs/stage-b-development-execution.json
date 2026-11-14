@@ -1,0 +1,38 @@
+{
+  "scope": "isolated development database only",
+  "target": {
+    "cluster": "D:/vetthevat.saas-dev/cluster",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "database": "vtv_saas_dev"
+  },
+  "applied": [
+    {
+      "source": "database/migrations/saas/003_stage_b_invoices_syntax_fix.review.sql",
+      "sha256": "0cbf009b4eb221e8c78c277d12899bff070601afbb4227e3aa113f88f26ab2c0",
+      "result": "committed",
+      "note": "Approved replacement for the rolled-back original 003; it adds parentheses around one CASE expression in the invoice trigger."
+    },
+    {
+      "source": "database/migrations/saas/004_public_contact.review.sql",
+      "sha256": "a8d47899caec449f7ec4be000a043952e8fd1eba73a7bfd2ea7e72d8f7d087a1",
+      "result": "committed"
+    }
+  ],
+  "notExecuted": [
+    {
+      "source": "database/migrations/saas/003_stage_b_invoices.review.sql",
+      "sha256": "a881b6bd1278f8bdcd0a0ae74739eb5cdd07defb8883c19f89aea79ecfd5887b",
+      "result": "rolled back after PostgreSQL syntax error; source retained unchanged"
+    }
+  ],
+  "excluded": [
+    "127.0.0.1:55439/vtv_web_auth_test",
+    "production Firebase",
+    "published Flutter applications",
+    "Vercel deployment",
+    "Cloudflare DNS",
+    "GoDaddy DNS",
+    "customer data"
+  ]
+}

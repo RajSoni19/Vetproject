@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "file": "supplier-multipage.pdf",
+      "realDatabase": true,
+      "realLocalStorage": true,
+      "retryAndContentDeduplication": true,
+      "oneInspectionJob": true,
+      "quarantineBlocksDownloadAndReview": true,
+      "companyIsolation": true
+    },
+    {
+      "file": "supplier-lines.png",
+      "realDatabase": true,
+      "realLocalStorage": true,
+      "retryAndContentDeduplication": true,
+      "oneInspectionJob": true,
+      "quarantineBlocksDownloadAndReview": true,
+      "companyIsolation": true
+    }
+  ],
+  "documentTransactionsRolledBack": true,
+  "syntheticOriginalsDirectory": "C:\\Users\\VRAJSO~1\\AppData\\Local\\Temp\\vtv-supplier-originals-ttT8EL",
+  "reviewPersistence": "BLOCKED: migration 036 not approved/applied",
+  "migrationsExecuted": false
+}

@@ -1,0 +1,79 @@
+{
+  "stage": "A",
+  "status": "COMMITTED AND VERIFIED ON APPROVED ISOLATED TARGET",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 55440,
+    "database": "vtv_saas_dev",
+    "cluster": "D:\\vetthevat.saas-dev\\cluster",
+    "newCluster": true,
+    "newDatabase": true,
+    "databaseOwner": "vtv_saas_database_owner (NOLOGIN)",
+    "operator": "vtv_saas_operator (new isolated cluster only)",
+    "schemaOwners": [
+      "vtv_web_owner (NOLOGIN)",
+      "vtv_saas_owner (NOLOGIN)"
+    ],
+    "applicationRoles": [
+      "vtv_web_runtime",
+      "vtv_saas_runtime"
+    ]
+  },
+  "migration": "database/migrations/saas/001_saas_foundation.review.sql",
+  "sha256": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366",
+  "tables": [
+    "web_auth.installation",
+    "web_auth.users",
+    "web_auth.sessions",
+    "web_auth.roles",
+    "web_auth.user_roles",
+    "web_auth.companies",
+    "web_auth.company_memberships",
+    "web_auth.password_reset_tokens",
+    "web_auth.email_verification_tokens",
+    "web_auth.audit_logs",
+    "web_auth.rate_limits",
+    "web_auth.notification_outbox",
+    "web_auth.bootstrap_once",
+    "saas.schema_version",
+    "saas.permissions",
+    "saas.company_roles",
+    "saas.role_permissions",
+    "saas.billing_accounts",
+    "saas.billing_memberships",
+    "saas.subscription_entitlements",
+    "saas.company_profiles",
+    "saas.company_selections",
+    "saas.documents",
+    "saas.document_inspections",
+    "saas.document_jobs",
+    "saas.idempotency_keys",
+    "saas.audit_events",
+    "saas.notification_outbox"
+  ],
+  "existingRecordsAffected": false,
+  "seedData": "Schema/installation stamps and permission/role definitions only; no user/company/subscription/financial records",
+  "privilegeChanges": "Only in the new database and new cluster; restricted CONNECT, schema/table/function grants and forced tenant RLS",
+  "backup": {
+    "database": "D:/vetthevat.saas-dev/backups/stage-a-before.dump",
+    "roles": "D:/vetthevat.saas-dev/backups/stage-a-before-roles.sql",
+    "checksums": "D:/vetthevat.saas-dev/backups/checksums.json",
+    "validation": "pg_restore --list checks the archive; actual restore exercise still requires a separately approved fresh restore target"
+  },
+  "rollback": "Migration is one transaction; error rolls back SQL. Do not drop/reset on failure or on uncertain commit; retain isolated cluster + private recovery files. After commit, stop the isolated service and use separately reviewed forward repair/restore, never overwrite an existing DB.",
+  "excluded": [
+    "127.0.0.1:55439/vtv_web_auth_test",
+    "production databases or services",
+    "real administrator bootstrap",
+    "object-storage service startup",
+    "real email",
+    "deployment"
+  ],
+  "approvalNote": "Latest explicit user approval selects D:\\vetthevat.saas-dev\\cluster instead of earlier proposed workspace subdirectory. SQL unchanged.",
+  "correctiveMigration": {
+    "file": "database/migrations/saas/002_stage_a_authorization_locks.review.sql",
+    "sha256": "082079c74f4788fa5724a30f86a443c46ed0179c8c0329c756a9323a690d80fd",
+    "approval": "Separately explicitly approved by user",
+    "status": "COMMITTED; two owner-only locking policies, no runtime grant or FORCE RLS change"
+  }
+}

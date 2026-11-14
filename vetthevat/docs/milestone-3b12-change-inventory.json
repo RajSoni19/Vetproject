@@ -1,0 +1,232 @@
+{
+  "milestone": "3B.1 / 3B.2",
+  "createdAt": "2026-10-15T18:07:53.193Z",
+  "project": "D:/vetthevat",
+  "immutableBackup": "D:/vetthevat-backup",
+  "gitAvailable": false,
+  "baseline": ".recovery/milestone-3b12-20261015-064510",
+  "additionalRecovery": ".recovery/milestone-3b-foundation-20261015-232716",
+  "notes": [
+    "Cumulative change inventory includes classification/configuration preparation and this approved dependency/backend continuation.",
+    "Only source, configuration template, test and documentation paths were hashed. No real environment files, client records or credentials inspected.",
+    "node_modules and .next are generated/installed artifacts excluded from source inventory.",
+    ".recovery originals are excluded from Git and retained locally.",
+    "Inventory file itself is listed separately to avoid a self-referential hash.",
+    "Screenshots are synthetic browser test output.",
+    "No PostgreSQL connection, migration, Firebase access, Flutter modification or deployment occurred."
+  ],
+  "changes": [
+    {
+      "path": "lib/server/api-v1.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "b9cd51b83d37a59a21cc3256688a92ecc14e011cda0af06dc93f6934deee1f0b",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/config-validation.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "f0fcf4036968101b6a506e8b1ebf6ff0297f2ad17ed2742a127cd095c9de8951",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/config.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "1ba105d90ea10f733ea1e45ca97983f5f3b8d66610c3b894739b02079b2127e1",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/database-core.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "a7a787efe540c90887ae7ab7d8ba2e66c154ce3706ddef21cc46bad270d250f3",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/database.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "0eb3094cd22f27e1a927d2a02d08d9981e691c732d7ef2280ce3ca47102daf9d",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/server/identity.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "8f194209c8409624a02d3058572cf48aad01005b6c47abc0309c6845b211e0ff",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/vat-calculations.ts",
+      "change": "modified",
+      "beforeSha256": "dfa1104ea109656204e52dd2b87ab63a83c703b4635fbcce92796e927fd914cd",
+      "afterSha256": "933eca5eb7241b8612ed08198420ccdd12247989d2ace8f712c3d74a06861c60",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/lib/vat-calculations.ts"
+    },
+    {
+      "path": "tests/backend-foundation.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "7b12738f42651944ac6a51f61000632911b7a474f8bb46dfc5a557de49b36328",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-classification-flows.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "3dcd016d15b435cb4146044d0c7c6cb145150548c2396c38fe84dc6ebfec1b7d",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "ea4af690309f551cca071bacd24873e22aa99583802985456b00743cd35f695a",
+      "afterSha256": "532b4bf3537b8db7affc63d2d75f846553e0e99be98921a02042fdbfb8522ed0",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "tests/database-infrastructure.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "5a4937226616e25b1ba268550bd4a8fb7e00ca622c331cd57c7bcc9e2016e2c3",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/load-source.cjs",
+      "change": "modified",
+      "beforeSha256": "456995df58b230747c6fd47cfa16ee32cbdc2ad5458183100775159618b81838",
+      "afterSha256": "ee979fbd6d9648fa7205bf783c53b628b3c19d269497cf515aab0fd30c23685d",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/tests/load-source.cjs"
+    },
+    {
+      "path": "docs/api-v1-foundation.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "8385c0a636f0957fe81bcc152b4f27d487eb75efb3fad7ace0f045d062ca6d74",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/milestone-3b-firebase-prerequisites.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "0bab5b60310615e94e744c8f3c49ded19d25d07196f67283cbdab1c7a3ef5805",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/milestone-3b12-results.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "64cb454c815d81624a635a51d04bfb4d26b5d1dda630fd6bdf7b9f93720f27b4",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "change": "modified",
+      "beforeSha256": "d7ca9f388cd0031bfb7cb54880660ef9226a8d38b9b0576994b973c91fc18748",
+      "afterSha256": "495e7b7500c8c4644ed74aa2b511f62db052c609c3a3cdddcddb3160a96122a5",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-1/desktop-invoices.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "change": "modified",
+      "beforeSha256": "db5f4f92c02feeea33218eef4955bee244e3f886047cabebf311fe8916951ccb",
+      "afterSha256": "00d11202a29596e02d4be5c7c6f83c8e0bd28de54c65d2d0c1610336ca5a2848",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/desktop-banking.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "change": "modified",
+      "beforeSha256": "74901ebfe152e609f30c06e4731f201431423da4cdfcfced8994bb363b38e76b",
+      "afterSha256": "317168707fa0eaf2eb99002245cbdc5af83b660a84d01b41d580aac172f14023",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/desktop-supplier.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-banking.png",
+      "change": "modified",
+      "beforeSha256": "b4731afaa95b4d0dcd8c9a7cd91db6c5f3a3b44d6a2c4dcfb19f6e4447dd88ec",
+      "afterSha256": "e5d3ab5a5a15703ae8783356ad6b8b65fd8b3bcb03cb295718fcd6e23a064f98",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/mobile-banking.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "change": "modified",
+      "beforeSha256": "2b6ff1c7cf27cdb6f267efcd4336cbe973be61abbf0e9c6389dcc5850237e274",
+      "afterSha256": "6098064b3e16526c271d761fdb68488eeef08c79d68fd2b7e514d6a092d7fd3d",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/mobile-companies.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-documents.png",
+      "change": "modified",
+      "beforeSha256": "3509f41737278ca62fe2359f9ec0faa00101a674dc08f5d0f30eb7145cd40bec",
+      "afterSha256": "75ab44d74ec17bb9f8ff15c74db1c2cf71c8edb6943f04b42fa4c6cebf474c9b",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/mobile-documents.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-suppliers.png",
+      "change": "modified",
+      "beforeSha256": "9c2373364e795086a46190ba08ff673b825ba261e33445491428501a67e164cb",
+      "afterSha256": "5ef19f717428eeef2f186726e328c392d0f2323d3302399e6dc9c37a597b747f",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/mobile-suppliers.png"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-vat.png",
+      "change": "modified",
+      "beforeSha256": "f76285da1d7be8c2b268e80207cd1e558d862c07eb4fa1d45ed21e56965745e9",
+      "afterSha256": "01aa9794c8df73d5119d7db3e2a12e81801e004057809a3dfc6b4e16c52b2c20",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/docs/previews/milestone-2/mobile-vat.png"
+    },
+    {
+      "path": "database/drafts/001_vat_core.review.sql",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "c4a4b9e3cee6285844503dd3bfcc243eaedd243c146f4d29dccda081dd8effa6",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "database/drafts/002_read_isolation.review.sql",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "d1561caa4d03f4df1eb62fcef14cf5198709a866540b5a68b9cc695128bd0933",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "database/drafts/README.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "a3dfc208805a1c35cb1471c989ec310d249050ecce26f915cf3901c2a01c756d",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "package.json",
+      "change": "modified",
+      "beforeSha256": "ea478737a391c008fc7cad97bfd558f3169742b73780a5fd55597e8b945c2d09",
+      "afterSha256": "aa20e3b904a95c1ca2db8de430fe99d2d2864781e5fe0c1e15a5bc78e7ac0fcd",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "change": "modified",
+      "beforeSha256": "26cc0a93490065fb4bba21bc3c8b871b3b2518d338166a27dfa5fbe1474ff8f5",
+      "afterSha256": "ceaf6b481f0de749161621dbb47cbe8e16160af40b8ada6d102733122df91c14",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/package-lock.json"
+    },
+    {
+      "path": ".gitignore",
+      "change": "modified",
+      "beforeSha256": "d3794dd97ee8c4e9268e14a05b2f80c5f25558d5e657d9231c4626c382ce0443",
+      "afterSha256": "bb814304efc31ed0d633ded49568dd923f18446d6c7d29768d0d17a2bf46bd46",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/.gitignore"
+    },
+    {
+      "path": ".env.example",
+      "change": "modified",
+      "beforeSha256": "6613eb4b347532c34d90e4e6433c3809853f510ac3647ae7d2dddb5752b1498f",
+      "afterSha256": "8ff986b49cb60fa8dbc2cb38df41ae46f12b3c1386c2210a8ba77701bfe3643b",
+      "recoverableOriginal": ".recovery/milestone-3b12-20261015-064510/.env.example"
+    }
+  ],
+  "removed": [],
+  "inventoryFile": "docs/milestone-3b12-change-inventory.json"
+}

@@ -1,0 +1,86 @@
+{
+  "pages": [
+    {
+      "text": "Supplier: Synthetic Fasteners Ltd\n\nInvoice Number: SYN-LINES-2026\n\nInvoice Date: 30/10/2026\n\nDue Date: 30/11/2026\n\nCurrency: GBP\n\nDescription | SKU | Qty | Unit | Unit Price | Discount | VAT % | VAT Amount | Line Total\nSteel bolt | BOLT-1 | 2 | EA | 10.00 | 1.00 | 20% | 3.80 | 19.00\n\nMystery part | UNKNOWN | 1 | EA | 5.00 | 0.00 | 0% | 0.00 | 5.00\n",
+      "confidence": null,
+      "page": 1
+    },
+    {
+      "text": "\\\n\nDescription | SKU | Qty | Unit | Unit Price | Discount | VAT % | VAT Amount | Line Total\nSteel bolt | BOLT-1 | 1 | EA | 10.00 | 0.00 | 20% | 2.00 | 10.00\n\nSubtotal: 34.00\n\nVAT: 5.80\n\nTotal: 40.80\n",
+      "confidence": null,
+      "page": 2
+    }
+  ],
+  "invoice": {
+    "supplier": "Synthetic Fasteners Ltd",
+    "invoiceNumber": "SYN-LINES-2026",
+    "invoiceDate": "2026-10-30",
+    "dueDate": "2026-11-30",
+    "currency": "GBP",
+    "subtotal": "34.00",
+    "vat": "5.80",
+    "total": "40.80",
+    "lines": [
+      {
+        "description": "Steel bolt",
+        "sku": "BOLT-1",
+        "quantity": "2",
+        "unit": "EA",
+        "unitPrice": "10.00",
+        "discount": "1.00",
+        "vatRate": "20",
+        "vatAmount": "3.80",
+        "lineTotal": "19.00",
+        "materialId": null,
+        "poPosition": null,
+        "evidence": {
+          "page": 1,
+          "row": 12,
+          "text": "Steel bolt | BOLT-1 | 2 | EA | 10.00 | 1.00 | 20% | 3.80 | 19.00",
+          "confidence": null
+        }
+      },
+      {
+        "description": "Mystery part",
+        "sku": "UNKNOWN",
+        "quantity": "1",
+        "unit": "EA",
+        "unitPrice": "5.00",
+        "discount": "0.00",
+        "vatRate": "0",
+        "vatAmount": "0.00",
+        "lineTotal": "5.00",
+        "materialId": null,
+        "poPosition": null,
+        "evidence": {
+          "page": 1,
+          "row": 14,
+          "text": "Mystery part | UNKNOWN | 1 | EA | 5.00 | 0.00 | 0% | 0.00 | 5.00",
+          "confidence": null
+        }
+      },
+      {
+        "description": "Steel bolt",
+        "sku": "BOLT-1",
+        "quantity": "1",
+        "unit": "EA",
+        "unitPrice": "10.00",
+        "discount": "0.00",
+        "vatRate": "20",
+        "vatAmount": "2.00",
+        "lineTotal": "10.00",
+        "materialId": null,
+        "poPosition": null,
+        "evidence": {
+          "page": 2,
+          "row": 4,
+          "text": "Steel bolt | BOLT-1 | 1 | EA | 10.00 | 0.00 | 20% | 2.00 | 10.00",
+          "confidence": null
+        }
+      }
+    ],
+    "warnings": [
+      "Unresolved text on page 2, row 1: \\"
+    ]
+  }
+}

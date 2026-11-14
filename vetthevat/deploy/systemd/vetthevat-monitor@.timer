@@ -1,0 +1,11 @@
+[Unit]
+Description=VET THE VAT %i private health monitoring schedule
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+RandomizedDelaySec=10s
+Unit=vetthevat-monitor@%i.service
+
+[Install]
+WantedBy=timers.target

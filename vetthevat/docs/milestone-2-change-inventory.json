@@ -1,0 +1,301 @@
+{
+  "milestone": 2,
+  "date": "2026-10-15",
+  "recoverySnapshot": "D:\\vetthevat\\.recovery\\milestone-2-20261015-060511",
+  "immutableBackup": {
+    "files": 90,
+    "changed": []
+  },
+  "files": [
+    {
+      "path": "app/app/banking/page.tsx",
+      "sha256": "b39c45065f5be11b6608b9b7e07ed599de7f5e0fe5a62c6767fbdbebe21136fe",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "app/app/companies/page.tsx",
+      "sha256": "09d77144b83bbdaa31e67fe912c768ce4f1508f5329b153267f93f50e71fde26",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/companies/[id]/page.tsx",
+      "sha256": "2cb4a58be7f26de61420506688c398ed613ec9e3e47fc540e73e4f5eeaab97d7",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "app/app/documents/page.tsx",
+      "sha256": "dae2e688f6af6672285acbf1c2e5ef2b38f9d12690bbe290605515dbbb3613bc",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/documents/[id]/page.tsx",
+      "sha256": "0573b0ab055bed3a945094c9d8522158500094c629e04ce601eb7fb9dfcd67d6",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/reports/page.tsx",
+      "sha256": "87056ed9368fb37e7d478df3228ea8ab5f7f4dca223914ce128d098cfe2b7c19",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/settings/page.tsx",
+      "sha256": "95c1893e6bc484cbab7f12a918796f77b20aa64ac39c11628d6bc4180a762d86",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/suppliers/page.tsx",
+      "sha256": "e00a3c3346cfafeec8c09af43e98ef0fdadb7d7f72480ab00354a621c365d7f9",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "app/app/suppliers/[id]/page.tsx",
+      "sha256": "1731bbeeb22d712c7fadcad42b270d6a0209760a6a1cd20b39b1c2dad9e466a3",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "app/app/vat/page.tsx",
+      "sha256": "5fb0824a900ec7e24b9a7bc09a6f3a4e8fa2a4d3e3a8b95b99865f3a1c89ba04",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "components/app-state.tsx",
+      "sha256": "7c159770d86a546854a3a8ab3ca7bc4188218ac9b9f6dcc22a68b3df68a3c5a6",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "components/bank-import.tsx",
+      "sha256": "9ccd844642dcc7c8089bcef276634aaab4af1ed30e44c3aaa9598c206fa9bd03",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/bank-matching.tsx",
+      "sha256": "1a05180aad7d4a7fe509badc77b61b39856e711a25c991c3b724fb098fb675d5",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/document-association.tsx",
+      "sha256": "28318539e8b5d465af85f0b6601a65b9d47a15410e8e11cd43b552b090e89ecf",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/document-availability.ts",
+      "sha256": "a923927af982ef1d497c421eb18f85690166033885c72f80137ec50f9cb06be4",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/entity-fields.ts",
+      "sha256": "3f4b390b82906a161201428adcfea1543233cc0688c765d37d400ee94d857908",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/entity-history.tsx",
+      "sha256": "74d72099948616c9aee8d7dbef398273456fcfc95683d4f457415c37328c3e1f",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "components/invoice-editor.tsx",
+      "sha256": "3a9a5372cf0ae8ef1c13e097f7dc338a47e1cad603be2c0f1c2bda53fa934515",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "components/reporting-kit.tsx",
+      "sha256": "afd69838e5f43e68fe449a1cd1cdd410b002721c3b5e271ae43bf7a558a11d87",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "components/workspace-kit.tsx",
+      "sha256": "ccb9eadbbc278cb9442db905382739f6248970c127a91f757937a70345bdd49b",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "components/ui/financial-table.tsx",
+      "sha256": "6e91babadeb1a388dfbc4e4872e6eadb2374d77cf6d175136b47ffb61e7bcb6c",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "lib/banking.ts",
+      "sha256": "954470f6f001fff06f31622fc94baed2369323d3e401e1d2f76302ab4573ad4f",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "lib/domain.ts",
+      "sha256": "4be5e0e78684a98b80f2476a2cc33a46ee874d42142f403aab3ebcb2949b02ee",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "lib/invoice-tax-review.ts",
+      "sha256": "260a9cf51c696766adc92ee4c3df5baf68580ba07cb7a485c6b0d31f624997d5",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "lib/report-exports.ts",
+      "sha256": "944e763f529cc281a1db4d16155aa512c8c8efe6625c0f2dc9f657c18812d8e7",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "lib/reporting.ts",
+      "sha256": "410de2d7f9160fc2b1d8a96551daca580d7c2b9c6b11c2e9f329e43ca82c0bb7",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "lib/vat-report-exports.ts",
+      "sha256": "78def50322fee3f1ca073ef3de7aedb38e7e0dcca9a311f0d3b6543d760771f4",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "lib/vat-report.ts",
+      "sha256": "f1c98436526fc6b4df224a5834fcb48c2d840591f0f71ae06224688b1ec96a0f",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "lib/vat-workspace.ts",
+      "sha256": "51872f7dbb424243c8df2e3020e0e12c164635ba4e1d570278ab7f55827878b7",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "lib/workspace-navigation.ts",
+      "sha256": "627c7764413c3911b48125dd266b8101357ab65b6b73e0ca6cf02aa83344c030",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "lib/workspace.ts",
+      "sha256": "df4e0c74bb47860fbbb69accb1da8f2f99f5f4b53c4a119eb7b7b447a21495a2",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "sha256": "ea4af690309f551cca071bacd24873e22aa99583802985456b00743cd35f695a",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-milestone2-flows.cjs",
+      "sha256": "c30a67b96f49475ea00915021aa668c4ea0ecc7f057bc551e3bd2332c3f87c88",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "tests/milestone2.test.cjs",
+      "sha256": "b5af178a25bc0e971511cdb1871356e7d77e43d14b9d9972e8749d9bf8faebf0",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-dashboard.png",
+      "sha256": "0e1e2314ba10efdccc5f3c3adebc3e538a0078548072b03a4108c351573fc95b",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "sha256": "d7ca9f388cd0031bfb7cb54880660ef9226a8d38b9b0576994b973c91fc18748",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "sha256": "7e7667080474ed0aaa04db9ffa29228325c820e34330c1dd472af76dcc91d4e0",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-invoices.png",
+      "sha256": "1480140f7fe3077aed4273cbdb053d57cb2d85a5808f69e30606650254a6b63c",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-new.png",
+      "sha256": "77cfa9a2f69037705aabd91bf80b52dca86e89f4cbb5052982b3593e1dbf34ff",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-upload.png",
+      "sha256": "62a55590656ac8b28993d3fe03560da3ba0a3fff57d097da0d1fac88152f27b2",
+      "originalPreserved": true,
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "sha256": "db5f4f92c02feeea33218eef4955bee244e3f886047cabebf311fe8916951ccb",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "sha256": "74901ebfe152e609f30c06e4731f201431423da4cdfcfced8994bb363b38e76b",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-banking.png",
+      "sha256": "b4731afaa95b4d0dcd8c9a7cd91db6c5f3a3b44d6a2c4dcfb19f6e4447dd88ec",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "sha256": "2b6ff1c7cf27cdb6f267efcd4336cbe973be61abbf0e9c6389dcc5850237e274",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-documents.png",
+      "sha256": "3509f41737278ca62fe2359f9ec0faa00101a674dc08f5d0f30eb7145cd40bec",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-suppliers.png",
+      "sha256": "9c2373364e795086a46190ba08ff673b825ba261e33445491428501a67e164cb",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-vat.png",
+      "sha256": "f76285da1d7be8c2b268e80207cd1e558d862c07eb4fa1d45ed21e56965745e9",
+      "originalPreserved": false,
+      "status": "created"
+    },
+    {
+      "path": "docs/milestone-2-results.md",
+      "status": "created"
+    },
+    {
+      "path": "docs/milestone-2-change-inventory.json",
+      "status": "created"
+    }
+  ]
+}

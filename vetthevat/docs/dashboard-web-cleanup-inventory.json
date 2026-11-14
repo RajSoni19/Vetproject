@@ -1,0 +1,95 @@
+{
+  "baseline": ".recovery/dashboard-web-cleanup-20261020-211844",
+  "changes": [
+    {
+      "path": "app/app/dashboard/page.tsx",
+      "change": "modified",
+      "beforeSha256": "ae7820440afa06610ea9b3c9171f46a33d7e1ac9105c15f904b2cd223e309088",
+      "afterSha256": "f7538c0cb8679eb27338cc6d4c985051c41d424957ce166da4bab599d78af413",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/app/dashboard/page.tsx"
+    },
+    {
+      "path": "app/app/audit/page.tsx",
+      "change": "modified",
+      "beforeSha256": "478394b15f1fbace63a8a9f452933c6faaa4e8aa5d59a98fc059703f15c4b317",
+      "afterSha256": "8646557048f0d973415e33275ddd130dcb68a7b5631a213e873d55314fa54e36",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/app/audit/page.tsx"
+    },
+    {
+      "path": "app/page.tsx",
+      "change": "modified",
+      "beforeSha256": "ade3eae6a39636f180a4f6799b4a8e85751e482680ea56ee034ac091f79b61a5",
+      "afterSha256": "09f2a411823a0a87ebaa3861499d1cf6baeddfe2a023ed6f9116a25c5889f45f",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/page.tsx"
+    },
+    {
+      "path": "app/about/page.tsx",
+      "change": "modified",
+      "beforeSha256": "326ac2ac05e3a905c6b60b6d7d5a044d47b16e65bde2bc14e769fd88f614998c",
+      "afterSha256": "18d0066812d8e30c895c06d46a94d011759b71d993ec4e11798bbfc9ad725fe1",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/about/page.tsx"
+    },
+    {
+      "path": "app/features/page.tsx",
+      "change": "modified",
+      "beforeSha256": "387255d346daf5d84fcdfc4f044297bbaa215a190786afe769e329f6fc7eb77d",
+      "afterSha256": "40849d8f9244a16323b9cc3ee70e91bf9b66d665f4ab3aa66d895829b4cb1c6f",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/features/page.tsx"
+    },
+    {
+      "path": "app/mobile-app/page.tsx",
+      "change": "modified",
+      "beforeSha256": "324dcba74261bad80545d1ab354f3ba0de213988c4f8dabb478a65822b623f7a",
+      "afterSha256": "34992885aa978ae973b3b47391bd315d5add62a0975193ffc6ab7617f1af1b29",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/app/mobile-app/page.tsx"
+    },
+    {
+      "path": "components/public-shell.tsx",
+      "change": "modified",
+      "beforeSha256": "79da5ac7a77dc6ee3daae34c5a46061db282ec5ff87958b90fe3212818f74245",
+      "afterSha256": "c656ded71c18fde79b4046805f43b4ad248219e6da3ba3e8ce7ed3f2c88a62ec",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/components/public-shell.tsx"
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "change": "modified",
+      "beforeSha256": "692f7100512645b7938158d48ce76ba51708bfbf7cc33c588a5b280350d57bf1",
+      "afterSha256": "c71f5a7f8ea0df8b07cb314927efee5a754da30697a34ae9f4ecbefae98f6208",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/components/app-shell.tsx"
+    },
+    {
+      "path": "components/uk-vat-interactive.tsx",
+      "change": "modified",
+      "beforeSha256": "f3fb7908dd724dabef0bafa2bc0c0bfe6e88a1381a1437cf25a1666f83300765",
+      "afterSha256": "39a836bd2043205c6fdea3e5e084a5b16dfea513334146f575ae133d96c7d323",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/components/uk-vat-interactive.tsx"
+    },
+    {
+      "path": "lib/site-links.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "1767609084c6c3ea75db254dd056a5b2c2c3174249f1a5cd301590e2f56cdde9",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "bb86fa96de8ee3305e0096ac7cda28348f5ee5db1d059779f9ebf008983c7f14",
+      "afterSha256": "3adba1a92409aa7862bd1665d4ca2c2b63af69fe72c76709012f239889c0ab01",
+      "recoverableOriginal": ".recovery/dashboard-web-cleanup-20261020-211844/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "docs/dashboard-web-cleanup.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "8d7dedabc1e586d407c0d0817e28e8c5f49c2b0086d62f1594eb3f500a0f2935",
+      "recoverableOriginal": null
+    }
+  ],
+  "checks": {
+    "testsPassed": 73,
+    "typecheck": "passed",
+    "build": "passed",
+    "focusedBrowser": "passed"
+  }
+}

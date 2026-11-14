@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-20",
+  "recovery": "D:/vetthevat/.recovery/milestone-3f-20261020-221043",
+  "sourceChanges": [
+    {
+      "path": "lib/legacy-review.ts",
+      "status": "created",
+      "sha256": "3a7e21a29066a74e595dd119873b18577b93ff735e7911a04641b7e9ee22734c",
+      "original": null
+    },
+    {
+      "path": "lib/remove-demo-data.ts",
+      "status": "modified",
+      "sha256": "b898348f8104d8634893066eaf0da23c21ce0caff6628d29edc84e2f01bd92f1",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/lib/remove-demo-data.ts"
+    },
+    {
+      "path": "lib/workspace.ts",
+      "status": "modified",
+      "sha256": "c4aa0bcffb22e2f77cac97eeeab7bde0e6f0141ea1fd4cce22f2f40fa2fee895",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/lib/workspace.ts"
+    },
+    {
+      "path": "components/app-state.tsx",
+      "status": "modified",
+      "sha256": "9b5dd492893a9bdffcf7fd525b2980badf1f670f9239bb7a6da661d85815a35e",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/components/app-state.tsx"
+    },
+    {
+      "path": "components/legacy-data-review.tsx",
+      "status": "modified",
+      "sha256": "034fedbff4a7895bcbc5732b6db468db4df85b4c8e5f5314b56adb47e5348953",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/components/legacy-data-review.tsx"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "b4ce294c47cf2606ae021f4f0d16f0b71042b1559627de3f439204e34614f145",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "tests/browser-legacy-review.cjs",
+      "status": "created",
+      "sha256": "4365c1286336cb9d9c1e71102c863183a2b689d36df65e90f1bd95c6f028cec7",
+      "original": null
+    },
+    {
+      "path": "tests/frontend-corrections.test.cjs",
+      "status": "modified",
+      "sha256": "1f0d722bd2c62edaa469b8ffc0a1718c2ce34089dae5cd8766300a203e7bbf62",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/tests/frontend-corrections.test.cjs"
+    },
+    {
+      "path": "tests/legacy-review.test.cjs",
+      "status": "created",
+      "sha256": "da29153d85a91f27fa4448b0cbf82fc7924ee673c076501805b6f7fccb9bab21",
+      "original": null
+    },
+    {
+      "path": "tests/toolchain-security.test.cjs",
+      "status": "created",
+      "sha256": "00099e3aa39222226e3e55efbea36dd6dd7003d127130a7de9e0f5d10930879e",
+      "original": null
+    },
+    {
+      "path": "tests/fixtures/toolchain-compat.json",
+      "status": "created",
+      "sha256": "5c93660931a4033ea07e36451db3d20d2ff84c72f154c71fbf8db0a13ed923fb",
+      "original": null
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "7c04734bb2818e91bfc54275ca6e9d96d01b3c8596451b7d544111cdd25ceae3",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "status": "modified",
+      "sha256": "c20453a4a9dcb8179679a5fce493b8ae48382f3f7a43727c432b042928798494",
+      "original": "D:/vetthevat/.recovery/milestone-3f-20261020-221043/package-lock.json"
+    }
+  ],
+  "protectedFilesUnchanged": {
+    "lib/money.ts": true,
+    "lib/vat-calculations.ts": true,
+    "lib/invoice-tax-review.ts": true,
+    "lib/document-extraction.ts": true,
+    "lib/invoice-parsing.ts": true,
+    "lib/plan-catalog.ts": true
+  },
+  "beforeAndAfterCssSha256": {
+    "css-before.css": "a107404ce52cfe73762d6a93eb391b0cfa833b89f845de0153b6f0530c3c745e",
+    "css-after.css": "a107404ce52cfe73762d6a93eb391b0cfa833b89f845de0153b6f0530c3c745e"
+  },
+  "beforeAndAfterCssIdentical": true,
+  "immutableBackupModified": false,
+  "evidenceFiles": [
+    {
+      "path": "docs/milestone-3f-results.md",
+      "sha256": "ed6330d11c4772e2fd8a865ee9f139829f6de9bdb01af1009d6836c3684cfd8a",
+      "kind": "new report/audit/trace evidence"
+    },
+    {
+      "path": "docs/milestone-3f-audit-full.json",
+      "sha256": "fd5b1f6f87e475ab7e4041b28d78f682c4d7a90405f7b2f9f3093b0b09874415",
+      "kind": "new report/audit/trace evidence"
+    },
+    {
+      "path": "docs/milestone-3f-audit-production.json",
+      "sha256": "7f7622bb30f93d7e37cefe1751be05bc4d89390bf138068dbd07ea15fca421d3",
+      "kind": "new report/audit/trace evidence"
+    },
+    {
+      "path": "docs/milestone-3f-runtime-traces.json",
+      "sha256": "a5625e4e4ec2923c1e5db724c11d388496d47335b0fccddfd709b6416a871042",
+      "kind": "new report/audit/trace evidence"
+    },
+    {
+      "path": "docs/previews/milestone-3f/legacy-confirmation-320.png",
+      "sha256": "07fe0ab1c5be81314a05e209f17fd7aac335144fd1ab6b0da1453c8c2bafca04",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-3f/pricing-1440.png",
+      "sha256": "1f0f2d477f2c4f2d9193c06823a647680f17cc7f55d5d76dfeecc1e2d85d666d",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-3f/pricing-390.png",
+      "sha256": "25f1ae2f01daa124b7a9ebe9a6467c279afc7adc16173400634fa00d17f11b4c",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-3f/subscription-1440.png",
+      "sha256": "6012791e5813ec2b57a2d02262bfb6010238800641f8d495fe32535140702f82",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-3f/subscription-390.png",
+      "sha256": "9f4d9007f053ebeea2d8c9f524baf9143493401b79413df05edc4e0f2b47af25",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-1440.png",
+      "sha256": "1f0f2d477f2c4f2d9193c06823a647680f17cc7f55d5d76dfeecc1e2d85d666d",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-320.png",
+      "sha256": "d5c79bd28d4e36f3003f5891cdbb23fad52e3c869fb2d027ad78526e9df2dd83",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-390.png",
+      "sha256": "25f1ae2f01daa124b7a9ebe9a6467c279afc7adc16173400634fa00d17f11b4c",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/pricing-768.png",
+      "sha256": "17d83a11f6b6a6ac6e95d1a6dc675ac9bcdb817ce02d90fe2785cccf61fd0e02",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-1440.png",
+      "sha256": "6012791e5813ec2b57a2d02262bfb6010238800641f8d495fe32535140702f82",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-320.png",
+      "sha256": "4f7d02864b97aaeef1add83994199cfa4b7186cc98ff4b18e4ae3503a913e6f1",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-390.png",
+      "sha256": "9f4d9007f053ebeea2d8c9f524baf9143493401b79413df05edc4e0f2b47af25",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-corrections/subscription-768.png",
+      "sha256": "09438b9b255faddd3d39371b4c2c05348e244212a4f334630aa565254171c187",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-dashboard.png",
+      "sha256": "423748d5f66c411ad5f35d5081ccc44f3b72fe961779b1ed70944fd4f740e7c7",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/desktop-invoices.png",
+      "sha256": "8a4c87a1b7fb4e18af62d4b067a6e89fb527aeadb4a42de3c9347fd59c17e24b",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "sha256": "b6a4eb2d2435201bf089922bdbdc6b15600d6839a5f9b95057368388952584cf",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-invoices.png",
+      "sha256": "36a254510259742e604288fd8731f987b31cebf64f08a0b2ea446e41e3a2b9e0",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-new.png",
+      "sha256": "8b83749cbf9d8046d5ac1342cad8ac6d02f8093775b96d9cdc316758f2ba864a",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-upload.png",
+      "sha256": "03a8afa20410847b32b289baab132b5e32dc24c3d0e9085b121999a676dd857a",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-banking.png",
+      "sha256": "6c318483e269a4f2e1625cca08b059865dc40e796225c8945e73136f894e4108",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/desktop-supplier.png",
+      "sha256": "c3fd37e2e71f400c6016bcfd6c41a807b3029b30cdf3f5805e3d257e5b1dae22",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-banking.png",
+      "sha256": "38cc3eace096b6080d5e8d78d50a92279e46595e6766ab4a5f095e38d9041a6e",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-companies.png",
+      "sha256": "6cba8fb17bbd88e534f1b0fc15e7758e56cf853d0adc50c41472ca300286cc32",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-documents.png",
+      "sha256": "99296bc83c51724f8f8ae5d21a4e72f060be966c7295898700b391763ebd68ec",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-suppliers.png",
+      "sha256": "385a304205322ff58c840db05b587a1652107e819d088819fc31f4ce6fd64f84",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/milestone-2/mobile-vat.png",
+      "sha256": "8de25fe99abea8c8409888911fd66102bec15a3c539d94a6946583ea738f192e",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-phase/dashboard-390.png",
+      "sha256": "027a595ab32444227536bb7b639c1799b13735a6a5a612762a5d0e63c6c8a4bf",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-phase/team-320.png",
+      "sha256": "533c1a45bc067b179c5a337158c05c66dabad1fc03737c2e71ee859e1efc3caf",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/activity-390.png",
+      "sha256": "6a102affb3ae43a2d726ddf84cfd50e6a155740e8a3b07cd35c75754a4f5a144",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/reports-390.png",
+      "sha256": "30a23b0e55e8b23efb51419afe4537a8a0dfb4aa063aaf397710194bfa281b19",
+      "kind": "synthetic screenshot generated/refreshed"
+    },
+    {
+      "path": "docs/previews/frontend-batch2/settings-390.png",
+      "sha256": "e1f8e3461e5df23b290add26093ef5f0769c383d9945c74a25a12647244d0039",
+      "kind": "synthetic screenshot generated/refreshed"
+    }
+  ],
+  "recoveryArtifacts": [
+    ".recovery/current-3f-snapshot.txt",
+    "CSS input and old/new outputs in recovery snapshot",
+    "Previous parser 6.1.4 tarball/extraction for isolated compatibility evidence only; ignored and excluded from Docker context"
+  ]
+}

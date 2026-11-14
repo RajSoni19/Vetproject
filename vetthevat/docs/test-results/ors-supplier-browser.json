@@ -1,0 +1,12 @@
+{
+  "browser": "Chrome headless",
+  "component": "OrsSupplierInvoices",
+  "httpBoundary": "simulated",
+  "multiPageRows": 3,
+  "repeatedProductsPreserved": true,
+  "unmatchedRetained": true,
+  "totalCorrection": true,
+  "explicitAcknowledgementsRequired": true,
+  "confirmedReadOnly": true,
+  "silentCatalogueWrites": 0
+}

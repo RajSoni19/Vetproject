@@ -1,0 +1,2 @@
+const s=require('./saas-dev-common.cjs'),{Client}=require('pg');
+(async()=>{const db=new Client(s.connection('vtv_saas_operator'));await db.connect();try{await db.query('BEGIN READ ONLY');console.log(JSON.stringify((await db.query("SELECT conname,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conrelid='business.command_keys'::regclass AND contype='c'")).rows,null,2));await db.query('ROLLBACK');}finally{await db.end();}})().catch(e=>{console.error(e);process.exitCode=1});

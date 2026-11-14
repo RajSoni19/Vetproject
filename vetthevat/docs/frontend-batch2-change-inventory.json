@@ -1,0 +1,122 @@
+{
+  "phase": "Frontend audit refresh / batch 2",
+  "clientDate": "2026-10-20",
+  "baseline": ".recovery/frontend-20261020-200620",
+  "gitAvailable": false,
+  "changes": [
+    {
+      "path": "app/app/audit/page.tsx",
+      "change": "modified",
+      "beforeSha256": "8dcf14f3314b7aea7598ee44a7fb077fec2b5393811e3c21baa0563a5715bb57",
+      "afterSha256": "478394b15f1fbace63a8a9f452933c6faaa4e8aa5d59a98fc059703f15c4b317",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/app/app/audit/page.tsx"
+    },
+    {
+      "path": "app/app/reports/page.tsx",
+      "change": "modified",
+      "beforeSha256": "87056ed9368fb37e7d478df3228ea8ab5f7f4dca223914ce128d098cfe2b7c19",
+      "afterSha256": "e62755a382ae4950014625d338bfd145e30623656d476da077585e2ea819e14e",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/app/app/reports/page.tsx"
+    },
+    {
+      "path": "app/app/settings/page.tsx",
+      "change": "modified",
+      "beforeSha256": "95c1893e6bc484cbab7f12a918796f77b20aa64ac39c11628d6bc4180a762d86",
+      "afterSha256": "eb90fed104ca56b3afcd213e7c7a67b2b6abc6f39459fcb1ef6bc7a521f15308",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/app/app/settings/page.tsx"
+    },
+    {
+      "path": "components/settings-availability.tsx",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "850f7e6896fc45023edeb9ca18e1f8a4c4005ae8507885c59ed5f0ea9d4ba123",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "lib/activity-filters.ts",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "7d9a87aac102353ac42da2ff2e64569860c024b704609c94e0bc3de4eb2e267f",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/activity-filters.test.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "80d9856ef71dcc9ad753914b89cdc98d8c813b6dd1f43f19b818fe3666151315",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-frontend-batch2.cjs",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "4403ea55479e7f9cfbec81c7a2962c19bb97a0e0ccd75eed3ec634924353fbcc",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "change": "modified",
+      "beforeSha256": "9138791f0a5a1d48ddf190d9e4ff6a34c5a2f9b7db7ef15ffbd319ac012b14b1",
+      "afterSha256": "3a3d8f2e9db9d992c32e16e16265c9ff4369b12ca17edfc40c9f03a592d92dfd",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/tests/browser-invoices.cjs"
+    },
+    {
+      "path": "docs/frontend-batch2-audit-results.md",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "6a5fba5c713f04b60f72f48eb2e78d1357c672f77470bbf77959f096cbf3235a",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/frontend-batch2/activity-390.png",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "421c9980d434dfdf20497093285fb76fb16a4ee421bd03020766f43876bb37f7",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/frontend-batch2/reports-390.png",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "fe4c585731eb27c840bf474e56a729f2a9ba95297bf541a41915f779caad1eeb",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/frontend-batch2/settings-390.png",
+      "change": "created",
+      "beforeSha256": null,
+      "afterSha256": "c0289902bf6036b0d5f4b43ad94adfba328a5621abd7747ba85d257519051b02",
+      "recoverableOriginal": null
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-dashboard.png",
+      "change": "modified",
+      "beforeSha256": "ad52b11f43828632a56f0fa805da182c42b8cf1351015d5f5059a9dcaae6787f",
+      "afterSha256": "05aaaa2cff4e404eccc0e874e926274a064e74c7d64c288a680135bacbea1e26",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/docs/previews/milestone-1/mobile-dashboard.png"
+    },
+    {
+      "path": "docs/previews/milestone-1/mobile-upload.png",
+      "change": "modified",
+      "beforeSha256": "138e9dbebd2326ec06c6f5bd068e4ca4315aa7bac337bbf4e3c9b94bbddf239e",
+      "afterSha256": "f655afa6550c4c28252ea20c3b73203bb3773bbc739164c259cedfcab8a037e4",
+      "recoverableOriginal": ".recovery/frontend-20261020-200620/docs/previews/milestone-1/mobile-upload.png"
+    }
+  ],
+  "removed": [],
+  "inventoryFile": "docs/frontend-batch2-change-inventory.json",
+  "checks": {
+    "unitTests": 57,
+    "typecheck": "passed",
+    "build": "passed",
+    "fullBrowserSuite": "passed",
+    "finalFocusedBrowser": "passed",
+    "lint": "existing next lint unsupported"
+  },
+  "notes": [
+    "No database connections, migrations, provider access, Firebase/Flutter changes, ORS work or deployments.",
+    "Immutable backup untouched; no package changes.",
+    "No production-readiness claim.",
+    "Screenshots use synthetic data only; generated build and recovery artifacts excluded."
+  ]
+}

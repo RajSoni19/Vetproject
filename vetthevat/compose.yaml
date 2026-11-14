@@ -1,0 +1,19 @@
+# Local container preview only. No DB service, credentials or production config.
+services:
+  web:
+    build:
+      context: .
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:?Supply an approved digest-pinned Node image}
+    ports:
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+      - /app/.next/cache:uid=1000,gid=1000,size=64m,nosuid,nodev
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 1g
+    cpus: 1.0
+    init: true

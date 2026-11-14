@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-22",
+  "scope": "Application route/authentication preparation only; no Git repository",
+  "modified": [
+    {
+      "file": ".env.example",
+      "sha256": "a36d2a793379e64721b65142b101cf48fd268321e14f6a018cb758b72e3d6445"
+    },
+    {
+      "file": ".gitignore",
+      "sha256": "2ca71523a4620c251e53690f5a81622df5a5ebf0e295e24c24835c724c714d09"
+    },
+    {
+      "file": ".vercelignore",
+      "sha256": "3e6b2fa0842a5d34902992e5348ea604e3b2f29054dfcd191f661019c62a145b"
+    },
+    {
+      "file": "proxy.ts",
+      "sha256": "b251f77ed65202a8ae78bfeff93eadf10bb90057dea32a197df9b134f32dc8ec"
+    },
+    {
+      "file": "components/public-shell.tsx",
+      "sha256": "c51a467bdf22daab0c9e863b79e70d1f9650d4632618514d39a02993d9c05eb2"
+    },
+    {
+      "file": "lib/server/admin-auth.ts",
+      "sha256": "cd92195563316299c420343c6b57971206f10702d476b349bf1cb6e01cd2d93a"
+    },
+    {
+      "file": "lib/workspace-navigation.ts",
+      "sha256": "1fbd77721d2a562c18bbf7ee50a34ecafa91140f284f9dfac09eb2bbb2b29397"
+    },
+    {
+      "file": "tests/admin-auth.test.cjs",
+      "sha256": "890d7f50f52082339e7d9b084f1faae29f62634749632aaa285c0f7fbead7153"
+    },
+    {
+      "file": "tests/browser-admin-auth.cjs",
+      "sha256": "e83622597c15acb8c3d91fd2bdfb390db476f949d9c795cca199b00165bc1c00"
+    },
+    {
+      "file": "tests/browser-invoices.cjs",
+      "sha256": "69ff8b3ac126be83bf49707eec37be7e788ec12f791efad879b2e18d9bc72257"
+    },
+    {
+      "file": "tests/leads.test.cjs",
+      "sha256": "7b0608112ffb35beab5679f6f6c0ee7d1f56d8888c5826e35a9510367200edb5"
+    },
+    {
+      "file": "tests/marketing-launch.test.cjs",
+      "sha256": "d13ae7edeecd04ac39ac1bb538d031af3095a5b8df35c47e09f669618de6cf2b"
+    },
+    {
+      "file": "tests/stage1-backend.test.cjs",
+      "sha256": "2d18327d92df8269012361bb00bbcaf0f02a6bff5da03d41b5357c85384f9594"
+    }
+  ],
+  "added": [
+    {
+      "file": "lib/server/private-routing.ts",
+      "sha256": "2f95bac3afb9d69ef44a1d3e57cded601283f9501474830594efe4d86aae22c8"
+    },
+    {
+      "file": "lib/server/admin-services.ts",
+      "sha256": "26933e919c503eb3bad81b5f2bb9d71ccd479e3a0de5fa62564e7b795a75ff00"
+    },
+    {
+      "file": "lib/server/admin-session.ts",
+      "sha256": "39246872afccb78a0f0c4467e0d28d044202ceffacba5813adc2debee33eb25a"
+    },
+    {
+      "file": "app/api/auth/session/route.ts",
+      "sha256": "2bae7cda1f93245ac5430e8e142ba9e474d9e6bf64499b595fc6bf01083cffc9"
+    },
+    {
+      "file": "app/api/auth/logout/route.ts",
+      "sha256": "0ff27a695b77a35715cb6899f96a34e1f6607c08402cf3d8c8958a6a889cca8c"
+    },
+    {
+      "file": "tests/auth-restoration.test.cjs",
+      "sha256": "404fc543830118000826f775bdf672bb4a782a7553b3c48815500549cd7a0d23"
+    },
+    {
+      "file": "tests/browser-auth-restoration.cjs",
+      "sha256": "edf5e416e9c7a2c0edf7ed912e5f6a47361bfaaeb7c164d9d267964aa71972c4"
+    },
+    {
+      "file": "docs/application-auth-restoration-results.md",
+      "sha256": "d0e8e427acbf19c1a97b365f4d1bcb3c805d70630275cb00268705aa03473f03"
+    },
+    {
+      "file": "docs/application-auth-restoration-verification.json",
+      "sha256": "fdc7ae60259a64a2be0aa9096c950f8d5cb2df3fbd85e12fbdac48dece8027f2"
+    },
+    {
+      "file": "docs/previews/auth-restoration/login-390.png",
+      "sha256": "f480c9a2147b0ad87dc03863ca57fe3efce4b30147b649b2894e8c3df1b92a45"
+    },
+    {
+      "file": "docs/previews/auth-restoration/login-1440.png",
+      "sha256": "8d0fb3264907519b270e6e8b4e4404a0763c627b8550bbc306e7aeb4f7fb3ded"
+    }
+  ],
+  "regeneratedBrowserEvidence": [
+    {
+      "file": "docs/previews/leads/unconfigured-390.png",
+      "sha256": "accecb12bd5af6558fa67773f4576e49828bbd7ab27f17c0dbaebda01b03a57c"
+    },
+    {
+      "file": "docs/previews/leads/unconfigured-1440.png",
+      "sha256": "bcf92931415dfe2953d3c38e638cd7cbacf6d0fffee11ae130f652f1f282e832"
+    },
+    {
+      "file": "docs/previews/leads/form-synthetic-390.png",
+      "sha256": "b8a513b888f7164544d6cfef14d2ddab4f9849cd6d8443dfa83a59226416fb7a"
+    },
+    {
+      "file": "docs/previews/leads/form-synthetic-1440.png",
+      "sha256": "0c72f22df24836721ec9cbb15d4303831f0c7d5e482846575dadd724d2f39a1a"
+    },
+    {
+      "file": "docs/previews/leads/confirmation-synthetic-1440.png",
+      "sha256": "a3ec6dda127dd7621672ff3cdc15e7d8b339f05cc8afed26d5cdfd951389be8a"
+    }
+  ],
+  "metadataFile": "docs/application-auth-restoration-change-inventory.json",
+  "metadataSelfHash": "omitted to avoid recursive hash",
+  "excluded": "Generated .next output and ignored .auth-restoration execution logs; no dependency/package changes",
+  "immutableBackupModified": false
+}

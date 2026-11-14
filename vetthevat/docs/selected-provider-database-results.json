@@ -1,0 +1,694 @@
+{
+  "at": "2026-10-23T16:48:12.853Z",
+  "identity": {
+    "database": "vtv_saas_dev",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "cluster": "D:/vetthevat.saas-dev/cluster"
+  },
+  "installationMatched": true,
+  "applied": [
+    {
+      "migration": "003_stage_b_invoices_syntax_fix.review.sql",
+      "sha256": "0cbf009b4eb221e8c78c277d12899bff070601afbb4227e3aa113f88f26ab2c0",
+      "acknowledgedCommit": true,
+      "backupChecksumsVerified": true,
+      "archiveListingVerified": true,
+      "at": "2026-10-23T16:35:02.210Z"
+    },
+    {
+      "migration": "004_public_contact.review.sql",
+      "sha256": "a8d47899caec449f7ec4be000a043952e8fd1eba73a7bfd2ea7e72d8f7d087a1",
+      "acknowledgedCommit": true,
+      "backupChecksumsVerified": true,
+      "archiveListingVerified": true,
+      "at": "2026-10-23T16:34:31.626Z"
+    }
+  ],
+  "tables": [
+    {
+      "schema": "business",
+      "table": "command_keys",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "contact_people",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "counterparties",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "extraction_jobs",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "extraction_results",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "invoice_attachments",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "invoice_lines",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "invoice_revisions",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "invoice_usage",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "invoices",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "migrations",
+      "owner": "vtv_saas_owner",
+      "rls": false,
+      "force_rls": false
+    },
+    {
+      "schema": "business",
+      "table": "payment_allocations",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "review_issues",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "source_links",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "tax_codes",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "vat_adjustments",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "business",
+      "table": "vat_periods",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "contact_intake",
+      "table": "enquiries",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "contact_intake",
+      "table": "notification_outbox",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "contact_intake",
+      "table": "rate_buckets",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    },
+    {
+      "schema": "contact_intake",
+      "table": "submission_keys",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "force_rls": true
+    }
+  ],
+  "policies": [
+    {
+      "schemaname": "business",
+      "tablename": "command_keys",
+      "policyname": "keys_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((actor_id = saas.current_actor()) AND business.scope(company_id, permission) AND (response IS NULL))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "command_keys",
+      "policyname": "keys_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "((actor_id = saas.current_actor()) AND business.scope(company_id, permission))",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "command_keys",
+      "policyname": "keys_update",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "((actor_id = saas.current_actor()) AND business.scope(company_id, permission))",
+      "with_check": "((actor_id = saas.current_actor()) AND business.scope(company_id, permission))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "command_keys",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "contact_people",
+      "policyname": "contact_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "business.scope(company_id, 'contacts:write'::text)"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "contact_people",
+      "policyname": "contact_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'contacts:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "contact_people",
+      "policyname": "contact_update",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "business.scope(company_id, 'contacts:write'::text)",
+      "with_check": "business.scope(company_id, 'contacts:write'::text)"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "contact_people",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "counterparties",
+      "policyname": "contact_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "business.scope(company_id, 'contacts:write'::text)"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "counterparties",
+      "policyname": "contact_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'contacts:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "counterparties",
+      "policyname": "contact_update",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "business.scope(company_id, 'contacts:write'::text)",
+      "with_check": "business.scope(company_id, 'contacts:write'::text)"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "counterparties",
+      "policyname": "owner_contact_lock",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "UPDATE",
+      "qual": "true",
+      "with_check": "false"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "counterparties",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "extraction_document_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.scope(company_id, 'documents:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "extraction_queue",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(business.scope(company_id, 'invoices:write'::text) AND saas.authorized_company(company_id, 'documents:read'::text) AND (state = 'queued'::text) AND (attempts = 0) AND (lease_id IS NULL) AND (lease_until IS NULL))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "owner_extraction_queue",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((state = 'queued'::text) AND (attempts = 0) AND (lease_id IS NULL) AND (lease_until IS NULL))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "owner_extraction_update",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "UPDATE",
+      "qual": "true",
+      "with_check": "true"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_jobs",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_results",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_results",
+      "policyname": "owner_extraction_results",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "true"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_results",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "extraction_results",
+      "policyname": "results_document_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.scope(company_id, 'documents:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_attachments",
+      "policyname": "attachment_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(business.scope(company_id, 'invoices:write'::text) AND saas.authorized_company(company_id, 'documents:read'::text))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_attachments",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_attachments",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_lines",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_lines",
+      "policyname": "lines_delete",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "DELETE",
+      "qual": "(business.scope(company_id, 'invoices:write'::text) OR business.scope(company_id, 'invoices:correct'::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_lines",
+      "policyname": "lines_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(business.scope(company_id, 'invoices:write'::text) OR business.scope(company_id, 'invoices:correct'::text))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_lines",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_revisions",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_revisions",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_revisions",
+      "policyname": "owner_revision_append",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((actor_id = saas.current_actor()) AND business.invoice_visible(company_id))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_usage",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoice_usage",
+      "policyname": "owner_usage_append",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(business.scope(company_id, 'invoices:write'::text) OR business.scope(company_id, 'invoices:correct'::text))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoices",
+      "policyname": "invoice_create",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((created_by = saas.current_actor()) AND (state = 'draft'::text) AND (((kind = 'invoice'::text) AND business.scope(company_id, 'invoices:write'::text)) OR ((kind = 'credit-note'::text) AND business.scope(company_id, 'invoices:correct'::text))))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoices",
+      "policyname": "invoice_edit",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "((state = 'draft'::text) AND (business.scope(company_id, 'invoices:write'::text) OR business.scope(company_id, 'invoices:correct'::text) OR business.scope(company_id, 'invoices:confirm'::text)))",
+      "with_check": "(((state = 'draft'::text) AND (business.scope(company_id, 'invoices:write'::text) OR business.scope(company_id, 'invoices:correct'::text))) OR ((state = 'confirmed'::text) AND business.scope(company_id, 'invoices:confirm'::text)))"
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoices",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "invoices",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "payment_allocations",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "payment_allocations",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "review_issues",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "review_issues",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "source_links",
+      "policyname": "invoice_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "source_links",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "tax_codes",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "tax_codes",
+      "policyname": "tax_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "business.invoice_visible(company_id)",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "vat_adjustments",
+      "policyname": "adjustments_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "(business.scope(company_id, 'reports:read'::text) OR business.scope(company_id, 'reports:export'::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "vat_adjustments",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "vat_periods",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "business",
+      "tablename": "vat_periods",
+      "policyname": "period_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "(business.scope(company_id, 'reports:read'::text) OR business.scope(company_id, 'reports:export'::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "contact_intake",
+      "tablename": "enquiries",
+      "policyname": "owner_commands",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "ALL",
+      "qual": "true",
+      "with_check": "true"
+    },
+    {
+      "schemaname": "contact_intake",
+      "tablename": "notification_outbox",
+      "policyname": "owner_commands",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "ALL",
+      "qual": "true",
+      "with_check": "true"
+    },
+    {
+      "schemaname": "contact_intake",
+      "tablename": "rate_buckets",
+      "policyname": "owner_commands",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "ALL",
+      "qual": "true",
+      "with_check": "true"
+    },
+    {
+      "schemaname": "contact_intake",
+      "tablename": "submission_keys",
+      "policyname": "owner_commands",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "ALL",
+      "qual": "true",
+      "with_check": "true"
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "vtv_contact_runtime",
+      "rolcanlogin": true,
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false
+    },
+    {
+      "rolname": "vtv_saas_document_worker",
+      "rolcanlogin": true,
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false
+    }
+  ],
+  "existingAuthenticationDatabaseConnected": false,
+  "restoreDrill": false
+}

@@ -1,0 +1,64 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
+const file='database/migrations/saas/031_ors_shopping_cart.review.sql';
+test('shopping accepts the requested grocery units and bounded decimal quantities',()=>{
+ const service=require('./load-source.cjs').loadSource('lib/server/ors/shopping');
+ for(const code of ['pcs','kg','g','l','box'])assert.equal(service.shoppingUnit(code),code);
+ for(const code of ['ml','litre','EA',''])assert.throws(()=>service.shoppingUnit(code),error=>error.status===400);
+ for(const quantity of ['0.0001','1','999.125'])assert.equal(service.shoppingQuantity(quantity),quantity);
+ for(const quantity of ['0','-1','1.12345','Infinity'])assert.throws(()=>service.shoppingQuantity(quantity),error=>error.status===400);
+});
+test('shopping migration checksum is pinned, PostgreSQL 17 parses it, and schema stays tenant-scoped',async()=>{
+ const sql=fs.readFileSync(file,'utf8'),hash=crypto.createHash('sha256').update(sql).digest('hex');
+ assert.equal(hash,'aed2aacff75651dabe8970ed3b6126c5a2081fc8f908932a61260a58b82b9997');
+ const parsed=await require('libpg-query').parse(sql);assert.ok(parsed.version>=170000&&parsed.version<180000);
+ assert.equal(require('../scripts/saas-reviewed-migration.cjs').candidate('031-shopping').hash,hash);
+ for(const table of ['shopping_catalogue','shopping_units','shopping_supplier_products','shopping_requisitions','shopping_supplier_groups','shopping_requisition_lines','shopping_events'])assert.match(sql,new RegExp('operations\\.'+table));
+ assert.match(sql,/unit_code IN\('pcs','kg','g','l','box'\)/);assert.match(sql,/requested_unit text NOT NULL CHECK\(requested_unit IN\('pcs','kg','g','l','box'\)\)/);assert.match(sql,/actual_unit text CHECK\(actual_unit IS NULL OR actual_unit IN\('pcs','kg','g','l','box'\)\)/);
+ assert.equal((sql.match(/FORCE ROW LEVEL SECURITY/g)||[]).length,1);assert.match(sql,/FORCE ROW LEVEL SECURITY/);assert.match(sql,/operations\.allowed\(company_id/);
+ assert.match(sql,/inet_server_port\(\)<>55440/);assert.match(sql,/session_user<>'vtv_saas_operator'/);assert.match(sql,/REVOKE ALL ON TABLE[\s\S]*FROM vtv_web_runtime,vtv_saas_provider_runtime/);
+ assert.match(sql,/CREATE FUNCTION operations\.apply_shopping_purchase_reconciliation[\s\S]*SECURITY DEFINER/);assert.match(sql,/operations\.allowed\(p_company,'procurement:approve'\)/);assert.match(sql,/REVOKE ALL ON FUNCTION operations\.apply_shopping_purchase_reconciliation[\s\S]*FROM PUBLIC,vtv_web_runtime,vtv_saas_provider_runtime/);assert.match(sql,/GRANT EXECUTE ON FUNCTION operations\.apply_shopping_purchase_reconciliation/);assert.match(sql,/DELETE FROM operations\.purchase_order_lines/);assert.match(sql,/FROM operations\.goods_receipts/);assert.doesNotMatch(sql,/INSERT INTO operations\.inventory_movements/);
+ assert.match(sql,/CREATE FUNCTION operations\.cancel_shopping_requisition[\s\S]*SECURITY DEFINER/);assert.match(sql,/l\.state='purchased'[\s\S]*A requisition with purchased items cannot be cancelled/);assert.match(sql,/SET state='cancelled',version=version\+1 FROM operations\.shopping_supplier_groups/);assert.match(sql,/GRANT EXECUTE ON FUNCTION operations\.cancel_shopping_requisition/);
+});
+test('shopping activation is checksum-gated and local launcher never migrates',()=>{
+ const activation=fs.readFileSync('lib/server/saas/manual-activation.ts','utf8'),launcher=fs.readFileSync('scripts/local-workspace.cjs','utf8'),route=fs.readFileSync('app/api/ors/[...segments]/route.ts','utf8');
+ assert.ok(activation.includes("SAAS_ORS_SHOPPING_SCHEMA_SHA256==='aed2aacff75651dabe8970ed3b6126c5a2081fc8f908932a61260a58b82b9997"));
+ assert.ok(launcher.includes('shoppingSchemaPresent:shopping'));assert.ok(launcher.includes("SAAS_ORS_SHOPPING_ENABLED:status.shopping?'1':'0'"));assert.ok(launcher.includes('migrationsExecuted:false'));
+ assert.ok(route.includes('orsShoppingEnabled(process.env)'));
+ const service=fs.readFileSync('lib/server/ors/shopping.ts','utf8'),ui=fs.readFileSync('components/ors-shopping.tsx','utf8');
+ assert.match(service,/type Unit="pcs"\|"kg"\|"g"\|"l"\|"box"/);assert.match(ui,/code:"pcs"\|"kg"\|"g"\|"l"\|"box"/);assert.ok(ui.includes('["pcs","kg","g","l","box"]'));
+ const operations=fs.readFileSync('lib/server/ors/services.ts','utf8');assert.ok(service.includes('operations.apply_shopping_purchase_reconciliation'));assert.ok(operations.includes('operations.apply_shopping_purchase_reconciliation'));assert.ok(operations.includes('operations.receive_purchase_line'));
+ assert.ok(service.includes('operations.cancel_shopping_requisition'));assert.ok(ui.includes('t("orsCancelRequisition")'));
+});
+test('marketplace schema is tenant-scoped, review-only, and never treats link opening as dispatch',async()=>{
+ const file='database/migrations/saas/039_ors_live_offers_whatsapp_dispatch.review.sql',sql=fs.readFileSync(file,'utf8'),hash=crypto.createHash('sha256').update(sql).digest('hex');
+ assert.equal(hash,'e35547a549d15141c338110a88f95d220d78da5b0b62695a0e32926b032d6eae');
+ const parsed=await require('libpg-query').parse(sql);assert.ok(parsed.version>=170000&&parsed.version<180000);
+ assert.equal(require('../scripts/saas-reviewed-migration.cjs').candidate('039-ors-marketplace').hash,hash);
+ assert.match(sql,/rolname='vtv_saas_owner' AND NOT\(rolcanlogin OR rolsuper OR rolbypassrls OR rolcreatedb OR rolcreaterole OR rolreplication\)/);
+ assert.match(sql,/rolname='vtv_saas_runtime' AND rolcanlogin AND NOT\(rolsuper OR rolbypassrls OR rolcreatedb OR rolcreaterole OR rolreplication\)/);
+ for(const table of ['shopping_supplier_offers','shopping_supplier_whatsapp','shopping_dispatches','shopping_dispatch_lines'])assert.match(sql,new RegExp('operations\\.'+table));
+ assert.match(sql,/FORCE ROW LEVEL SECURITY/);assert.match(sql,/availability_state IN\('available','unavailable','unknown'\)/);
+ assert.match(sql,/state text NOT NULL DEFAULT 'pending_dispatch'/);assert.match(sql,/NEW\.state='awaiting_confirmation'[\s\S]*saas\.current_actor\(\)/);
+ assert.match(sql,/provider_event_id IS NULL OR NEW\.provider_event_id=OLD\.provider_event_id/);
+ assert.doesNotMatch(sql,/message_opened_at|UPDATE operations\.shopping_dispatches[\s\S]*state='awaiting_confirmation' WHERE[^;]*opened/i);
+ const rollbackPath='database/migrations/saas/039_ors_live_offers_whatsapp_dispatch.rollback.review.sql',rollback=fs.readFileSync(rollbackPath,'utf8');
+ assert.equal(crypto.createHash('sha256').update(rollback).digest('hex'),'a752e609dc326f523640693f502c6b5db72320c12a5f5a70e5606996ec6f289b');
+ await require('libpg-query').parse(rollback);
+ assert.match(rollback,/Marketplace tables contain data; export and review before rollback/);
+});
+test('marketplace command migration adds only the three guarded operation keys',async()=>{
+ const file='database/migrations/saas/040_ors_marketplace_command_keys.review.sql',sql=fs.readFileSync(file,'utf8'),hash=crypto.createHash('sha256').update(sql).digest('hex');
+ assert.equal(require('../scripts/saas-reviewed-migration.cjs').candidate('040-ors-marketplace-command-keys').hash,hash);
+ const parsed=await require('libpg-query').parse(sql);assert.ok(parsed.version>=170000&&parsed.version<180000);
+ for(const operation of ['ors.shopping.offer.configure','ors.shopping.whatsapp.configure','ors.shopping.checkout'])assert.match(sql,new RegExp(operation.replaceAll('.','\\.') ));
+ assert.match(sql,/CHECK \(\(%s\) OR operation IN \(%L,%L,%L\)\)/);
+ assert.match(sql,/position\('ors\.shopping\.cart\.add' IN constraint_definition\)=0/);
+ assert.match(sql,/position\('ors\.shopping\.offer\.configure' IN constraint_definition\)>0/);
+ assert.match(sql,/business\.command_keys[\s\S]*operation IN \('ors\.shopping\.offer\.configure','ors\.shopping\.whatsapp\.configure','ors\.shopping\.checkout'\)/);
+ assert.match(sql,/current_database\(\)<>'vtv_saas_dev'/);assert.match(sql,/inet_server_port\(\)<>55440/);
+ assert.match(sql,/relrowsecurity AND relforcerowsecurity/);
+ assert.doesNotMatch(sql,/CREATE TABLE|CREATE POLICY|GRANT |REVOKE |INSERT INTO|UPDATE operations\.|DELETE FROM/i);
+ const route=fs.readFileSync('lib/server/ors/shopping-http.ts','utf8'),service=fs.readFileSync('lib/server/ors/marketplace.ts','utf8');
+ assert.match(route,/mutate\("procurement:approve"[\s\S]*configureOffer/);assert.match(route,/mutate\("procurement:approve"[\s\S]*configureWhatsapp/);assert.match(route,/mutate\("procurement:write"[\s\S]*checkout/);
+ for(const operation of ['ors.shopping.offer.configure','ors.shopping.whatsapp.configure','ors.shopping.checkout'])assert.ok(service.includes(`businessCommand(tx,"${operation}"`));
+});

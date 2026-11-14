@@ -1,0 +1,2 @@
+const esbuild=require('esbuild'),path=require('node:path');
+esbuild.build({entryPoints:['workers/main.ts','workers/processing.ts'],outdir:'.release-workers',outExtension:{'.js':'.cjs'},bundle:true,platform:'node',target:'node22',format:'cjs',packages:'external',sourcemap:false,alias:{'@':path.resolve('.')},plugins:[{name:'worker-server-only',setup(build){build.onResolve({filter:/^server-only$/},()=>({path:'server-only',namespace:'worker'}));build.onLoad({filter:/.*/,namespace:'worker'},()=>({contents:'',loader:'js'}));}}]}).catch(()=>{process.exitCode=1;});

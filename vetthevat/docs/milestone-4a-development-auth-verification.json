@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-22",
+  "status": "working isolated development authentication; production blocked",
+  "versions": {
+    "node": "v22.15.1",
+    "next": "16.4.2",
+    "firebaseAdmin": "14.5.0",
+    "firebaseWeb": "12.14.0",
+    "firebaseCli": "15.15.0"
+  },
+  "provider": {
+    "type": "actual Firebase Authentication emulator",
+    "projectId": "demo-vetthevat-auth",
+    "host": "127.0.0.1:9099",
+    "productionProjectUsed": false,
+    "unsignedEmulatorTokens": true,
+    "realMailboxOwnershipVerified": false
+  },
+  "storage": {
+    "type": "new isolated SQLite",
+    "file": ".auth-dev/auth.sqlite",
+    "existingDatabasesMigrated": false,
+    "sessionHashesOnly": true,
+    "durableGrantRegistryAndLimits": true,
+    "windowsPrivateDirectoryAclVerified": true
+  },
+  "unitTests": {
+    "passed": 166,
+    "failed": 0,
+    "command": "npm test",
+    "includesInjectedProviderTests": true
+  },
+  "realIntegration": {
+    "provider": "Firebase Auth emulator 15.15.0 at 127.0.0.1:9099",
+    "storage": "NEW isolated SQLite at .auth-dev/auth.sqlite",
+    "mocked": false,
+    "checks": [
+      "private storage/key paths are not public and login HTML omits server secret",
+      "incorrect password rejected by real emulator",
+      "unverified email rejected by server, no session cookie",
+      "invalid Firebase token rejected",
+      "verified user without persisted UID grant rejected",
+      "real ID token exchange and durable web session creation",
+      "session survives independent process reopen",
+      "refresh re-verifies persisted session and live UID grant",
+      "authorized direct navigation to dashboard",
+      "financial APIs remain disabled; unauthenticated admin API rejected",
+      "missing CSRF and cross-origin logout rejected",
+      "durable logout denies replay and preserves another web session",
+      "removed UID administrator grant immediately revokes its sessions",
+      "expired durable session rejected by real runtime",
+      "durable login rate limit returns 429 and Retry-After"
+    ],
+    "realProviderCrypto": "Auth emulator issues unsigned tokens by design; production signature verification not claimed",
+    "productionConnections": false,
+    "accounts": "random passwords held only in ignored private integration file, never logged"
+  },
+  "realBrowser": {
+    "realServices": true,
+    "mocked": false,
+    "widths": [
+      390,
+      1440
+    ],
+    "checks": [
+      "incorrect password displays safe error in actual Firebase-backed form",
+      "unverified email denied in actual login UI",
+      "real browser sign-in cannot load the legacy browser workspace",
+      "auth tokens/roles absent from localStorage; session cookie is HttpOnly",
+      "authorized direct navigation to all ten requested private modules",
+      "refresh preserves valid real session and scoped records",
+      "UI logout confirms durable revocation; captured old cookie cannot replay",
+      "second verified UID cannot see first UID records",
+      "switching back restores only first UID records; legacy bytes preserved",
+      "expired session removes workspace and shows sign-in explanation",
+      "removed administrator UID grant ends browser access"
+    ],
+    "routes": [
+      "/app/dashboard",
+      "/app/invoices",
+      "/app/customers",
+      "/app/suppliers",
+      "/app/banking",
+      "/app/reports",
+      "/app/ors",
+      "/app/settings",
+      "/app/subscription",
+      "/app/admin/leads"
+    ],
+    "provider": "actual local Firebase Auth emulator via Web SDK + Admin SDK",
+    "storage": "SQLite durable registry/grants/rate limits",
+    "financialApis": "remain disabled",
+    "adminLeads": "protected interface opens; lead database unavailable, no leads loaded",
+    "realEmailVerification": "emulator OOB verification only, no real mailbox claim"
+  },
+  "restart": {
+    "emulatorExportImportRestart": true,
+    "providerRevokedPreImportSession": true,
+    "providerRestartRequiresFreshLogin": true,
+    "storedTestCookieDeleted": true,
+    "mocked": false,
+    "applicationRestart": true,
+    "oldSessionReverified": true
+  },
+  "builds": {
+    "defaultProduction": "passed, dev authentication off",
+    "isolatedDevelopment": "passed on Next 16.4.2",
+    "typecheck": "passed",
+    "artifactScan": {
+      "passed": true,
+      "servedArtifacts": 937
+    }
+  },
+  "defaultModeBrowser": {
+    "publicRoutes": [
+      "/",
+      "/about",
+      "/features",
+      "/pricing",
+      "/contact",
+      "/support",
+      "/get-started",
+      "/privacy",
+      "/terms"
+    ],
+    "privateRoutesChecked": 25,
+    "privateVariants": [
+      "no cookie",
+      "forged cookie and role + RSC/prefetch",
+      "duplicate cookies"
+    ],
+    "widths": [
+      390,
+      1440
+    ],
+    "publicSignInNavigation": "desktop and mobile passed",
+    "login": "setup page reachable; no credential collection",
+    "privatePages": "redirect to setup; no workspace rendered",
+    "privateApis": "401 in app mode; 404 in marketing mode",
+    "sessionPost": "503 with unconfigured services; no cookie",
+    "logoutPost": "503 with unconfigured services; no cookie",
+    "localAuthBypass": "rejected",
+    "demoData": "none created",
+    "marketingLogin": "200",
+    "realFirebase": "not connected",
+    "authenticatedBrowserFlow": "blocked, no approved identity/session store",
+    "financialDataPublic": "not exposed by checked routes"
+  },
+  "publicLeadRegression": {
+    "publicPagesChecked": 15,
+    "widths": [
+      390,
+      1440
+    ],
+    "ctaNavigation": "desktop and mobile menu clicks passed",
+    "keyboard": "Tab moves through labelled form inputs",
+    "defaultSubmission": "503, disabled UI",
+    "publicLeadList": "405",
+    "clientValidation": "passed",
+    "providerCalls": "CDP-intercepted synthetic only",
+    "successAndFailureUI": "passed",
+    "duplicateClick": "single POST",
+    "idempotencyRetry": "same key",
+    "confirmation": "signed cookie; direct/cleared-cookie access redirects",
+    "adminAccess": "denied",
+    "worker": "disabled without approval; GET denied",
+    "marketingMode": "lead page accessible; intake disabled without config; admin denied",
+    "browserPersistence": "no localStorage/sessionStorage",
+    "realPersistence": "not verified",
+    "realEmail": "not sent or verified"
+  },
+  "dependencyAudit": {
+    "runtime": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "allDependencies": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 5,
+      "critical": 0,
+      "total": 5
+    },
+    "remaining": "5 pre-existing Tailwind build-toolchain high findings; separate migration/review required"
+  },
+  "finalLocalServices": {
+    "application": "https://localhost:3443",
+    "emulator": "127.0.0.1:9099",
+    "running": true,
+    "loopbackOnly": true,
+    "privateTestCredentials": ".auth-dev/integration-accounts.json (not copied to report)"
+  },
+  "productionServicesModified": false,
+  "immutableBackupModified": false,
+  "postgresMigrationsExecuted": false,
+  "deployed": false,
+  "realEmailsSent": false,
+  "financialApisEnabled": false,
+  "leadPersistenceVerified": false,
+  "fullApplicationOperational": false
+}

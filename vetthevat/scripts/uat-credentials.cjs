@@ -1,0 +1,2 @@
+// Intentionally prints no password, MFA secret, session token or email token.
+const path=require('node:path'),{load}=require('./uat-environment.cjs');const c=load();console.log('Synthetic UAT only. Open this Windows ACL-protected file locally:');console.log(path.join(c.privateDirectory,'credentials.json'));console.log('Customer, Customer B and platform role accounts use unique generated passwords. Admin accounts require SHA256 TOTP. Do not paste this file into chat or publish it.');

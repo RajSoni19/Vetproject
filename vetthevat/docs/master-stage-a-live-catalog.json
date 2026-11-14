@@ -1,0 +1,1847 @@
+{
+  "verifiedAt": "2026-10-23T15:05:59.767Z",
+  "target": {
+    "database": "vtv_saas_dev",
+    "host": "127.0.0.1",
+    "port": 55440,
+    "cluster": "D:/vetthevat.saas-dev/cluster",
+    "database_owner": "vtv_saas_database_owner"
+  },
+  "tables": [
+    {
+      "schema": "saas",
+      "table": "audit_events",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "billing_accounts",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "billing_memberships",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "company_profiles",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "company_roles",
+      "owner": "vtv_saas_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "saas",
+      "table": "company_selections",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "document_inspections",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "document_jobs",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "documents",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "idempotency_keys",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "notification_outbox",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "saas",
+      "table": "permissions",
+      "owner": "vtv_saas_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "saas",
+      "table": "role_permissions",
+      "owner": "vtv_saas_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "saas",
+      "table": "schema_version",
+      "owner": "vtv_saas_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "saas",
+      "table": "subscription_entitlements",
+      "owner": "vtv_saas_owner",
+      "rls": true,
+      "forced_rls": true
+    },
+    {
+      "schema": "web_auth",
+      "table": "audit_logs",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "bootstrap_once",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "companies",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "company_memberships",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "email_verification_tokens",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "installation",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "notification_outbox",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "password_reset_tokens",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "rate_limits",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "roles",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "sessions",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "user_roles",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    },
+    {
+      "schema": "web_auth",
+      "table": "users",
+      "owner": "vtv_web_owner",
+      "rls": false,
+      "forced_rls": false
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "vtv_saas_database_owner",
+      "rolcanlogin": false,
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "vtv_saas_operator",
+      "rolcanlogin": true,
+      "rolsuper": true,
+      "rolcreatedb": true,
+      "rolcreaterole": true,
+      "rolbypassrls": true
+    },
+    {
+      "rolname": "vtv_saas_owner",
+      "rolcanlogin": false,
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "vtv_saas_runtime",
+      "rolcanlogin": true,
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "vtv_web_owner",
+      "rolcanlogin": false,
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "vtv_web_runtime",
+      "rolcanlogin": true,
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolbypassrls": false
+    }
+  ],
+  "policies": [
+    {
+      "schemaname": "saas",
+      "tablename": "audit_events",
+      "policyname": "audit_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((actor_id = saas.current_actor()) AND saas.authorized_company(company_id, current_setting('app.permission'::text, true)))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "audit_events",
+      "policyname": "audit_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'audit:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "audit_events",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_accounts",
+      "policyname": "owner_authorization_lock",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "UPDATE",
+      "qual": "true",
+      "with_check": "false"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_accounts",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_memberships",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "policyname": "owner_authorization_lock",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "UPDATE",
+      "qual": "true",
+      "with_check": "false"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "policyname": "profiles_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'company:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "policyname": "selection_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((session_id = saas.current_session()) AND saas.authorized_company(company_id, 'company:read'::text))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "policyname": "selection_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "(session_id = saas.current_session())",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "policyname": "selection_update",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "(session_id = saas.current_session())",
+      "with_check": "((session_id = saas.current_session()) AND saas.authorized_company(company_id, 'company:read'::text))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_inspections",
+      "policyname": "inspection_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'documents:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_inspections",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "policyname": "jobs_queue",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(saas.authorized_company(company_id, 'documents:write'::text) AND (kind = 'inspect'::text) AND (state = 'queued'::text) AND (attempts = 0) AND (lease_id IS NULL) AND (lease_until IS NULL))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "policyname": "jobs_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'documents:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "policyname": "documents_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "saas.authorized_company(company_id, 'documents:read'::text)",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "policyname": "documents_reserve",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "(saas.authorized_company(company_id, 'documents:write'::text) AND (created_by = saas.current_actor()) AND (state = 'awaiting_upload'::text) AND (object_version IS NULL))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "policyname": "documents_upload",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "(saas.authorized_company(company_id, 'documents:write'::text) AND (state = 'awaiting_upload'::text))",
+      "with_check": "(saas.authorized_company(company_id, 'documents:write'::text) AND (state = 'quarantined'::text) AND (object_version IS NOT NULL))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "policyname": "idempotency_complete",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "UPDATE",
+      "qual": "((user_id = saas.current_actor()) AND saas.authorized_company(company_id, 'documents:write'::text))",
+      "with_check": "((user_id = saas.current_actor()) AND saas.authorized_company(company_id, 'documents:write'::text))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "policyname": "idempotency_insert",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "INSERT",
+      "qual": null,
+      "with_check": "((user_id = saas.current_actor()) AND (operation = 'document.upload'::text) AND (response IS NULL) AND saas.authorized_company(company_id, 'documents:write'::text))"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "policyname": "idempotency_read",
+      "roles": "{vtv_saas_runtime}",
+      "cmd": "SELECT",
+      "qual": "((user_id = saas.current_actor()) AND saas.authorized_company(company_id, 'documents:write'::text))",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "notification_outbox",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "subscription_entitlements",
+      "policyname": "owner_lookup",
+      "roles": "{vtv_saas_owner}",
+      "cmd": "SELECT",
+      "qual": "true",
+      "with_check": null
+    }
+  ],
+  "constraints": [
+    {
+      "schema": "saas",
+      "name": "audit_events_action_check",
+      "table": "audit_events",
+      "type": "c",
+      "definition": "CHECK (((length(action) >= 1) AND (length(action) <= 100)))"
+    },
+    {
+      "schema": "saas",
+      "name": "audit_events_actor_id_fkey",
+      "table": "audit_events",
+      "type": "f",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "audit_events_company_id_fkey",
+      "table": "audit_events",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "audit_events_pkey",
+      "table": "audit_events",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_accounts_owner_id_fkey",
+      "table": "billing_accounts",
+      "type": "f",
+      "definition": "FOREIGN KEY (owner_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_accounts_pkey",
+      "table": "billing_accounts",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_accounts_status_check",
+      "table": "billing_accounts",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'active'::text, 'suspended'::text, 'closed'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_accounts_version_check",
+      "table": "billing_accounts",
+      "type": "c",
+      "definition": "CHECK ((version > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_account_id_fkey",
+      "table": "billing_memberships",
+      "type": "f",
+      "definition": "FOREIGN KEY (account_id) REFERENCES saas.billing_accounts(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_account_id_user_id_key",
+      "table": "billing_memberships",
+      "type": "u",
+      "definition": "UNIQUE (account_id, user_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_pkey",
+      "table": "billing_memberships",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_role_check",
+      "table": "billing_memberships",
+      "type": "c",
+      "definition": "CHECK ((role = ANY (ARRAY['Owner'::text, 'BillingAdmin'::text, 'Member'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_status_check",
+      "table": "billing_memberships",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "billing_memberships_user_id_fkey",
+      "table": "billing_memberships",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_account_id_company_id_key",
+      "table": "company_profiles",
+      "type": "u",
+      "definition": "UNIQUE (account_id, company_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_account_id_fkey",
+      "table": "company_profiles",
+      "type": "f",
+      "definition": "FOREIGN KEY (account_id) REFERENCES saas.billing_accounts(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_company_id_fkey",
+      "table": "company_profiles",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_company_id_key",
+      "table": "company_profiles",
+      "type": "u",
+      "definition": "UNIQUE (company_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_currency_check",
+      "table": "company_profiles",
+      "type": "c",
+      "definition": "CHECK ((currency = ANY (ARRAY['GBP'::text, 'EUR'::text, 'USD'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_pkey",
+      "table": "company_profiles",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_status_check",
+      "table": "company_profiles",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'active'::text, 'suspended'::text, 'archived'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "company_profiles_version_check",
+      "table": "company_profiles",
+      "type": "c",
+      "definition": "CHECK ((version > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "company_roles_code_key",
+      "table": "company_roles",
+      "type": "u",
+      "definition": "UNIQUE (code)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_roles_pkey",
+      "table": "company_roles",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_selections_company_id_fkey",
+      "table": "company_selections",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_selections_pkey",
+      "table": "company_selections",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_selections_session_id_fkey",
+      "table": "company_selections",
+      "type": "f",
+      "definition": "FOREIGN KEY (session_id) REFERENCES web_auth.sessions(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "company_selections_session_id_key",
+      "table": "company_selections",
+      "type": "u",
+      "definition": "UNIQUE (session_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_company_id_document_id_fkey",
+      "table": "document_inspections",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id, document_id) REFERENCES saas.documents(company_id, id)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_pkey",
+      "table": "document_inspections",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_policy_version_check",
+      "table": "document_inspections",
+      "type": "c",
+      "definition": "CHECK (((length(policy_version) >= 1) AND (length(policy_version) <= 100)))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_scanner_check",
+      "table": "document_inspections",
+      "type": "c",
+      "definition": "CHECK (((length(scanner) >= 1) AND (length(scanner) <= 200)))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_sha256_check",
+      "table": "document_inspections",
+      "type": "c",
+      "definition": "CHECK ((sha256 ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_inspections_verdict_check",
+      "table": "document_inspections",
+      "type": "c",
+      "definition": "CHECK ((verdict = ANY (ARRAY['clean'::text, 'infected'::text, 'error'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_attempts_check",
+      "table": "document_jobs",
+      "type": "c",
+      "definition": "CHECK (((attempts >= 0) AND (attempts <= 20)))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_company_id_document_id_fkey",
+      "table": "document_jobs",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id, document_id) REFERENCES saas.documents(company_id, id)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_company_id_document_id_kind_key",
+      "table": "document_jobs",
+      "type": "u",
+      "definition": "UNIQUE (company_id, document_id, kind)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_kind_check",
+      "table": "document_jobs",
+      "type": "c",
+      "definition": "CHECK ((kind = ANY (ARRAY['inspect'::text, 'extract'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_pkey",
+      "table": "document_jobs",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "document_jobs_state_check",
+      "table": "document_jobs",
+      "type": "c",
+      "definition": "CHECK ((state = ANY (ARRAY['queued'::text, 'processing'::text, 'completed'::text, 'failed'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_byte_size_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK (((byte_size >= 1) AND (byte_size <= 10485760)))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK ((object_key = ((((('companies/'::text || (company_id)::text) || '/documents/'::text) || (id)::text) || '/'::text) || (sha256)::text)))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_check1",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK (((state = 'awaiting_upload'::text) OR (object_version IS NOT NULL)))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_company_id_fkey",
+      "table": "documents",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_company_id_id_key",
+      "table": "documents",
+      "type": "u",
+      "definition": "UNIQUE (company_id, id)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_company_id_sha256_key",
+      "table": "documents",
+      "type": "u",
+      "definition": "UNIQUE (company_id, sha256)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_created_by_fkey",
+      "table": "documents",
+      "type": "f",
+      "definition": "FOREIGN KEY (created_by) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_mime_type_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK ((mime_type = ANY (ARRAY['application/pdf'::text, 'image/jpeg'::text, 'image/png'::text, 'image/webp'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_object_key_key",
+      "table": "documents",
+      "type": "u",
+      "definition": "UNIQUE (object_key)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_object_version_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK ((((length(object_version) >= 1) AND (length(object_version) <= 1024)) AND (object_version <> 'null'::text)))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_original_name_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK (((length(original_name) >= 1) AND (length(original_name) <= 200)))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_pkey",
+      "table": "documents",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_sha256_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK ((sha256 ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "saas",
+      "name": "documents_state_check",
+      "table": "documents",
+      "type": "c",
+      "definition": "CHECK ((state = ANY (ARRAY['awaiting_upload'::text, 'quarantined'::text, 'clean'::text, 'rejected'::text, 'missing'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_company_id_fkey",
+      "table": "idempotency_keys",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_company_id_user_id_operation_key_hash_key",
+      "table": "idempotency_keys",
+      "type": "u",
+      "definition": "UNIQUE (company_id, user_id, operation, key_hash)"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_key_hash_check",
+      "table": "idempotency_keys",
+      "type": "c",
+      "definition": "CHECK ((key_hash ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_operation_check",
+      "table": "idempotency_keys",
+      "type": "c",
+      "definition": "CHECK (((length(operation) >= 1) AND (length(operation) <= 100)))"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_payload_hash_check",
+      "table": "idempotency_keys",
+      "type": "c",
+      "definition": "CHECK ((payload_hash ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_pkey",
+      "table": "idempotency_keys",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "idempotency_keys_user_id_fkey",
+      "table": "idempotency_keys",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "notification_outbox_attempts_check",
+      "table": "notification_outbox",
+      "type": "c",
+      "definition": "CHECK ((attempts >= 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "notification_outbox_company_id_fkey",
+      "table": "notification_outbox",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "notification_outbox_kind_check",
+      "table": "notification_outbox",
+      "type": "c",
+      "definition": "CHECK (((length(kind) >= 1) AND (length(kind) <= 100)))"
+    },
+    {
+      "schema": "saas",
+      "name": "notification_outbox_pkey",
+      "table": "notification_outbox",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "notification_outbox_state_check",
+      "table": "notification_outbox",
+      "type": "c",
+      "definition": "CHECK ((state = ANY (ARRAY['pending'::text, 'accepted'::text, 'review'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "permissions_code_check",
+      "table": "permissions",
+      "type": "c",
+      "definition": "CHECK (((length(code) >= 3) AND (length(code) <= 80)))"
+    },
+    {
+      "schema": "saas",
+      "name": "permissions_code_key",
+      "table": "permissions",
+      "type": "u",
+      "definition": "UNIQUE (code)"
+    },
+    {
+      "schema": "saas",
+      "name": "permissions_pkey",
+      "table": "permissions",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "role_permissions_permission_id_fkey",
+      "table": "role_permissions",
+      "type": "f",
+      "definition": "FOREIGN KEY (permission_id) REFERENCES saas.permissions(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "role_permissions_pkey",
+      "table": "role_permissions",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "role_permissions_role_id_fkey",
+      "table": "role_permissions",
+      "type": "f",
+      "definition": "FOREIGN KEY (role_id) REFERENCES saas.company_roles(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "role_permissions_role_id_permission_id_key",
+      "table": "role_permissions",
+      "type": "u",
+      "definition": "UNIQUE (role_id, permission_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "schema_version_installation_id_key",
+      "table": "schema_version",
+      "type": "u",
+      "definition": "UNIQUE (installation_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "schema_version_pkey",
+      "table": "schema_version",
+      "type": "p",
+      "definition": "PRIMARY KEY (version)"
+    },
+    {
+      "schema": "saas",
+      "name": "schema_version_version_check",
+      "table": "schema_version",
+      "type": "c",
+      "definition": "CHECK ((version = 1))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_account_id_fkey",
+      "table": "subscription_entitlements",
+      "type": "f",
+      "definition": "FOREIGN KEY (account_id) REFERENCES saas.billing_accounts(id)"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_account_id_key",
+      "table": "subscription_entitlements",
+      "type": "u",
+      "definition": "UNIQUE (account_id)"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK (((status <> 'active'::text) OR ((verified_at IS NOT NULL) AND (source_reference IS NOT NULL) AND ((length(source_reference) >= 1) AND (length(source_reference) <= 200)) AND (plan IS NOT NULL) AND (invoices_per_month IS NOT NULL) AND (company_limit IS NOT NULL) AND (seat_limit IS NOT NULL) AND (((plan = 'Basic'::text) AND (invoices_per_month = 30) AND (company_limit = 2) AND (seat_limit = 2) AND (history_days IS NOT NULL) AND (history_days = 90)) OR ((plan = 'Starter'::text) AND (invoices_per_month = 100) AND (company_limit = 2) AND (seat_limit = 4) AND (history_days IS NOT NULL) AND (history_days = 180) AND ors_enabled) OR ((plan = 'Growth'::text) AND (invoices_per_month = 300) AND (company_limit = 3) AND (seat_limit = 6) AND (history_days IS NULL) AND ors_enabled)))))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_company_limit_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((company_limit > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_history_days_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((history_days > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_invoices_per_month_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((invoices_per_month > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_pkey",
+      "table": "subscription_entitlements",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_plan_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((plan = ANY (ARRAY['Basic'::text, 'Starter'::text, 'Growth'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_seat_limit_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((seat_limit > 0))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_status_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'active'::text, 'past_due'::text, 'cancelled'::text])))"
+    },
+    {
+      "schema": "saas",
+      "name": "subscription_entitlements_version_check",
+      "table": "subscription_entitlements",
+      "type": "c",
+      "definition": "CHECK ((version > 0))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "audit_logs_action_check",
+      "table": "audit_logs",
+      "type": "c",
+      "definition": "CHECK ((length(action) <= 100))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "audit_logs_actor_user_id_fkey",
+      "table": "audit_logs",
+      "type": "f",
+      "definition": "FOREIGN KEY (actor_user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "audit_logs_company_id_fkey",
+      "table": "audit_logs",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "audit_logs_pkey",
+      "table": "audit_logs",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "bootstrap_once_id_check",
+      "table": "bootstrap_once",
+      "type": "c",
+      "definition": "CHECK (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "bootstrap_once_pkey",
+      "table": "bootstrap_once",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "bootstrap_once_user_id_fkey",
+      "table": "bootstrap_once",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "companies_name_check",
+      "table": "companies",
+      "type": "c",
+      "definition": "CHECK (((length(name) >= 1) AND (length(name) <= 200)))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "companies_owner_id_fkey",
+      "table": "companies",
+      "type": "f",
+      "definition": "FOREIGN KEY (owner_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "companies_pkey",
+      "table": "companies",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "company_memberships_company_id_fkey",
+      "table": "company_memberships",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES web_auth.companies(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "company_memberships_pkey",
+      "table": "company_memberships",
+      "type": "p",
+      "definition": "PRIMARY KEY (user_id, company_id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "company_memberships_role_check",
+      "table": "company_memberships",
+      "type": "c",
+      "definition": "CHECK ((role = ANY (ARRAY['Owner'::text, 'Admin'::text, 'Finance'::text, 'Accountant'::text, 'Procurement'::text, 'Inventory'::text, 'Staff'::text, 'Viewer'::text])))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "company_memberships_status_check",
+      "table": "company_memberships",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text])))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "company_memberships_user_id_fkey",
+      "table": "company_memberships",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "email_verification_tokens_pkey",
+      "table": "email_verification_tokens",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "email_verification_tokens_token_hash_key",
+      "table": "email_verification_tokens",
+      "type": "u",
+      "definition": "UNIQUE (token_hash)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "email_verification_tokens_user_id_fkey",
+      "table": "email_verification_tokens",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_check",
+      "table": "email_verification_tokens",
+      "type": "c",
+      "definition": "CHECK ((expires_at > created_at))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_token_hash_check",
+      "table": "email_verification_tokens",
+      "type": "c",
+      "definition": "CHECK ((token_hash ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "installation_pkey",
+      "table": "installation",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "installation_version_check",
+      "table": "installation",
+      "type": "c",
+      "definition": "CHECK ((version = 1))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "notification_outbox_kind_check",
+      "table": "notification_outbox",
+      "type": "c",
+      "definition": "CHECK ((kind = ANY (ARRAY['verify_email'::text, 'reset_password'::text])))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "notification_outbox_pkey",
+      "table": "notification_outbox",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "notification_outbox_state_check",
+      "table": "notification_outbox",
+      "type": "c",
+      "definition": "CHECK ((state = ANY (ARRAY['pending'::text, 'accepted'::text, 'review'::text])))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "notification_outbox_user_id_fkey",
+      "table": "notification_outbox",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_check",
+      "table": "password_reset_tokens",
+      "type": "c",
+      "definition": "CHECK ((expires_at > created_at))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_pkey",
+      "table": "password_reset_tokens",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_token_hash_check",
+      "table": "password_reset_tokens",
+      "type": "c",
+      "definition": "CHECK ((token_hash ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_token_hash_key",
+      "table": "password_reset_tokens",
+      "type": "u",
+      "definition": "UNIQUE (token_hash)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "password_reset_tokens_user_id_fkey",
+      "table": "password_reset_tokens",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "rate_limits_count_check",
+      "table": "rate_limits",
+      "type": "c",
+      "definition": "CHECK ((count >= 0))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "rate_limits_key_check",
+      "table": "rate_limits",
+      "type": "c",
+      "definition": "CHECK ((key ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "rate_limits_pkey",
+      "table": "rate_limits",
+      "type": "p",
+      "definition": "PRIMARY KEY (key)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "roles_name_key",
+      "table": "roles",
+      "type": "u",
+      "definition": "UNIQUE (name)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "roles_pkey",
+      "table": "roles",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "sessions_check",
+      "table": "sessions",
+      "type": "c",
+      "definition": "CHECK ((expires_at > created_at))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "sessions_pkey",
+      "table": "sessions",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "sessions_token_hash_check",
+      "table": "sessions",
+      "type": "c",
+      "definition": "CHECK ((token_hash ~ '^[a-f0-9]{64}$'::text))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "sessions_token_hash_key",
+      "table": "sessions",
+      "type": "u",
+      "definition": "UNIQUE (token_hash)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "sessions_user_id_fkey",
+      "table": "sessions",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "user_roles_pkey",
+      "table": "user_roles",
+      "type": "p",
+      "definition": "PRIMARY KEY (user_id, role_id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "user_roles_role_id_fkey",
+      "table": "user_roles",
+      "type": "f",
+      "definition": "FOREIGN KEY (role_id) REFERENCES web_auth.roles(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "user_roles_user_id_fkey",
+      "table": "user_roles",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES web_auth.users(id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_email_check",
+      "table": "users",
+      "type": "c",
+      "definition": "CHECK (((email = lower(btrim(email))) AND ((length(email) >= 3) AND (length(email) <= 254))))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_email_key",
+      "table": "users",
+      "type": "u",
+      "definition": "UNIQUE (email)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_full_name_check",
+      "table": "users",
+      "type": "c",
+      "definition": "CHECK (((length(full_name) >= 1) AND (length(full_name) <= 120)))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_password_hash_check",
+      "table": "users",
+      "type": "c",
+      "definition": "CHECK (((password_hash ~~ '$argon2id$%'::text) AND (length(password_hash) <= 512)))"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_pkey",
+      "table": "users",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "schema": "web_auth",
+      "name": "users_status_check",
+      "table": "users",
+      "type": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text, 'disabled'::text])))"
+    }
+  ],
+  "indexes": [
+    {
+      "schemaname": "saas",
+      "tablename": "audit_events",
+      "indexname": "audit_company_date",
+      "indexdef": "CREATE INDEX audit_company_date ON saas.audit_events USING btree (company_id, created_at DESC, id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "audit_events",
+      "indexname": "audit_events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX audit_events_pkey ON saas.audit_events USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_accounts",
+      "indexname": "billing_accounts_pkey",
+      "indexdef": "CREATE UNIQUE INDEX billing_accounts_pkey ON saas.billing_accounts USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_memberships",
+      "indexname": "billing_memberships_account_id_user_id_key",
+      "indexdef": "CREATE UNIQUE INDEX billing_memberships_account_id_user_id_key ON saas.billing_memberships USING btree (account_id, user_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "billing_memberships",
+      "indexname": "billing_memberships_pkey",
+      "indexdef": "CREATE UNIQUE INDEX billing_memberships_pkey ON saas.billing_memberships USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "indexname": "company_profiles_account",
+      "indexdef": "CREATE INDEX company_profiles_account ON saas.company_profiles USING btree (account_id, company_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "indexname": "company_profiles_account_id_company_id_key",
+      "indexdef": "CREATE UNIQUE INDEX company_profiles_account_id_company_id_key ON saas.company_profiles USING btree (account_id, company_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "indexname": "company_profiles_company_id_key",
+      "indexdef": "CREATE UNIQUE INDEX company_profiles_company_id_key ON saas.company_profiles USING btree (company_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_profiles",
+      "indexname": "company_profiles_pkey",
+      "indexdef": "CREATE UNIQUE INDEX company_profiles_pkey ON saas.company_profiles USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_roles",
+      "indexname": "company_roles_code_key",
+      "indexdef": "CREATE UNIQUE INDEX company_roles_code_key ON saas.company_roles USING btree (code)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_roles",
+      "indexname": "company_roles_pkey",
+      "indexdef": "CREATE UNIQUE INDEX company_roles_pkey ON saas.company_roles USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "indexname": "company_selections_pkey",
+      "indexdef": "CREATE UNIQUE INDEX company_selections_pkey ON saas.company_selections USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "company_selections",
+      "indexname": "company_selections_session_id_key",
+      "indexdef": "CREATE UNIQUE INDEX company_selections_session_id_key ON saas.company_selections USING btree (session_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_inspections",
+      "indexname": "document_inspections_pkey",
+      "indexdef": "CREATE UNIQUE INDEX document_inspections_pkey ON saas.document_inspections USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "indexname": "document_jobs_company_id_document_id_kind_key",
+      "indexdef": "CREATE UNIQUE INDEX document_jobs_company_id_document_id_kind_key ON saas.document_jobs USING btree (company_id, document_id, kind)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "indexname": "document_jobs_pending",
+      "indexdef": "CREATE INDEX document_jobs_pending ON saas.document_jobs USING btree (available_at, id) WHERE (state = 'queued'::text)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "document_jobs",
+      "indexname": "document_jobs_pkey",
+      "indexdef": "CREATE UNIQUE INDEX document_jobs_pkey ON saas.document_jobs USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "indexname": "documents_company_id_id_key",
+      "indexdef": "CREATE UNIQUE INDEX documents_company_id_id_key ON saas.documents USING btree (company_id, id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "indexname": "documents_company_id_sha256_key",
+      "indexdef": "CREATE UNIQUE INDEX documents_company_id_sha256_key ON saas.documents USING btree (company_id, sha256)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "indexname": "documents_object_key_key",
+      "indexdef": "CREATE UNIQUE INDEX documents_object_key_key ON saas.documents USING btree (object_key)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "documents",
+      "indexname": "documents_pkey",
+      "indexdef": "CREATE UNIQUE INDEX documents_pkey ON saas.documents USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "indexname": "idempotency_keys_company_id_user_id_operation_key_hash_key",
+      "indexdef": "CREATE UNIQUE INDEX idempotency_keys_company_id_user_id_operation_key_hash_key ON saas.idempotency_keys USING btree (company_id, user_id, operation, key_hash)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "idempotency_keys",
+      "indexname": "idempotency_keys_pkey",
+      "indexdef": "CREATE UNIQUE INDEX idempotency_keys_pkey ON saas.idempotency_keys USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "notification_outbox",
+      "indexname": "notification_outbox_pending",
+      "indexdef": "CREATE INDEX notification_outbox_pending ON saas.notification_outbox USING btree (available_at, id) WHERE (state = 'pending'::text)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "notification_outbox",
+      "indexname": "notification_outbox_pkey",
+      "indexdef": "CREATE UNIQUE INDEX notification_outbox_pkey ON saas.notification_outbox USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "permissions",
+      "indexname": "permissions_code_key",
+      "indexdef": "CREATE UNIQUE INDEX permissions_code_key ON saas.permissions USING btree (code)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "permissions",
+      "indexname": "permissions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX permissions_pkey ON saas.permissions USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "role_permissions",
+      "indexname": "role_permissions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX role_permissions_pkey ON saas.role_permissions USING btree (id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "role_permissions",
+      "indexname": "role_permissions_role_id_permission_id_key",
+      "indexdef": "CREATE UNIQUE INDEX role_permissions_role_id_permission_id_key ON saas.role_permissions USING btree (role_id, permission_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "schema_version",
+      "indexname": "schema_version_installation_id_key",
+      "indexdef": "CREATE UNIQUE INDEX schema_version_installation_id_key ON saas.schema_version USING btree (installation_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "schema_version",
+      "indexname": "schema_version_pkey",
+      "indexdef": "CREATE UNIQUE INDEX schema_version_pkey ON saas.schema_version USING btree (version)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "subscription_entitlements",
+      "indexname": "subscription_entitlements_account_id_key",
+      "indexdef": "CREATE UNIQUE INDEX subscription_entitlements_account_id_key ON saas.subscription_entitlements USING btree (account_id)"
+    },
+    {
+      "schemaname": "saas",
+      "tablename": "subscription_entitlements",
+      "indexname": "subscription_entitlements_pkey",
+      "indexdef": "CREATE UNIQUE INDEX subscription_entitlements_pkey ON saas.subscription_entitlements USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "audit_logs",
+      "indexname": "audit_actor_date",
+      "indexdef": "CREATE INDEX audit_actor_date ON web_auth.audit_logs USING btree (actor_user_id, created_at DESC)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "audit_logs",
+      "indexname": "audit_logs_pkey",
+      "indexdef": "CREATE UNIQUE INDEX audit_logs_pkey ON web_auth.audit_logs USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "bootstrap_once",
+      "indexname": "bootstrap_once_pkey",
+      "indexdef": "CREATE UNIQUE INDEX bootstrap_once_pkey ON web_auth.bootstrap_once USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "companies",
+      "indexname": "companies_owner",
+      "indexdef": "CREATE INDEX companies_owner ON web_auth.companies USING btree (owner_id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "companies",
+      "indexname": "companies_pkey",
+      "indexdef": "CREATE UNIQUE INDEX companies_pkey ON web_auth.companies USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "company_memberships",
+      "indexname": "company_memberships_pkey",
+      "indexdef": "CREATE UNIQUE INDEX company_memberships_pkey ON web_auth.company_memberships USING btree (user_id, company_id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "company_memberships",
+      "indexname": "memberships_company",
+      "indexdef": "CREATE INDEX memberships_company ON web_auth.company_memberships USING btree (company_id, user_id) WHERE (status = 'active'::text)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "email_verification_tokens",
+      "indexname": "email_verification_tokens_pkey",
+      "indexdef": "CREATE UNIQUE INDEX email_verification_tokens_pkey ON web_auth.email_verification_tokens USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "email_verification_tokens",
+      "indexname": "email_verification_tokens_token_hash_key",
+      "indexdef": "CREATE UNIQUE INDEX email_verification_tokens_token_hash_key ON web_auth.email_verification_tokens USING btree (token_hash)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "email_verification_tokens",
+      "indexname": "email_verification_tokens_user_id_expires_at_idx",
+      "indexdef": "CREATE INDEX email_verification_tokens_user_id_expires_at_idx ON web_auth.email_verification_tokens USING btree (user_id, expires_at) WHERE (used_at IS NULL)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "installation",
+      "indexname": "installation_pkey",
+      "indexdef": "CREATE UNIQUE INDEX installation_pkey ON web_auth.installation USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "notification_outbox",
+      "indexname": "auth_outbox_pending",
+      "indexdef": "CREATE INDEX auth_outbox_pending ON web_auth.notification_outbox USING btree (available_at) WHERE (state = 'pending'::text)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "notification_outbox",
+      "indexname": "notification_outbox_pkey",
+      "indexdef": "CREATE UNIQUE INDEX notification_outbox_pkey ON web_auth.notification_outbox USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "password_reset_tokens",
+      "indexname": "password_reset_tokens_pkey",
+      "indexdef": "CREATE UNIQUE INDEX password_reset_tokens_pkey ON web_auth.password_reset_tokens USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "password_reset_tokens",
+      "indexname": "password_reset_tokens_token_hash_key",
+      "indexdef": "CREATE UNIQUE INDEX password_reset_tokens_token_hash_key ON web_auth.password_reset_tokens USING btree (token_hash)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "password_reset_tokens",
+      "indexname": "reset_user_live",
+      "indexdef": "CREATE INDEX reset_user_live ON web_auth.password_reset_tokens USING btree (user_id, expires_at) WHERE (used_at IS NULL)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "rate_limits",
+      "indexname": "rate_limits_pkey",
+      "indexdef": "CREATE UNIQUE INDEX rate_limits_pkey ON web_auth.rate_limits USING btree (key)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "roles",
+      "indexname": "roles_name_key",
+      "indexdef": "CREATE UNIQUE INDEX roles_name_key ON web_auth.roles USING btree (name)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "roles",
+      "indexname": "roles_pkey",
+      "indexdef": "CREATE UNIQUE INDEX roles_pkey ON web_auth.roles USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "sessions",
+      "indexname": "sessions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX sessions_pkey ON web_auth.sessions USING btree (id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "sessions",
+      "indexname": "sessions_token_hash_key",
+      "indexdef": "CREATE UNIQUE INDEX sessions_token_hash_key ON web_auth.sessions USING btree (token_hash)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "sessions",
+      "indexname": "sessions_user_live",
+      "indexdef": "CREATE INDEX sessions_user_live ON web_auth.sessions USING btree (user_id, expires_at) WHERE (revoked_at IS NULL)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "user_roles",
+      "indexname": "user_roles_pkey",
+      "indexdef": "CREATE UNIQUE INDEX user_roles_pkey ON web_auth.user_roles USING btree (user_id, role_id)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "users",
+      "indexname": "users_email_key",
+      "indexdef": "CREATE UNIQUE INDEX users_email_key ON web_auth.users USING btree (email)"
+    },
+    {
+      "schemaname": "web_auth",
+      "tablename": "users",
+      "indexname": "users_pkey",
+      "indexdef": "CREATE UNIQUE INDEX users_pkey ON web_auth.users USING btree (id)"
+    }
+  ],
+  "accounts": {
+    "real_admin_accounts": 0,
+    "software_admin_grants": 0
+  },
+  "migrations": [
+    {
+      "file": "database/migrations/saas/001_saas_foundation.review.sql",
+      "sha256": "d70e4e20c828e2e91349f8a6fce450c330716b16493c9868e023cf25c911d366",
+      "status": "committed",
+      "record": "private runtime.approvedSqlHash + web_auth.installation and saas.schema_version + verified live catalog"
+    },
+    {
+      "file": "database/migrations/saas/002_stage_a_authorization_locks.review.sql",
+      "sha256": "082079c74f4788fa5724a30f86a443c46ed0179c8c0329c756a9323a690d80fd",
+      "status": "committed",
+      "record": "private authorization-fix-applied.json and both verified live owner_authorization_lock policies"
+    }
+  ],
+  "backups": {
+    "initialDatabaseAndRolesChecksumsVerified": true,
+    "correctionBackupChecksumVerified": true,
+    "archiveListingsValidated": true,
+    "restoreDrill": false
+  }
+}

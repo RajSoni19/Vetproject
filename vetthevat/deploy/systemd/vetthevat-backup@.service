@@ -1,0 +1,20 @@
+[Unit]
+Description=VET THE VAT %i encrypted managed database backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=vtv-backup-%i
+Group=vtv-backup-%i
+SupplementaryGroups=vtv-originals-%i
+EnvironmentFile=/etc/vetthevat/%i/backup.env
+ExecStart=/usr/bin/bash /srv/vetthevat/%i/current/deploy/ubuntu/backup.sh %i
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vetthevat-%i-backup
+MemoryMax=768M
+TimeoutStartSec=1800

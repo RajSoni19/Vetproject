@@ -1,0 +1,178 @@
+﻿{
+    "date":  "2026-10-22",
+    "project":  "D:\\vetthevat",
+    "gitAvailable":  false,
+    "inventoryFile":  "docs/backend-stage1-change-inventory.json",
+    "inventorySelfHash":  "omitted",
+    "files":  [
+                  {
+                      "path":  "app/api/stage1/[...segments]/route.ts",
+                      "status":  "added",
+                      "sha256":  "f7aa21603aa5e96b28bd77f362aa18bb4f523345700a94f0ac75ce81fa54a2f1"
+                  },
+                  {
+                      "path":  "app/app/ors/page.tsx",
+                      "status":  "added",
+                      "sha256":  "5a6464f5d3eab780289043e6594b4e9b384c46aafa4a280805ab47011fe01135"
+                  },
+                  {
+                      "path":  "components/ors-workspace.tsx",
+                      "status":  "added",
+                      "sha256":  "41b573ce7b605782fe9cc1344c0516077737f69f3b89c4cf8a605d0d0fd1d883"
+                  },
+                  {
+                      "path":  "lib/workspace-navigation.ts",
+                      "status":  "modified",
+                      "sha256":  "4f75adcfbfe893229ca33968810e02c39dce052daa2640b9f0fd6b908572c050"
+                  },
+                  {
+                      "path":  "lib/ors/contracts.ts",
+                      "status":  "added",
+                      "sha256":  "fbf9019dc4442ff1a06bdc5eb7aceb05e08b7b96049cc43bf9bb26fe8706926b"
+                  },
+                  {
+                      "path":  "lib/ors/fixtures.ts",
+                      "status":  "added",
+                      "sha256":  "9513720d331dc33e46f053b3ab0781514e948c4ad5c2c8cf05beb92c4cec7932"
+                  },
+                  {
+                      "path":  "lib/server/business-contracts.ts",
+                      "status":  "modified",
+                      "sha256":  "a46e8d8478942b3c385b96ed8f26975e3638a702fa9b31f80f7a0d9c75548683"
+                  },
+                  {
+                      "path":  "lib/server/stage1/banking.ts",
+                      "status":  "added",
+                      "sha256":  "a0a3438aae12e1f99636b9f1b7a681824d1e3d5e102a340cdbf9b15956869abc"
+                  },
+                  {
+                      "path":  "lib/server/stage1/documents.ts",
+                      "status":  "added",
+                      "sha256":  "840218963c588123106984557e33791c3b23fa12c9c1a06c64c1dad1cc68b799"
+                  },
+                  {
+                      "path":  "lib/server/stage1/extraction.ts",
+                      "status":  "added",
+                      "sha256":  "f74bc0c02940e3c96d2b6fe910839863c362f3d3d4f3728f6833b4acc63eec5f"
+                  },
+                  {
+                      "path":  "lib/server/stage1/http.ts",
+                      "status":  "added",
+                      "sha256":  "f665f93baa609a5176e9b0cb1f80bae66a214fc9d16ff33ab6532f637c25e536"
+                  },
+                  {
+                      "path":  "lib/server/stage1/legacy-import.ts",
+                      "status":  "added",
+                      "sha256":  "1acf3d53e89e76dfc8155ade537d13a894036192ae93980e2e7ec0c17ae21928"
+                  },
+                  {
+                      "path":  "lib/server/stage1/local-ocr.ts",
+                      "status":  "added",
+                      "sha256":  "1eb219cc90fc3f6f6708106c3767427e9752da0a6f92865a6b78f34850c5dbb7"
+                  },
+                  {
+                      "path":  "lib/server/stage1/local-storage.ts",
+                      "status":  "added",
+                      "sha256":  "601a8c4908ade6ee452b0804efaf324872c61e01d87ef88e02f3941e58fc3643"
+                  },
+                  {
+                      "path":  "lib/server/stage1/pdf-reader.ts",
+                      "status":  "added",
+                      "sha256":  "83d8972581326e4628d31a8f1342c5b827adb0e646c756bb4d4265ba4480da5f"
+                  },
+                  {
+                      "path":  "lib/server/stage1/repositories.ts",
+                      "status":  "added",
+                      "sha256":  "01acdbb2efd1ac90dc923151d6485bf5e13620b3cbeceed6b8c37e6bc3458a86"
+                  },
+                  {
+                      "path":  "lib/server/stage1/security.ts",
+                      "status":  "added",
+                      "sha256":  "784744b14b79c8cc1c7d5f4a703c7657cc78ea4bb02dc1bf567e350727fac0a6"
+                  },
+                  {
+                      "path":  "lib/server/stage1/worker.ts",
+                      "status":  "added",
+                      "sha256":  "469f5d08abc78f46cd731633cf49b71cc79be02b472b3fe5a5f810cbce2ecba0"
+                  },
+                  {
+                      "path":  "database/drafts/stage1/001_extraction_jobs.review.sql",
+                      "status":  "added",
+                      "sha256":  "5ce2aa4044de27fd64405751977c6bb52b105a1184f4a0e510fd0d2416fb9b13"
+                  },
+                  {
+                      "path":  "database/drafts/stage1/README.md",
+                      "status":  "added",
+                      "sha256":  "9b808d6dd55b140840752de68bc01ad5714cc21b5631f3a760b03894f80376cb"
+                  },
+                  {
+                      "path":  "tests/browser-invoices.cjs",
+                      "status":  "modified",
+                      "sha256":  "513a2c9d3d2d60535b1c55a3d4dba3b2df0c5ba7dca1b1689c456b349916ffe2"
+                  },
+                  {
+                      "path":  "tests/browser-stage1-boundary.cjs",
+                      "status":  "added",
+                      "sha256":  "b41284eb0d41e78bf7445e906def71d649b4449e5904d26e67f6bbb6b66bc614"
+                  },
+                  {
+                      "path":  "tests/stage1-backend.test.cjs",
+                      "status":  "added",
+                      "sha256":  "ead655b53c46e754d889b28ab82fd6d711aa725d4cd3debc1a58d18c79b8df9d"
+                  },
+                  {
+                      "path":  "tests/stage1-local-adapters.test.cjs",
+                      "status":  "added",
+                      "sha256":  "db2a68636414a2b1a8a2b585a821d8aa46d0304e531f3c9de9b73b58a144ffa9"
+                  },
+                  {
+                      "path":  "tests/stage1-ors.test.cjs",
+                      "status":  "added",
+                      "sha256":  "f2762f500d5698b790c55b08ea6ba6d54dd5db3e9857d45ef6c5edcf03032f40"
+                  },
+                  {
+                      "path":  "docs/backend-stage1-delivery.md",
+                      "status":  "added",
+                      "sha256":  "1b15f8320dc82ed90822804194db05de7ce9f0572e7e7ab462a7b852d42bd8e8"
+                  },
+                  {
+                      "path":  "docs/previews/stage1/pricing-1440.png",
+                      "status":  "added",
+                      "sha256":  "628eda8119ac866376a2f51756a42f1218dddfea47a471cf5d7edd72a6ff2f75"
+                  },
+                  {
+                      "path":  "docs/previews/stage1/pricing-390.png",
+                      "status":  "added",
+                      "sha256":  "8b097b16b64ebc45befabe7d7aff5f85e82e609fc2ca17935f6e0b6706623fdd"
+                  },
+                  {
+                      "path":  ".gitignore",
+                      "status":  "modified",
+                      "sha256":  "feaf78c3fbc87704b10f840ed27920381664e33fdb6b0220dc0ef85c33d1ca29"
+                  },
+                  {
+                      "path":  ".vercelignore",
+                      "status":  "modified",
+                      "sha256":  "68e0c0e36006a6b2865073c7a1c0880fd0a5ac745f0fc15d651aa72551839cfa"
+                  },
+                  {
+                      "path":  "proxy.ts",
+                      "status":  "modified",
+                      "sha256":  "fd66c51e74bc194fed0af6a02ada5f22907f8ce78965a1d3ba6b5a6a854e6009"
+                  }
+              ],
+    "verification":  {
+                         "pdf":  "real synthetic PDF.js",
+                         "firebase":  "SDK double only",
+                         "imageOcr":  "real synthetic Tesseract",
+                         "productionBuild":  "passed",
+                         "ors":  "fixture state tests; signed-in browser blocked",
+                         "postgres":  "not connected or executed",
+                         "typecheck":  "passed",
+                         "redis":  "transport double only",
+                         "testsPassed":  131,
+                         "originals":  "real synthetic local files",
+                         "browserBoundary":  "passed",
+                         "testsFailed":  0
+                     }
+}

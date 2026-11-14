@@ -1,0 +1,43 @@
+{
+  "publicPagesChecked": 15,
+  "widths": [
+    390,
+    1440
+  ],
+  "ctaNavigation": "desktop and mobile menu clicks passed",
+  "keyboard": "Tab moves through labelled form inputs",
+  "defaultSubmission": "503, disabled UI",
+  "publicLeadList": "405",
+  "clientValidation": "passed",
+  "providerCalls": "CDP-intercepted synthetic only",
+  "successAndFailureUI": "passed",
+  "duplicateClick": "single POST",
+  "idempotencyRetry": "same key",
+  "confirmation": "signed cookie; direct/cleared-cookie access redirects",
+  "adminAccess": "denied",
+  "worker": "disabled without approval; GET denied",
+  "marketingMode": "lead page accessible; intake disabled without config; admin denied",
+  "browserPersistence": "no localStorage/sessionStorage",
+  "realPersistence": "not verified",
+  "realEmail": "not sent or verified",
+  "date": "2026-10-22",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "automatedTests": {
+    "passed": 157,
+    "failed": 0
+  },
+  "storeTests": "actual adapter SQL against serialized transactional doubles; no PostgreSQL execution",
+  "providerTests": "mocked HTTP transports only",
+  "productionArtifactScan": {
+    "files": 984,
+    "result": "passed; no checked demo markers/test fixture traces"
+  },
+  "databaseMigration": "draft only, not executed",
+  "realLeadPersistenceVerified": false,
+  "realEmailAcceptanceVerified": false,
+  "realEmailDeliveryVerified": false,
+  "productionTurnstileVerified": false,
+  "deployment": "not performed",
+  "schemaDraftSha256": "bf5ae62d01fa68049304ced694a7a77bc08d38e6baaceba896f27cebe695d07f"
+}

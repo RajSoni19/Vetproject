@@ -1,0 +1,241 @@
+{
+  "date": "2026-10-22",
+  "scope": "Milestone 4A isolated development authentication",
+  "files": [
+    {
+      "file": ".env.example",
+      "status": "modified",
+      "sha256": "e131f0f5264ff7587ffac8c20f4d4f9f63ddb6d30af352ea2130790119e84609"
+    },
+    {
+      "file": ".gitignore",
+      "status": "modified",
+      "sha256": "5d70d7d1b32431c874c17660a8e335489316cf850fb9f13169c2ae828147395f"
+    },
+    {
+      "file": ".vercelignore",
+      "status": "modified",
+      "sha256": "a9605b6d0925e7aa996eefb437e55d720c36732c992b2c8d10725b73eadabe5b"
+    },
+    {
+      "file": "app/app/layout.tsx",
+      "status": "modified",
+      "sha256": "d9b5c2e3f7720270465697d554b2fec769d9f1cc433dc60d592b47a1c222721c"
+    },
+    {
+      "file": "app/login/page.tsx",
+      "status": "modified",
+      "sha256": "6cf802d9c5d274023c2ce68d56f7b7937ca55b075f408f7e2744646122c7207c"
+    },
+    {
+      "file": "components/app-state.tsx",
+      "status": "modified",
+      "sha256": "642cdffc7eebf5abb923f2f228b1d9cab690e1141d0fbca626a25fe9093ed5a2"
+    },
+    {
+      "file": "components/authenticated-session.tsx",
+      "status": "added",
+      "sha256": "5f56485e17fa7b619abead40ca33636c28f5ebbefa76937c65c93e55c9bcf7a5"
+    },
+    {
+      "file": "components/development-login.tsx",
+      "status": "added",
+      "sha256": "16c4669326340f40f174ce1caa44d395c0ce309e87476f046ba88afd169a9937"
+    },
+    {
+      "file": "components/empty-workspace.tsx",
+      "status": "modified",
+      "sha256": "651d414a80135c15439a75e24705f69bc1f69f81fd8b7af8900924e2b7916bc3"
+    },
+    {
+      "file": "components/settings-availability.tsx",
+      "status": "modified",
+      "sha256": "278e22105b443b6069e1329ceea21fb5afae32200be2333e0451f7fa274afa4e"
+    },
+    {
+      "file": "docs/application-auth-restoration-results.md",
+      "status": "modified: current development-status pointer",
+      "sha256": "6383d13a7b41dfb9f6cfbf7b80fc379c46765941fed70efecbbc43f3a0dcda57"
+    },
+    {
+      "file": "docs/milestone-4a-development-auth-results.md",
+      "status": "added",
+      "sha256": "d5df08d1542e30413fb3066fe9a546ee707b2f9ad423e0889860ba9b071bc127"
+    },
+    {
+      "file": "docs/milestone-4a-development-auth-verification.json",
+      "status": "added",
+      "sha256": "c289eb132f02c20355bb34324c87f13f0a475d9605822621ad77cdb5337ab8c0"
+    },
+    {
+      "file": "docs/previews/auth-restoration/login-1440.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "8d0fb3264907519b270e6e8b4e4404a0763c627b8550bbc306e7aeb4f7fb3ded"
+    },
+    {
+      "file": "docs/previews/auth-restoration/login-390.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "f480c9a2147b0ad87dc03863ca57fe3efce4b30147b649b2894e8c3df1b92a45"
+    },
+    {
+      "file": "docs/previews/leads/confirmation-synthetic-1440.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "69c50540171c37efd2fc184ca4f9ee421226822cbdf9a5f1096a21c9e33d3401"
+    },
+    {
+      "file": "docs/previews/leads/form-synthetic-1440.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "0c72f22df24836721ec9cbb15d4303831f0c7d5e482846575dadd724d2f39a1a"
+    },
+    {
+      "file": "docs/previews/leads/form-synthetic-390.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "b8a513b888f7164544d6cfef14d2ddab4f9849cd6d8443dfa83a59226416fb7a"
+    },
+    {
+      "file": "docs/previews/leads/unconfigured-1440.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "bcf92931415dfe2953d3c38e638cd7cbacf6d0fffee11ae130f652f1f282e832"
+    },
+    {
+      "file": "docs/previews/leads/unconfigured-390.png",
+      "status": "regenerated regression evidence; may be byte-identical",
+      "sha256": "accecb12bd5af6558fa67773f4576e49828bbd7ab27f17c0dbaebda01b03a57c"
+    },
+    {
+      "file": "docs/previews/milestone-4a/dashboard-1440.png",
+      "status": "added",
+      "sha256": "2008e6142b23d79ed6b619810aeac38cf083057a660d14a3c8919e29c3dcf110"
+    },
+    {
+      "file": "docs/previews/milestone-4a/dashboard-390.png",
+      "status": "added",
+      "sha256": "bc31c6cf4bdc3023c6be198f2f585572b23f4e18a24e515911c9f355466ef6f9"
+    },
+    {
+      "file": "infra/dev-auth/firebase.json",
+      "status": "added",
+      "sha256": "c5ca8e59ae89ca027abf4e2a9418bfdd3083a5f092bb6f46632234c7a408ecb2"
+    },
+    {
+      "file": "lib/scoped-workspace-storage.ts",
+      "status": "added",
+      "sha256": "c4dc7df49fbb6e51f2e23db22d1fec55c3a14c5bd991c7b39ad724be5082fabb"
+    },
+    {
+      "file": "lib/server/admin-services.ts",
+      "status": "modified",
+      "sha256": "84df2a5694e5a1d5865c98cc1cef46ff810023cb3cd7fa32b9f930bfce3c8a4e"
+    },
+    {
+      "file": "lib/server/dev-auth-config.ts",
+      "status": "added",
+      "sha256": "e764180ccfacfafe7e71dcc6f3192bc371afda6b5782dfe88a319da99c5e6b20"
+    },
+    {
+      "file": "lib/server/dev-auth-store.ts",
+      "status": "added",
+      "sha256": "04482e21140fd34a80dde22c2321adbc246867c39a22299bfaa95c05b28b24a3"
+    },
+    {
+      "file": "next.config.ts",
+      "status": "modified",
+      "sha256": "ba3e5fe98cd6e1d99aa96aeb5678074f5a03649a5e1d9dfe81bf4654e858bbcc"
+    },
+    {
+      "file": "package-lock.json",
+      "status": "modified",
+      "sha256": "03888454e9916a8a0dfc75ca4903f780067a52ca7edf50a3d0ff8a9fe2be41f0"
+    },
+    {
+      "file": "package.json",
+      "status": "modified",
+      "sha256": "a6677ac1e1e1c0b849c9f28aca82d2bb51d4e6ab851a771a9ee32a22d390fc2a"
+    },
+    {
+      "file": "scripts/dev-auth-account.cjs",
+      "status": "added",
+      "sha256": "518b40c9b5fdeb494832173c328292638ffd8c768d6f88696a9d496f246e04b3"
+    },
+    {
+      "file": "scripts/dev-auth-build.cjs",
+      "status": "added",
+      "sha256": "67fdf28053b56c32613c9e8783e55f0be353b42e632a69b3ea34bdfc52dadb86"
+    },
+    {
+      "file": "scripts/dev-auth-common.cjs",
+      "status": "added",
+      "sha256": "c5e177554afe7ce92ff4b8cd5b665a1c11e934235b98fda0af5a684b01eb293c"
+    },
+    {
+      "file": "scripts/dev-auth-emulator.cjs",
+      "status": "added",
+      "sha256": "9776d0281cca6bfcadca40b62392e40d4e7fa3c445eeac226a22db12d880dd31"
+    },
+    {
+      "file": "scripts/dev-auth-init.cjs",
+      "status": "added",
+      "sha256": "731a125ccd8f930a97c9e643fa367e8775e6b212958e399697b2317351aea333"
+    },
+    {
+      "file": "scripts/dev-auth-permissions.ps1",
+      "status": "added",
+      "sha256": "b3fd1ccfae14fc3b9df3c0eb04e0ac713ac053e9dbdcf3131cd7d3f5d4123208"
+    },
+    {
+      "file": "scripts/dev-auth-server.cjs",
+      "status": "added",
+      "sha256": "3aef2333375bd52c9928ddc64c2e34e739aa3c6a3b592b6a0a1d58629746714f"
+    },
+    {
+      "file": "tests/browser-dev-auth.cjs",
+      "status": "added",
+      "sha256": "3f31df60a04b84d7c41c3ab98de91623dd3b69b172199bc2e546f9fc658e662f"
+    },
+    {
+      "file": "tests/browser-invoices.cjs",
+      "status": "modified",
+      "sha256": "b7c72862c4761cc8cb9412484f174d676afe3c6c28a8a823cff861b4190c2f1b"
+    },
+    {
+      "file": "tests/dev-auth-integration.cjs",
+      "status": "added",
+      "sha256": "a0d6bc157cd55029d4a1345e65fc4cdb845a154f665160d0b4dd3322426606b0"
+    },
+    {
+      "file": "tests/dev-auth-restart-check.cjs",
+      "status": "added",
+      "sha256": "a2d4a9b1414f9621aec43f0040d44406e851620c14f1a1597d71469675c56600"
+    },
+    {
+      "file": "tests/dev-auth-services.cjs",
+      "status": "added",
+      "sha256": "bbe7e2720ec59afe8400d0463e01934150d538f16fbb7c2fb4ac1b642fe21acc"
+    },
+    {
+      "file": "tests/dev-auth-store.test.cjs",
+      "status": "added",
+      "sha256": "aac7f9c8c9e359ec28be50aef256b1b6503bfe84aceca4397b5ca86bcb2c4093"
+    }
+  ],
+  "metadataFile": "docs/milestone-4a-development-auth-change-inventory.json",
+  "metadataSelfHash": "omitted to avoid recursive hash",
+  "privateGeneratedState": {
+    "root": ".auth-dev/",
+    "paths": [
+      "auth.sqlite",
+      "auth.sqlite-wal",
+      "auth.sqlite-shm",
+      "runtime.json",
+      "localhost.key",
+      "localhost.crt",
+      "integration-accounts.json",
+      "emulator/",
+      "cli-config/"
+    ],
+    "note": "Private runtime values, hashes of secret files and execution logs are deliberately not published. No existing database migration was run."
+  },
+  "generatedBuildOutput": ".next/ excluded from source inventory",
+  "dependencyChanges": "Firebase SDKs + compatible app overrides; Next 16.4.2 security patch; gRPC 1.14.6 security override; Node >=22.15",
+  "backupModified": false
+}

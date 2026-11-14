@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-23T15:51:09.619Z",
+  "baselineAt": "2026-10-23T15:26:48.225Z",
+  "scope": "Stage B request only; excludes private evidence/secrets/dependencies/generated build",
+  "counts": {
+    "added": 16,
+    "modified": 7,
+    "removed": 0
+  },
+  "changes": [
+    {
+      "path": ".gitignore",
+      "status": "modified"
+    },
+    {
+      "path": "database/migrations/saas/003_stage_b_invoices.review.sql",
+      "status": "added"
+    },
+    {
+      "path": "database/migrations/saas/stage-b.manifest.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/master-stage-b-change-inventory.json",
+      "status": "added"
+    },
+    {
+      "path": "docs/master-stage-b-preparation-results.md",
+      "status": "added"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-1440.png",
+      "status": "modified"
+    },
+    {
+      "path": "docs/previews/saas-stage-a/authenticated-390.png",
+      "status": "modified"
+    },
+    {
+      "path": "docs/stage-b-development-services.md",
+      "status": "added"
+    },
+    {
+      "path": "docs/stage-b-migration-review.md",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/document-worker.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/exports.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/invoice-contracts.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/invoice-http.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/invoices.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/services.ts",
+      "status": "modified"
+    },
+    {
+      "path": "lib/server/saas/vat.ts",
+      "status": "added"
+    },
+    {
+      "path": "lib/server/saas/worker-store.ts",
+      "status": "added"
+    },
+    {
+      "path": "package.json",
+      "status": "modified"
+    },
+    {
+      "path": "scripts/saas-stage-b-review.cjs",
+      "status": "added"
+    },
+    {
+      "path": "tests/browser-invoices.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "tests/browser-saas-flow.cjs",
+      "status": "modified"
+    },
+    {
+      "path": "tests/saas-stage-b-postgres.cjs",
+      "status": "added"
+    },
+    {
+      "path": "tests/saas-stage-b.test.cjs",
+      "status": "added"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+[Unit]
+Description=VET THE VAT %i web
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=vtv-web-%i
+Group=vtv-web-%i
+SupplementaryGroups=vtv-originals-%i
+WorkingDirectory=/srv/vetthevat/%i/current/app
+EnvironmentFile=/etc/vetthevat/%i/web.env
+ExecStart=/opt/vetthevat/node/bin/node server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/vetthevat-%i-web /var/lib/vetthevat-%i-originals
+MemoryMax=2G
+TasksMax=256
+LimitNOFILE=4096
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vtv-web-%i
+
+[Install]
+WantedBy=multi-user.target

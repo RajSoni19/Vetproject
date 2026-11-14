@@ -1,0 +1,2 @@
+const s=require('./saas-dev-common.cjs'),{Client}=require('pg');
+(async()=>{const db=new Client(s.connection('vtv_saas_operator'));await db.connect();try{await db.query('BEGIN READ ONLY');for(const p of ['operations.approve_purchase_request(uuid,uuid,bigint,uuid)','operations.transition_sales_order(uuid,uuid,text,bigint,uuid)'])console.log((await db.query('SELECT pg_get_functiondef($1::regprocedure) AS source',[p])).rows[0].source);await db.query('ROLLBACK');}finally{await db.end();}})().catch(e=>{console.error(e);process.exitCode=1});
