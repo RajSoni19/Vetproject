@@ -5,7 +5,9 @@
 // until a person reviews it).
 import { extractInvoiceFields, type ExtractedInvoiceLine } from "@/lib/invoice-text-extraction";
 
-export type DraftLine = { description: string; quantity: string; unitPrice: string; discount: string; rate: string; treatment: string; pricing: string };
+// printed: the line amount exactly as printed on the document (the AMOUNT column),
+// shown next to the calculated amount so a misread is visible. Not sent to the API.
+export type DraftLine = { description: string; quantity: string; unitPrice: string; discount: string; rate: string; treatment: string; pricing: string; printed?: string };
 export type InvoiceDraft = {
   supplierName: string; supplierVatNumber: string; number: string; issuedOn: string; dueOn: string; currency: string;
   lines: DraftLine[]; warnings: string[]; source: string;
@@ -19,7 +21,7 @@ const decimal = (value: number, places: number) => {
 };
 
 export function draftLine(line: ExtractedInvoiceLine): DraftLine {
-  const base = { description: line.description.slice(0, 2000), quantity: decimal(line.quantity, 4), unitPrice: decimal(line.unitPrice, 4), discount: "0", pricing: "exclusive" };
+  const base = { description: line.description.slice(0, 2000), quantity: decimal(line.quantity, 4), unitPrice: decimal(line.unitPrice, 4), discount: "0", pricing: "exclusive", printed: line.netAmount.toFixed(2) };
   if (line.vatRate === null) return { ...base, rate: "0", treatment: "not-evidenced" };
   if (line.taxClassification === "Exempt") return { ...base, rate: "0", treatment: "exempt" };
   if (line.taxClassification === "Out of scope") return { ...base, rate: "0", treatment: "outside" };

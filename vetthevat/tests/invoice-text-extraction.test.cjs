@@ -538,3 +538,17 @@ test('lines that do not make the invoice total are flagged (likely a second page
   assert.equal(fields.gross, 180);
   assert.ok(fields.notes.some(note => /more pages/.test(note)), fields.notes.join(' | '));
 });
+
+test('multi-page invoice: page 1 alone is flagged, pages 1 and 2 together give the printed total', () => {
+  const page1 = rows([['SYNTHETIC HYGIENE LTD', 'Vat Invoice 32558'], ['DATE', 'PLEASE PAY'], ['17/11/2026', 'GBP 144.00'],
+    ['ACTIVITY', 'DESCRIPTION', 'VAT', 'QTY', 'RATE', 'AMOUNT'], ['A1', 'Napkins 1X2000', '20.0% S', '1', '100.00', '100.00']]);
+  const page2 = rows([['ACTIVITY', 'DESCRIPTION', 'VAT', 'QTY', 'RATE', 'AMOUNT'], ['D1', 'Delivery charge', '20.0% S', '1', '20.00', '20.00'], ['TOTAL', '144.00']]);
+  const one = extractInvoiceFields(page1);
+  assert.equal(one.gross, 144);
+  assert.equal(one.vat, 20, 'VAT shown is what the read items carry, not total minus items');
+  assert.ok(one.notes.some(note => /more pages/.test(note)), one.notes.join(' | '));
+  const both = extractInvoiceFields(page1 + '\n' + page2);
+  assert.equal(both.lines.length, 2);
+  assert.deepEqual([both.net, both.vat, both.gross], [120, 24, 144]);
+  assert.ok(!both.notes.some(note => /more pages/.test(note)), both.notes.join(' | '));
+});

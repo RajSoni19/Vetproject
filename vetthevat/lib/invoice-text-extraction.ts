@@ -775,7 +775,7 @@ export function extractInvoiceFields(input: string, context: ExtractionContext =
   }
 
   const net = read.net ?? (read.gross !== null && read.vat !== null ? round2(read.gross - read.vat) : linesNet);
-  const vat = read.vat ?? (net !== null && read.gross !== null && read.gross - net > -0.005 ? round2(read.gross - net) : null);
+  let vat = read.vat ?? (net !== null && read.gross !== null && read.gross - net > -0.005 ? round2(read.gross - net) : null);
   const gross = read.gross ?? (net !== null && read.vat !== null ? round2(net + read.vat) : null);
 
   // Line VAT rates: explicit on the line, else evidenced by the invoice totals.
@@ -784,10 +784,11 @@ export function extractInvoiceFields(input: string, context: ExtractionContext =
   if (open.length) {
     if (noVatCharged) for (const line of open) line.vatRate = 0;
     else if (vat !== null && vat > 0) {
+      const totalVat = vat;
       const explicitVat = lines.filter((line) => line.vatRate !== null).reduce((sum, line) => sum + line.netAmount * line.vatRate! / 100, 0);
       const openNet = open.reduce((sum, line) => sum + line.netAmount, 0);
       const mentioned = [...text.matchAll(/(?:vat|tax)[^\n%\d]{0,12}(\d{1,2}(?:\.\d{1,2})?)\s*%/gi)].map((match) => Number(match[1]));
-      const rate = [...new Set([20, 5, ...mentioned])].find((candidate) => candidate > 0 && close(openNet * candidate / 100, vat - explicitVat, Math.max(0.05, 0.01 * open.length)));
+      const rate = [...new Set([20, 5, ...mentioned])].find((candidate) => candidate > 0 && close(openNet * candidate / 100, totalVat - explicitVat, Math.max(0.05, 0.01 * open.length)));
       if (rate !== undefined) for (const line of open) line.vatRate = rate;
       else assignFromVatAnalysis(open, readVatAnalysis(rows));
     }
@@ -796,7 +797,9 @@ export function extractInvoiceFields(input: string, context: ExtractionContext =
   // Every line has its own rate, but the VAT they make differs from the invoice total: lines are missing (often a second page).
   else if (lines.length && lines.every((line) => line.vatRate !== null) && vat !== null) {
     const linesVat = lines.reduce((sum, line) => sum + line.netAmount * line.vatRate! / 100, 0);
-    if (!close(linesVat, vat, Math.max(0.05, 0.01 * lines.length))) notes.push("The invoice total does not match the items read. The invoice may have more pages, or an item may be missing or misread. Check the totals against the original.");
+    // VAT that was only derived (total minus items) is not evidence: show the VAT the read items carry.
+    if (!close(linesVat, vat, Math.max(0.05, 0.01 * lines.length)) && read.vat === null) vat = round2(linesVat);
+    if (!close(linesVat, read.vat ?? linesVat, Math.max(0.05, 0.01 * lines.length)) || (read.vat === null && read.gross !== null && net !== null && !close(net + linesVat, read.gross, Math.max(0.05, 0.01 * lines.length)))) notes.push("The invoice total does not match the items read. The invoice may have more pages (use “Add next page” below), or an item may be missing or misread. Check the totals against the original.");
   }
 
   const supplierName = readSupplier(rows, customer.name, context, tableStart) || extra?.supplierName || "";

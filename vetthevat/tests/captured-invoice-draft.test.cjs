@@ -5,7 +5,7 @@ const { draftLine, invoiceDraftFromText } = loadSource('lib/captured-invoice-dra
 const line = (extra) => ({ description: 'Synthetic item', quantity: 2, unitPrice: 14.5, netAmount: 29, vatRate: null, ...extra });
 
 test('VAT treatment is mapped from evidence only; unknown VAT is never assumed', () => {
-  assert.deepEqual(draftLine(line({ vatRate: null })), { description: 'Synthetic item', quantity: '2', unitPrice: '14.5', discount: '0', pricing: 'exclusive', rate: '0', treatment: 'not-evidenced' });
+  assert.deepEqual(draftLine(line({ vatRate: null })), { description: 'Synthetic item', quantity: '2', unitPrice: '14.5', discount: '0', pricing: 'exclusive', printed: '29.00', rate: '0', treatment: 'not-evidenced' });
   assert.equal(draftLine(line({ vatRate: 20 })).treatment, 'standard');
   assert.equal(draftLine(line({ vatRate: 20 })).rate, '20');
   assert.equal(draftLine(line({ vatRate: 5 })).treatment, 'reduced');

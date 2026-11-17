@@ -1,9 +1,11 @@
 "use client";
 // Scan / upload an invoice, read it in the browser, then review and save it to
 // the company's database through ManualInvoiceWorkspace. Nothing is stored
-// until the person presses Save.
+// until the person presses Save. Multi-page invoices: each page is read in
+// turn and all pages become one invoice (items from every page, totals usually
+// on the last).
 import { useEffect, useRef, useState } from "react";
-import { Camera, ExternalLink, FileUp, Loader2, RotateCcw } from "lucide-react";
+import { Camera, ExternalLink, FileUp, Loader2, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ManualInvoiceWorkspace } from "@/components/manual-invoice-workspace";
@@ -12,56 +14,96 @@ import { invoiceDraftFromText, type InvoiceDraft } from "@/lib/captured-invoice-
 
 const HMRC_VAT_CHECK = "https://www.tax.service.gov.uk/check-vat-number/enter-vat-details";
 const ACCEPTED = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+const MAX_PAGES = 10;
 const money = (value: number | null, currency: string) => value === null ? "" : new Intl.NumberFormat("en-GB", { style: "currency", currency: currency || "GBP" }).format(value);
 const ukDate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }) : "";
 
+// One read page: the main reading and the supplementary (totals) reading, split at the form feed.
+type Page = { id: number; file: File; preview: string; main: string; sparse: string; notes: string[] };
+
+// All pages as one document: main readings in page order, then all supplementary readings after one form feed.
+export function combinedPageText(pages: { main: string; sparse: string }[]) {
+  const main = pages.map(page => page.main).join("\n");
+  const sparse = pages.map(page => page.sparse).filter(Boolean).join("\n");
+  return sparse ? `${main}\n\f\n${sparse}` : main;
+}
+
 export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: string; companyName?: string }) {
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState("");
+  const [pages, setPages] = useState<Page[]>([]);
   const [status, setStatus] = useState("");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   const [draft, setDraft] = useState<InvoiceDraft | null>(null);
   const [copied, setCopied] = useState(false);
   const controller = useRef<AbortController | null>(null);
+  const pagesRef = useRef<Page[]>([]);
+  const nextId = useRef(1);
   const picker = useRef<HTMLInputElement>(null), camera = useRef<HTMLInputElement>(null);
+  const morePicker = useRef<HTMLInputElement>(null), moreCamera = useRef<HTMLInputElement>(null);
 
-  useEffect(() => () => { controller.current?.abort(); }, []);
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
+  useEffect(() => () => { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); }, []);
 
-  async function read(chosen: File | undefined) {
+  function show(next: Page[]) {
+    pagesRef.current = next; setPages(next);
+    if (!next.length) { setDraft(null); return; }
+    const source = next.length > 1 ? `${next[0].file.name} (+${next.length - 1} more page${next.length > 2 ? "s" : ""})` : next[0].file.name;
+    const parsed = invoiceDraftFromText(combinedPageText(next), source, { companyName });
+    const notes = [...new Set(next.flatMap(page => page.notes))];
+    setDraft(notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed);
+  }
+
+  // addPage: keep the pages already read and add this one as the next page.
+  async function read(chosen: File | undefined, addPage = false) {
     if (!chosen) return;
     controller.current?.abort();
-    setError(""); setDraft(null); setCopied(false);
+    setError(""); setCopied(false);
     if (!ACCEPTED.includes(chosen.type)) { setError("Choose a PDF, JPG, PNG or WEBP file."); return; }
     if (!chosen.size || chosen.size > 10 * 1024 * 1024) { setError("Choose a file no larger than 10 MB."); return; }
-    setFile(chosen); setPreview(URL.createObjectURL(chosen));
+    if (addPage && pagesRef.current.length >= MAX_PAGES) { setError(`An invoice can have up to ${MAX_PAGES} pages.`); return; }
+    if (!addPage) { pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); show([]); }
     const abort = new AbortController(); controller.current = abort;
     const timer = window.setTimeout(() => abort.abort(), 120000);
+    const preview = URL.createObjectURL(chosen);
+    let kept = false;
     try {
-      setStatus("Reading the document"); setProgress(5);
+      const pageNumber = pagesRef.current.length + 1;
+      setStatus(pageNumber > 1 ? `Reading page ${pageNumber}` : "Reading the document"); setProgress(5);
       const notes: string[] = [];
-      const text = await extractDocumentText(chosen, abort.signal, (message, percent) => { setStatus(message); setProgress(percent); }, notes);
+      const text = await extractDocumentText(chosen, abort.signal, (message, percent) => { setStatus(pageNumber > 1 ? `Page ${pageNumber}: ${message}` : message); setProgress(percent); }, notes);
       if (abort.signal.aborted) return;
       if (!text.trim()) { setError("No readable text was found. Try a clearer photo, or enter the invoice manually."); return; }
       setProgress(95);
-      const parsed = invoiceDraftFromText(text, chosen.name, { companyName });
-      setDraft(notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed);
+      const split = text.indexOf("\f");
+      const page: Page = { id: nextId.current++, file: chosen, preview, main: split < 0 ? text : text.slice(0, split).trim(), sparse: split < 0 ? "" : text.slice(split + 1).trim(), notes };
+      kept = true;
+      show([...pagesRef.current, page]);
       setProgress(100);
     } catch (reason) {
       if (!abort.signal.aborted || controller.current === abort) setError(reason instanceof Error ? reason.message : "The document could not be read.");
-    } finally { window.clearTimeout(timer); if (controller.current === abort) setStatus(""); }
+    } finally { window.clearTimeout(timer); if (!kept) URL.revokeObjectURL(preview); if (controller.current === abort) setStatus(""); }
   }
 
-  function reset() { controller.current?.abort(); setFile(null); setDraft(null); setError(""); setStatus(""); setProgress(0); }
+  function removePage(id: number) {
+    const page = pagesRef.current.find(item => item.id === id);
+    if (page) URL.revokeObjectURL(page.preview);
+    show(pagesRef.current.filter(item => item.id !== id));
+  }
+
+  function reset() { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); show([]); setError(""); setStatus(""); setProgress(0); }
 
   const vatDigits = (draft?.supplierVatNumber ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^GB/, "");
   const reading = Boolean(status);
+  const progressBox = reading ? <div role="status" className="mt-4 rounded-md bg-brand-50 p-3 text-sm"><Loader2 className="mr-2 inline h-4 w-4 animate-spin" />{status}
+    <div className="mt-2 h-2 rounded-full bg-white"><div className="h-2 rounded-full bg-brand-500 transition-all" style={{ width: `${progress}%` }} /></div>
+    <Button type="button" variant="outline" className="mt-3" onClick={() => controller.current?.abort()}>Stop</Button></div> : null;
+  const errorBox = error ? <p role="alert" className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800">{error}</p> : null;
+  const first = pages[0];
+  const more = pages.length > 1 ? ` + ${pages.length - 1} more page${pages.length > 2 ? "s" : ""}` : "";
 
   return <div className="grid min-w-0 gap-6">
     {!draft ? <Card className="p-5">
       <h2 className="text-xl font-bold">Scan or upload a supplier invoice</h2>
-      <p className="mt-1 text-sm text-muted">The invoice is read on this device. You check every value before it is saved to your company records.</p>
+      <p className="mt-1 text-sm text-muted">The invoice is read on this device. You check every value before it is saved to your company records. For an invoice with more than one page, start with page 1; you can add the other pages next.</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <Button type="button" variant="outline" disabled={reading} onClick={() => camera.current?.click()}><Camera className="h-4 w-4" />Take a photo</Button>
         <Button type="button" disabled={reading} onClick={() => picker.current?.click()}><FileUp className="h-4 w-4" />Upload PDF or image</Button>
@@ -69,17 +111,14 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
       <input ref={camera} hidden type="file" accept="image/*" capture="environment" aria-label="Take invoice photo" onChange={e => { void read(e.currentTarget.files?.[0]); e.currentTarget.value = ""; }} />
       <input ref={picker} hidden type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Choose invoice file" onChange={e => { void read(e.currentTarget.files?.[0]); e.currentTarget.value = ""; }} />
       <p className="mt-3 text-xs text-muted">PDF, JPG, PNG or WEBP · up to 10 MB · PDFs up to 20 pages</p>
-      {reading ? <div role="status" className="mt-4 rounded-md bg-brand-50 p-3 text-sm"><Loader2 className="mr-2 inline h-4 w-4 animate-spin" />{status}
-        <div className="mt-2 h-2 rounded-full bg-white"><div className="h-2 rounded-full bg-brand-500 transition-all" style={{ width: `${progress}%` }} /></div>
-        <Button type="button" variant="outline" className="mt-3" onClick={reset}>Stop</Button></div> : null}
-      {error ? <p role="alert" className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
+      {progressBox}{errorBox}
     </Card> : null}
 
-    {draft && file ? <>
+    {draft && first ? <>
       <Card className="p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="text-xl font-bold">Read from {file.name}</h2><p className="text-sm text-muted">Check these against the document, then complete and save below.</p></div>
-          <Button type="button" variant="outline" onClick={reset}><RotateCcw className="h-4 w-4" />Scan another</Button>
+          <div><h2 className="text-xl font-bold">Read from {first.file.name}{more}</h2><p className="text-sm text-muted">Check these against the document, then complete and save below.</p></div>
+          <Button type="button" variant="outline" disabled={reading} onClick={reset}><RotateCcw className="h-4 w-4" />Scan another</Button>
         </div>
         <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border border-brand-200 bg-brand-50 p-4 sm:grid-cols-3">
           {([["Supplier", draft.supplierName], ["Invoice date", ukDate(draft.issuedOn)], ["Invoice number", draft.number],
@@ -93,12 +132,26 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
               {copied ? <span className="text-xs text-muted">Number copied — paste it into HMRC&apos;s checker.</span> : null}</dd></div>
         </dl>
         {draft.warnings.length ? <ul className="mt-3 grid gap-2">{draft.warnings.map(w => <li key={w} className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{w}</li>)}</ul> : null}
+        <div className="mt-4 rounded-lg border border-line p-3">
+          <p className="text-sm font-semibold">Does this invoice have more pages?</p>
+          <p className="mt-0.5 text-xs text-muted">Add each page before editing below; the items and totals are read again from all pages together.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button type="button" variant="outline" disabled={reading || pages.length >= MAX_PAGES} onClick={() => moreCamera.current?.click()}><Plus className="h-4 w-4" />Add next page (photo)</Button>
+            <Button type="button" variant="outline" disabled={reading || pages.length >= MAX_PAGES} onClick={() => morePicker.current?.click()}><Plus className="h-4 w-4" />Add next page (file)</Button>
+          </div>
+          <input ref={moreCamera} hidden type="file" accept="image/*" capture="environment" aria-label="Take photo of next page" onChange={e => { void read(e.currentTarget.files?.[0], true); e.currentTarget.value = ""; }} />
+          <input ref={morePicker} hidden type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" aria-label="Choose next page file" onChange={e => { void read(e.currentTarget.files?.[0], true); e.currentTarget.value = ""; }} />
+          {progressBox}{errorBox}
+        </div>
       </Card>
       <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <Card className="min-w-0 overflow-hidden p-2">{file.type === "application/pdf"
-          ? <iframe title="Uploaded invoice" src={preview} className="h-[70vh] w-full rounded" />
-          : <img src={preview} alt="Uploaded invoice" className="max-h-[70vh] w-full rounded object-contain" />}</Card>
-        <ManualInvoiceWorkspace key={companyId + file.name + file.lastModified} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} />
+        <Card className="grid min-w-0 gap-3 overflow-hidden p-2">{pages.map((page, index) => <div key={page.id} className="min-w-0">
+          {pages.length > 1 ? <div className="flex items-center justify-between px-1 pb-1 text-xs text-muted"><span className="font-semibold">Page {index + 1}</span>{index > 0 ? <button type="button" className="underline" disabled={reading} onClick={() => removePage(page.id)}>Remove page</button> : null}</div> : null}
+          {page.file.type === "application/pdf"
+            ? <iframe title={`Uploaded invoice page ${index + 1}`} src={page.preview} className="h-[70vh] w-full rounded" />
+            : <img src={page.preview} alt={`Uploaded invoice page ${index + 1}`} className="max-h-[70vh] w-full rounded object-contain" />}
+        </div>)}</Card>
+        <ManualInvoiceWorkspace key={companyId + pages.map(page => page.id).join("-")} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} />
       </div>
     </> : null}
   </div>;
