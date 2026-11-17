@@ -467,3 +467,13 @@ test('totals misread by OCR are taken from the self-checking VAT analysis box', 
   const noTotal = extractInvoiceFields(box('738.94', null));
   assert.deepEqual([noTotal.net, noTotal.vat, noTotal.gross], [369.47, 73.89, 443.36]);
 });
+
+test('invoice number is never taken from "Invoice Total" when the number label is misread', () => {
+  const fields = extractInvoiceFields(rows([
+    ['Invoice Numbr:', '295646'], ['Invoice Date:', '28/08/26'],
+    ['Code', 'Qty', 'Description', 'Unit', 'Pack Size', 'Unit Price', 'Value'], ['51010', '1', 'COBRA BEER KEG', '11Gal', '1', '154.99', '154.99'],
+    ['Goods', '154.99'], ['VAT', '31.00'], ['Invoice Total', '185.99']
+  ]));
+  assert.notEqual(fields.invoiceNumber, '185.99');
+  assert.ok(!/^\d+\.\d{2}$/.test(fields.invoiceNumber), fields.invoiceNumber);
+});

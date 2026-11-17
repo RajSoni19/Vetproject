@@ -128,6 +128,8 @@ function acceptReference(strict: boolean) {
   return (candidate: string) => {
     const match = candidate.match(/^[\s:#.\-]*([A-Z0-9][A-Z0-9/._-]{0,29})(?![A-Za-z0-9])/i);
     const token = match?.[1].replace(/[/._-]+$/, "");
+    // A money amount ("1201.08") is never an invoice number.
+    if (token && /^\d{1,3}(?:,\d{3})*\.\d{2}$|^\d+\.\d{2}$/.test(token)) return null;
     if (!token || !/\d/.test(token) || parseFlexibleDate(token)) return null;
     if (strict && (token.match(/\d/g) ?? []).length < 3) return null;
     return token;
@@ -757,7 +759,8 @@ export function extractInvoiceFields(text: string, context: ExtractionContext = 
     "inv\\.?\\s*(?:number|no\\.?|#)",
     "(?:document|doc|bill|receipt|credit\\s+note|(?:cash\\s+)?sale|transaction)\\s*(?:number|no\\.?|#)"
   ], acceptReference(false)) ?? firstLabelled(rows, [
-    "(?:tax\\s+)?invoices?",
+    // Not "Invoice Total 1201.08", "Invoice Date", "Invoice To".
+    "(?:tax\\s+)?invoices?(?!\\s*(?:total|date|to\\b|value|amount|address))",
     "(?<!(?:payment|supplier|customer|order|your|our|po|bank)\\s)(?:reference|ref\\.?)(?:\\s*(?:number|no\\.?))?"
   ], acceptReference(true)) ?? "";
 

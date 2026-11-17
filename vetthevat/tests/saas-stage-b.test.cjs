@@ -291,12 +291,14 @@ test('PDF/XLSX exports fetch authorized server report and preserve exact decimal
 test('invoice export uses authorized server snapshots; spreadsheet text is never a formula',async()=>{
  const {exportInvoice}=loadSource('lib/server/saas/exports');let reads=0;const svc={exportInvoice:async()=>{reads++;return {companyId:company,reference:"=cmd|' /C calc!A0",invoice:{number:'=HYPERLINK("https://invalid.test")',state:'confirmed',issued_on:'2026-10-26',gross:'120.00',net:'100.00',vat:'20.00',supplier_name:'@SUM(1,1)',supplier_email:'accounts@example.test',supplier_phone:'',supplier_address:'1 Test Street',supplier_vat_number:'',currency:'GBP',contact_snapshot:{name:'Supplier'}},taxReview:{evidencedVat:null,evidenceStatus:'not-evidenced / pending review',claimStatus:'review-required',taxTreatment:'unknown'},payment:{status:'unpaid / due',method:null,amountPaid:'0.00',balanceDue:'120.00'},lines:[{position:1,description:'=1+1',quantity:'2.00',unit_price:'50.00',discount:'0.00',treatment:'not-evidenced',rate:'0.00',pricing:'exclusive',net:'100.00',vat:'0.00',gross:'100.00'}]};}};
  await assert.rejects(exportInvoice(svc,scope,contact,'xlsx'),{status:403});assert.equal(reads,0);
- const output=await exportInvoice(svc,{...scope,permission:'reports:export'},contact,'xlsx'),XLSX=require('xlsx'),book=XLSX.read(output.bytes),summary=book.Sheets['Invoice'],lines=book.Sheets['Items'];
- // Readable layout: "Invoice" (label / value rows) and "Items" (one row per line).
- assert.deepEqual(book.SheetNames,['Invoice','Items']);
- assert.equal(summary.B2.v,'\'=HYPERLINK("https://invalid.test")');assert.equal(summary.B2.f,undefined);assert.equal(summary.B3.v,"'@SUM(1,1)");assert.equal(summary.B3.f,undefined);
- assert.equal(summary.B12.v,100);assert.equal(summary.B13.v,20);assert.equal(summary.B14.v,120);
- assert.equal(lines.B2.v,"'=1+1");assert.equal(lines.B2.f,undefined);assert.equal(lines.E2.v,'Not shown');assert.equal(lines.G2.v,'');
+ const output=await exportInvoice(svc,{...scope,permission:'reports:export'},contact,'xlsx'),XLSX=require('xlsx'),book=XLSX.read(output.bytes),sheet=book.Sheets['Invoice'];
+ // Column layout on one sheet: headings in row 1, invoice values in row 2, items table from row 5.
+ assert.deepEqual(book.SheetNames,['Invoice']);
+ assert.equal(sheet.A1.v,'Invoice number');assert.equal(sheet.D1.v,'Supplier');assert.equal(sheet.L1.v,'Total');
+ assert.equal(sheet.A2.v,"'=HYPERLINK(\"https://invalid.test\")");assert.equal(sheet.A2.f,undefined);assert.equal(sheet.D2.v,"'@SUM(1,1)");assert.equal(sheet.D2.f,undefined);
+ assert.equal(sheet.J2.v,100);assert.equal(sheet.K2.v,20);assert.equal(sheet.L2.v,120);
+ assert.equal(sheet.B5.v,'Description');
+ assert.equal(sheet.B6.v,"'=1+1");assert.equal(sheet.B6.f,undefined);assert.equal(sheet.E6.v,'Not shown');assert.equal(sheet.G6.v,'');
  // No cell anywhere in the workbook is a formula.
  for(const name of book.SheetNames)for(const [ref,cell] of Object.entries(book.Sheets[name]))if(!ref.startsWith('!'))assert.equal(cell.f,undefined,name+' '+ref);
 });

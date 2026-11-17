@@ -78,20 +78,22 @@ export async function exportInvoice(service:ReturnType<typeof invoiceService>,sc
           .map((value,column)=>[0,1,2,4,8,10,14].includes(column)?textCell(value):value);
       })
     ];
-    // Readable workbook: real numbers, plain-English VAT labels, sized columns.
+    // One sheet, column layout: invoice headings across the top with the values
+    // underneath, then the item table. Real numbers, plain-English VAT labels.
     const n=(value:unknown)=>value===null||value===undefined||value===""?"":Number(value);
-    const details=[
-      ["Invoice",""],["Invoice number",textCell(invoice.number)],["Supplier",textCell(invoice.supplier_name)],["Supplier VAT number",textCell(invoice.supplier_vat_number??"")],
-      ["Supplier address",textCell(invoice.supplier_address??"")],["Supplier email",textCell(invoice.supplier_email??"")],["Supplier phone",textCell(invoice.supplier_phone??"")],
-      ["Invoice date",textCell(ukDate(invoice.issued_on))],["Due date",textCell(ukDate(invoice.due_on))],["Currency",textCell(invoice.currency)],["",""],
-      ["Net",n(invoice.net)],["VAT",n(invoice.vat)],["Total",n(invoice.gross)]
+    const header=[
+      ["Invoice number","Invoice date","Due date","Supplier","Supplier VAT number","Supplier address","Supplier email","Supplier phone","Currency","Net","VAT","Total"],
+      [textCell(invoice.number),textCell(ukDate(invoice.issued_on)),textCell(ukDate(invoice.due_on)),textCell(invoice.supplier_name),textCell(invoice.supplier_vat_number??""),
+       textCell(invoice.supplier_address??""),textCell(invoice.supplier_email??""),textCell(invoice.supplier_phone??""),textCell(invoice.currency),n(invoice.net),n(invoice.vat),n(invoice.gross)]
     ];
     const items=[["#","Description","Quantity","Unit price","VAT","Net","VAT amount","Total"],
       ...data.lines.map(raw=>{const row=raw as Record<string,unknown>;return [n(row.position),textCell(row.description),n(row.quantity),n(row.unit_price),textCell(vatLabel(row.treatment,row.rate)),n(row.net),row.treatment==="not-evidenced"?"":n(row.vat),n(row.gross)];}),
-      [],["","","","","Totals",n(invoice.net),n(invoice.vat),n(invoice.gross)]];
-    const detailSheet=XLSX.utils.aoa_to_sheet(details);detailSheet["!cols"]=[{wch:22},{wch:48}];
-    const itemSheet=XLSX.utils.aoa_to_sheet(items);itemSheet["!cols"]=[{wch:4},{wch:42},{wch:9},{wch:11},{wch:16},{wch:11},{wch:11},{wch:11}];
-    const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,detailSheet,"Invoice");XLSX.utils.book_append_sheet(workbook,itemSheet,"Items");
+      ["","","","","Totals",n(invoice.net),n(invoice.vat),n(invoice.gross)]];
+    const sheet=XLSX.utils.aoa_to_sheet([...header,[],["Items"],...items]);
+    // Widths suit both tables (row 1 headings and the item columns below).
+    sheet["!cols"]=[{wch:16},{wch:44},{wch:12},{wch:32},{wch:20},{wch:30},{wch:26},{wch:16},{wch:10},{wch:12},{wch:12},{wch:12}];
+    sheet["!autofilter"]={ref:`A5:H${5+data.lines.length}`};
+    const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,sheet,"Invoice");
     return {bytes:new Uint8Array(XLSX.write(workbook,{type:"buffer",bookType:"xlsx"})),mime:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",name:`invoice-${fileSafe(invoice.number)}.xlsx`};
   }
   if(format!=="pdf")throw new ApiError(400,"INVALID_REQUEST","Invalid export format.");

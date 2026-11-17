@@ -55,7 +55,10 @@ const nextConfig: NextConfig = {
     // Later entries override earlier ones for the same header key.
     return [
       { source: "/(.*)", headers: securityHeaders(true) },
-      ...privateRoutes.map((source) => ({ source, headers: securityHeaders(false) }))
+      ...privateRoutes.map((source) => ({ source, headers: securityHeaders(false) })),
+      // OCR engine and language data (~14 MB) never change: cache in the browser
+      // and on Vercel's CDN so invoice reading starts instantly after the first time.
+      { source: "/ocr/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }] }
     ];
   }
 };
