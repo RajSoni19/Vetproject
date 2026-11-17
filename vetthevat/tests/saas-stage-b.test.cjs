@@ -219,6 +219,9 @@ test('invoice report export contains verified summary and every item on exactly 
  assert.equal(summary.A2.f,undefined);assert.equal(summary.A2.v,"'=HYPERLINK(\"https://invalid.test\")");assert.equal(summary.B2.v,"'@SUM(1,1)");
  assert.equal(summary.P2.v,"'=cmd|'/C calc!A0");assert.equal(lines.E2.f,undefined);assert.equal(lines.E2.v,"'=1+1");assert.equal(lines.J2.v,'');assert.equal(lines.M2.v,'');
  assert.deepEqual(['A1','B1','C1','D1','E1','F1','G1','H1','I1','J1','K1','L1','M1','N1','O1','P1'].map(cell=>summary[cell].v),['Invoice number','Supplier','Invoice date','Due date','Currency','Direction','Invoice status','Subtotal','VAT evidenced','VAT claim eligibility','Grand total','Payment status','Payment method','Amount paid','Balance due','Original invoice reference']);
+ // With the site address, every invoice row links to its PDF.
+ const linked=XLSX.read(exportReport(report,company,'xlsx','https://app.example.test').bytes).Sheets['Invoice Summary'];
+ assert.equal(linked.Q1.v,'Invoice PDF Link');assert.equal(linked.Q2.v,'Open invoice PDF');assert.equal(linked.Q2.l.Target,`https://app.example.test/app/invoices/${invoiceId}?pdf=1`);
 });
 test('Excel report loads persisted company-scoped lines without payment schema and labels unavailable financial fields honestly',async()=>{
  const {reportService}=loadSource('lib/server/saas/reports'),invoiceId=id(),calls=[],lines=Array.from({length:12},(_,index)=>({invoice_id:invoiceId,invoice_number:'INV-000110',supplier:'RK Fruits & Vegetables Limited',invoice_date:'2026-10-26',position:index+1,description:'Line '+(index+1),quantity:'1.00',unit_price:'17.7083333333',discount:'0.00',treatment:'not-evidenced',rate:'0.00',pricing:'exclusive',net:'17.7083333333',vat:'0.00',gross:'17.7083333333'}));
@@ -298,6 +301,8 @@ test('invoice export uses authorized server snapshots; spreadsheet text is never
  assert.equal(sheet.A2.v,"'=HYPERLINK(\"https://invalid.test\")");assert.equal(sheet.A2.f,undefined);assert.equal(sheet.D2.v,"'@SUM(1,1)");assert.equal(sheet.D2.f,undefined);
  assert.equal(sheet.J2.v,100);assert.equal(sheet.K2.v,20);assert.equal(sheet.L2.v,120);
  assert.equal(sheet.B5.v,'Description');
+ const withLink=XLSX.read((await exportInvoice(svc,{...scope,permission:'reports:export'},contact,'xlsx','https://app.example.test')).bytes).Sheets['Invoice'];
+ assert.equal(withLink.M1.v,'Invoice PDF');assert.equal(withLink.M2.l.Target,`https://app.example.test/app/invoices/${contact}?pdf=1`);
  assert.equal(sheet.B6.v,"'=1+1");assert.equal(sheet.B6.f,undefined);assert.equal(sheet.E6.v,'Not shown');assert.equal(sheet.G6.v,'');
  // No cell anywhere in the workbook is a formula.
  for(const name of book.SheetNames)for(const [ref,cell] of Object.entries(book.Sheets[name]))if(!ref.startsWith('!'))assert.equal(cell.f,undefined,name+' '+ref);

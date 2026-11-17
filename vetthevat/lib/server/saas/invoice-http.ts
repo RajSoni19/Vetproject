@@ -13,6 +13,10 @@ import {routingEnabled} from "@/lib/server/procurement/routing";
 import {invoiceSoftDeleteEnabled} from "@/lib/server/saas/invoice-soft-delete";
 import {supplierLogosEnabled} from "@/lib/server/saas/manual-activation";
 
+// The site address used in links written into exports: the configured origin
+// (the deployed URL), else the address this request came in on.
+function appOrigin(request:Request){const configured=process.env.WEB_AUTH_ORIGIN?.trim();return configured&&/^https?:\/\//.test(configured)?configured:new URL(request.url).origin;}
+
 export function preparedInvoiceHandler(services:ReturnType<typeof businessServices>){return async(request:Request)=>{
   let binary:Awaited<ReturnType<typeof exportVat>>|undefined;
   let privateImage:{bytes:Uint8Array;mime:string}|undefined;
@@ -22,7 +26,7 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
     if(url.pathname==='/api/business/invoice-report'&&request.method==='GET'){
       const format=url.searchParams.get('format'),access=await requireBusinessScope(request,request.headers.get('x-company-id'),format?'reports:export':'reports:read',services);
       const report=await services.reports.invoices(access,url.searchParams);
-      if(format){binary=exportReport(report,access.companyId,format as 'pdf'|'xlsx');return null;}return report;
+      if(format){binary=exportReport(report,access.companyId,format as 'pdf'|'xlsx',appOrigin(request));return null;}return report;
     }
     if(request.method==="GET"&&url.pathname==="/api/business/payable-invoices"){
       // All purchase invoices (newest first): ORS list, dashboard and bank matching.
@@ -166,7 +170,7 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
         return services.invoices.eraseInvoice(await scope(confirmed?"invoices:confirm":"invoices:write"),id,m.key,m.version,confirmed);}
       if(request.method==="GET"&&id&&action==="export"){
         const format=url.searchParams.get("format");if([...url.searchParams.keys()].length!==1||!['pdf','xlsx'].includes(format??''))throw new ApiError(400,"INVALID_REQUEST","Select one export format.");
-        binary=await exportInvoice(services.invoices,await scope("reports:export"),id,format as "pdf"|"xlsx");return null;
+        binary=await exportInvoice(services.invoices,await scope("reports:export"),id,format as "pdf"|"xlsx",appOrigin(request));return null;
       }
       if(request.method==="GET"&&!action)return id?services.invoices.detail(await scope("invoices:read"),id):services.invoices.list(await scope("invoices:read"),url.searchParams);
       if(request.method==="POST"&&id&&action==="confirm"){const access=await scope("invoices:confirm"),m=mutationHeaders(request.headers);return services.invoices.confirm(access,id,m.key,m.version);}

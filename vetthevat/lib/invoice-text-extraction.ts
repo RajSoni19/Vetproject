@@ -11,6 +11,7 @@
 //   review) unless the document evidences them.
 import { parseInvoiceDate } from "@/lib/invoice-rules";
 import { parseDocumentMoney } from "@/lib/invoice-parsing";
+import { nameFromWebsite, readReceipt } from "@/lib/receipt-extraction";
 
 export type ExtractedTaxClassification = "Taxable" | "Zero-rated" | "Exempt" | "Out of scope";
 export type ExtractedInvoiceLine = {
@@ -20,6 +21,10 @@ export type ExtractedInvoiceLine = {
   netAmount: number;
   vatRate: number | null;
   taxClassification?: ExtractedTaxClassification;
+  // Receipts: unitPrice and netAmount include VAT (netAmount is the printed line amount).
+  inclusive?: boolean;
+  // Money taken off the line (offer / loyalty price); netAmount is after it.
+  discount?: number;
 };
 export type ExtractedInvoiceFields = {
   supplierName: string;
@@ -39,6 +44,8 @@ export type ExtractedInvoiceFields = {
   lines: ExtractedInvoiceLine[];
   vatNeedsReview: boolean;
   notes: string[];
+  // Set when the document was read as a till receipt (prices include VAT).
+  receipt?: boolean;
 };
 export type ExtractionContext = { companyName?: string; companyVatNumber?: string };
 
@@ -638,6 +645,27 @@ function validUkVat(digits: string) {
   return sum % 97 === 0 || (sum + 55) % 97 === 0;
 }
 
+// Digits OCR commonly confuses on small or thermal print.
+const LOOKALIKE: Record<string, string> = { "0": "869", "1": "74", "2": "7", "3": "85", "4": "19", "5": "63", "6": "850", "7": "21", "8": "3609", "9": "804" };
+// A VAT number failing the check digit test with exactly one single-digit
+// lookalike correction that passes: that correction, else null.
+export function repairUkVat(digits: string) {
+  if (digits.length !== 9 || validUkVat(digits)) return null;
+  const fixes = new Set<string>();
+  for (let i = 0; i < 9; i++) for (const alt of LOOKALIKE[digits[i]] ?? "") {
+    const candidate = digits.slice(0, i) + alt + digits.slice(i + 1);
+    if (validUkVat(candidate)) fixes.add(candidate);
+  }
+  return fixes.size === 1 ? [...fixes][0] : null;
+}
+const vatCheck = (digits: string, notes: string[]) => {
+  if (digits.length !== 9 || validUkVat(digits)) return digits;
+  const fixed = repairUkVat(digits);
+  if (fixed) { notes.push(`VAT number read as ${digits} failed the HMRC check digit test; one digit was corrected to ${fixed}. Check it against the original.`); return fixed; }
+  notes.push(`VAT number ${digits} does not pass the HMRC check digit test. It may have been misread; check it against the original.`);
+  return digits;
+};
+
 function readVatNumbers(rows: Row[], customerRow: number, context: ExtractionContext, notes: string[]) {
   const found: { value: string; row: number; customer: boolean }[] = [];
   const add = (value: string, row: number, text: string) => {
@@ -652,14 +680,15 @@ function readVatNumbers(rows: Row[], customerRow: number, context: ExtractionCon
     const labelled = VAT_CONTEXT.test(text) || (text.length <= 40 && r > 0 && VAT_CONTEXT.test(rows[r - 1].text) && /(?:no\.?|number|reg\w*\.?|#|:)\s*$/i.test(rows[r - 1].text));
     for (const match of text.matchAll(UK_VAT)) {
       if (!match[1] && !labelled) continue;
-      const digits = match[2] + match[3] + match[4];
-      if (digits.length === 9 && !validUkVat(digits)) notes.push(`VAT number ${digits} does not pass the HMRC check digit test. It may have been misread; check it against the original.`);
+      // Only a 9-digit number is a UK VAT number ("141 399 18" is a misread).
+      if ((match[2] + match[3] + match[4]).length !== 9) continue;
+      const digits = vatCheck(match[2] + match[3] + match[4], notes);
       add(`${(match[1] ?? "").toUpperCase()}${digits}${match[5] ?? ""}`, r, text);
     }
     for (const match of text.matchAll(LABELLED_VAT)) {
-      const rawDigits = match[2].replace(/[^0-9]/g, "");
+      let rawDigits = match[2].replace(/[^0-9]/g, "");
       if (rawDigits.length === 9 || rawDigits.length === 12) {
-        if (rawDigits.length === 9 && !validUkVat(rawDigits)) notes.push(`VAT number ${rawDigits} does not pass the HMRC check digit test. It may have been misread; check it against the original.`);
+        if (rawDigits.length === 9) rawDigits = vatCheck(rawDigits, notes);
         add(`${(match[1] ?? (labelled ? "GB" : "")).toUpperCase()}${rawDigits}`, r, text);
       }
     }
@@ -727,11 +756,33 @@ function assignFromVatAnalysis(open: ExtractedInvoiceLine[], groups: { rate: num
 // ---------------------------------------------------------------- entry point
 
 export function extractInvoiceFields(input: string, context: ExtractionContext = {}): ExtractedInvoiceFields {
+  const fields = extractDocumentFields(input, context);
+  // Till receipts: prices include VAT and items carry VAT codes. The receipt
+  // reading is used when its items add up to a total the receipt prints, or
+  // when the invoice reading found no items at all.
+  const receipt = readReceipt(input);
+  if (!receipt || !(receipt.consistent || !fields.lines.length)) return fields;
+  const lines: ExtractedInvoiceLine[] = receipt.lines.map((line) => ({ description: line.description, quantity: line.quantity, unitPrice: line.unitPrice, netAmount: line.amount, vatRate: line.vatRate, inclusive: true, ...(line.discount ? { discount: line.discount } : {}) }));
+  const net = receipt.vat === null ? null : round2(receipt.gross - receipt.vat);
+  return {
+    ...fields,
+    supplierName: receipt.retailer || nameFromWebsite(fields.supplierName, input).replace(/\((uk)\)/i, "(UK)"),
+    invoiceNumber: fields.invoiceNumber || receipt.reference,
+    currency: fields.currency ?? "GBP",
+    read: { net, vat: receipt.vat, gross: receipt.gross },
+    net, vat: receipt.vat, gross: receipt.gross, lines,
+    vatNeedsReview: lines.some((line) => line.vatRate === null),
+    notes: [...new Set([...fields.notes.filter((note) => /^VAT number/.test(note)), ...receipt.notes])],
+    receipt: true
+  };
+}
+
+function extractDocumentFields(input: string, context: ExtractionContext): ExtractedInvoiceFields {
   // Photos: a second, sparse OCR reading follows a form feed. It reads boxed
   // and white-on-dark totals well but loses table rows, so it only fills gaps.
   const split = input.indexOf("\f");
   const text = split < 0 ? input : input.slice(0, split);
-  const extra = split < 0 ? null : extractInvoiceFields(input.slice(split + 1).replace(/\f/g, ""), context);
+  const extra = split < 0 ? null : extractDocumentFields(input.slice(split + 1).replace(/\f/g, ""), context);
   const rows = toRows(text);
   const notes: string[] = [];
   const { hits, totalRows } = readTotals(rows);
@@ -807,7 +858,7 @@ export function extractInvoiceFields(input: string, context: ExtractionContext =
   const invoiceNumber = firstLabelled(rows, [
     "(?:tax\\s+)?invoice\\s*(?:number|num\\.?|no\\.?|n[°º]\\.?|#|id|ref(?:erence)?\\.?)",
     "inv\\.?\\s*(?:number|no\\.?|#)",
-    "(?:document|doc|bill|receipt|credit\\s+note|(?:cash\\s+)?sale|transaction)\\s*(?:number|no\\.?|#)"
+    "(?:document|doc|bill|receipt|credit\\s+note|(?:cash\\s+)?sale|transaction|trans|trns|txn)\\s*(?:number|no\\.?|#)"
   ], acceptReference(false)) ?? firstLabelled(rows, [
     // Not "Invoice Total 1201.08", "Invoice Date", "Invoice To".
     "(?:tax\\s+)?invoices?(?!\\s*(?:total|date|to\\b|value|amount|address))",

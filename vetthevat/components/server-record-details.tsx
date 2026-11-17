@@ -22,6 +22,14 @@ export function ServerRecordDetail({companyId,id,kind}:{companyId:string;id:stri
  const resource=kind==='invoice'?'invoices':kind==='document'?'documents':'contacts';
  async function read(signal?:AbortSignal){const result=await businessData(companyId,resource+'/'+id+(kind==='document'?'/status':''),{signal});if((kind==='supplier'||kind==='customer')&&result.kind!==kind)throw Error(translate.current('detailContactUnavailable'));return result;}
  useEffect(()=>{const abort=new AbortController();setValue(null);setError('');void read(abort.signal).then(v=>{if(!abort.signal.aborted)setValue(v);}).catch(()=>{if(!abort.signal.aborted)setError(translate.current('detailUnavailable'));});return()=>abort.abort();},[companyId,id,kind]);
+ // Opened from an Excel export link (/app/invoices/<id>?pdf=1): download this invoice's PDF once.
+ const pdfDone=useRef(false);
+ useEffect(()=>{
+  if(kind!=='invoice'||!value||pdfDone.current||new URLSearchParams(window.location.search).get('pdf')!=='1')return;
+  pdfDone.current=true;
+  const number=String(value.invoice?.number??value.number??'invoice').replace(/[^A-Za-z0-9._-]+/g,'-');
+  void downloadBusiness(companyId,'invoices/'+id+'/export?format=pdf','invoice-'+number+'.pdf').then(()=>setNotice('Invoice PDF downloaded.'),()=>setError('The invoice PDF could not be downloaded. Use “Invoice PDF” below.'));
+ },[kind,value,companyId,id]);
  async function action(work:()=>Promise<void>){if(pending.current)return;pending.current=true;setBusy(true);setError('');setNotice('');try{await work();}catch{setError(translate.current('detailOperationFailed'));}finally{pending.current=false;setBusy(false);}}
  const key=(operation:string)=>{let result=keys.current.get(operation);if(!result){result=crypto.randomUUID();keys.current.set(operation,result);}return result;};
  const date=(input:unknown)=>input?formatDate(String(input).slice(0,10),locale):'';
