@@ -125,7 +125,9 @@ const firstLabelled = <T>(rows: Row[], sources: string[], accept: (candidate: st
 };
 
 function acceptReference(strict: boolean) {
-  return (candidate: string) => {
+  return (raw: string) => {
+    // OCR may add a space after a separator: "QVKUK/26-27/ 1390".
+    const candidate = raw.replace(/([A-Za-z0-9][/-])\s+(?=[A-Za-z0-9])/g, "$1");
     const match = candidate.match(/^[\s:#.\-]*([A-Z0-9][A-Z0-9/._-]{0,29})(?![A-Za-z0-9])/i);
     const token = match?.[1].replace(/[/._-]+$/, "");
     // A money amount ("1201.08") is never an invoice number.
@@ -186,6 +188,19 @@ function readTotals(rows: Row[]) {
       }
     }
   }
+  // Amount due printed under its heading ("PLEASE PAY" / "GBP 404.30"). Only
+  // payable-type labels: a "Total" column heading has line amounts under it.
+  const payable = new RegExp(`^(?:${TOTAL_LABELS.filter((label) => label.kind === "gross" && label.rank === 2).map((label) => label.source).join("|")})\\s*:?$`, "i");
+  for (let r = 0; r + 1 < rows.length; r++) rows[r].cells.forEach((cell, c) => {
+    if (!payable.test(cell)) return;
+    // Up to three letters before the amount: currency, or currency misread ("EP 404.30" for "GBP 404.30").
+    const amount = new RegExp(`^(?:${CUR}|[A-Za-z]{1,3}\\s*)(${DEC})$`, "i");
+    // Same column on the next row; in a sparse reading (columns interleaved), the first amount-only line within six.
+    let below = rows[r + 1].cells[c]?.match(amount);
+    for (let next = r + 1; !below && next <= Math.min(rows.length - 1, r + 6); next++) if (rows[next].cells.length === 1) below = rows[next].text.match(amount);
+    const value = below ? parseDocumentMoney(below[1]) : null;
+    if (value !== null) { hits.push({ kind: "gross", rank: 2, value, rate: null, repairable: false, row: r }); totalRows.add(r); totalRows.add(r + 1); }
+  });
   readVatSummary(rows, hits, totalRows);
   return { hits, totalRows };
 }
@@ -255,7 +270,7 @@ const DECIMAL_NOTE = "Some amounts were read without a decimal point and correct
 type TableContext = { inTable: boolean; order: string[]; hasVatColumn: boolean; moneyDecimals: boolean; expectedIndex: number };
 type NumberToken = { value: number; raw: string; hasDecimal: boolean; repairable: boolean; currency: boolean };
 
-const UNIT = /^(?:kg|kgs|g|gm|gms|ltr|ltrs|l|ml|ea|each|pcs?|box|boxes|case|cases|cs|pk|pack|packs|unit|units|nos?|hrs?|hours?|days?|x|@)$/i;
+const UNIT = /^(?:kg|kgs|g|gm|gms|ltr|ltrs|lit|l|ml|cl|ea|each|pcs?|box|boxes|case|cases|cs|ctn|ctns|carton|cartons|btl|btls|bottles?|tray|trays|bags?|tins?|jars?|rolls?|doz|dozen|pk|pack|packs|unit|units|nos?|hrs?|hours?|days?|x|@)$/i;
 const NUMBER = /^\(?-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:[.,]\d{1,4})?\)?$/;
 const VAT_CODES: Record<string, { rate: number; classification?: ExtractedTaxClassification }> = {
   S: { rate: 20 }, STD: { rate: 20 }, T1: { rate: 20 }, R: { rate: 5 }, T5: { rate: 5 },
@@ -271,8 +286,9 @@ const HEADER_WORDS: [string, RegExp][] = [
   ["disc", /^(?:disc|discount)$/],
   ["amount", /^(?:amount|total|net|value|gross|ext|extended)$/]
 ];
-const NOT_AN_ITEM = /\b(?:invoice\s*(?:#|no\b|number|date)|due\s+date|bill\s+to|ship\s+to|deliver\s+to|vat\s+(?:reg|no\b|number)|sort\s+code|short\s+code|account\s+(?:no\b|number|name)|iban|swift|carried\s+forward|brought\s+forward|page\s+\d|tel\b|phone|payment\s+terms|thanks?\s+(?:for|you))/i;
-const TABLE_END = /^(?:payment|bank|notes?\b|terms\b|thank|vat\s+(?:summary|analysis|breakdown)|e\s*&\s*o\s*e)/i;
+const NOT_AN_ITEM = /^total\b|\btotal\s+(?:qty|quantity|items?)\b|(?:invoice|grand|sub)\s*total\b|\b(?:invoice\s*(?:#|no\b|number|date)|due\s+date|bill\s+to|ship\s+to|deliver\s+to|vat\s+(?:reg|no\b|number)|sort\s+code|short\s+code|account\s+(?:no\b|number|name)|iban|swift|carried\s+forward|brought\s+forward|page\s+\d|tel\b|phone|payment\s+terms|thanks?\s+(?:for|you))/i;
+// Also anywhere in the row: OCR often misreads the first word of a boxed footer ("Cod VAT Analysis Bank Details").
+const TABLE_END = /^(?:payment|bank|notes?\b|terms\b|thank|vat\s+(?:summary|analysis|breakdown)|e\s*&\s*o\s*e)|\bvat\s+(?:summary|analysis|breakdown)\b|\bbank\s+details\b/i;
 
 function headerOrder(row: Row): string[] | null {
   if (row.text.length > 140 || /\d[.,]\d{2}/.test(row.text)) return null;
@@ -307,7 +323,8 @@ function parseQtyFirstRow(row: Row, table: TableContext): ExtractedInvoiceLine |
   cells.forEach((cell, index) => { if (letters(cell) >= 3 && (descIndex < 0 || letters(cell) > letters(cells[descIndex]))) descIndex = index; });
   if (descIndex < 1) return null;
   const quantity = [...cells.slice(0, descIndex)].reverse().map(cell => cell.match(/^\d{1,5}(?:\.\d{1,3})?$/) ? Number(cell) : null).find(value => value !== null);
-  const after = cells.slice(descIndex + 1).map(cell => numberToken(cell, false)).filter((token): token is NumberToken => token !== null);
+  // "154.99 154.99": OCR may merge the price and amount columns into one cell.
+  const after = cells.slice(descIndex + 1).flatMap(cell => cell.split(" ")).map(cell => numberToken(cell, false)).filter((token): token is NumberToken => token !== null);
   if (!quantity || after.length < 2) return null;
   const amount = after[after.length - 1], price = after[after.length - 2];
   if (!amount.hasDecimal || !close(quantity * price.value, amount.value, 0.011)) return null;
@@ -329,7 +346,9 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
     const percent = token.match(/^(\d{1,2}(?:[.,]\d{1,2})?)%$/);
     if (percent || (percentNext && /^\d{1,2}(?:[.,]\d{1,2})?$/.test(token))) { if (rate === null) rate = Number((percent?.[1] ?? token).replace(",", ".")); percentNext = false; continue; }
     const code = VAT_CODES[token.toUpperCase()];
-    if (code && table.hasVatColumn && rate === null && classification === undefined && (token.length > 1 || index === tokens.length - 1 || numbers.length > 0)) { rate = code.rate; classification = code.classification; continue; }
+    // "20.0% S": a VAT code right after a printed rate counts even when the table heading was misread.
+    const afterRate = /^\d{1,2}(?:[.,]\d{1,2})?%$/.test(tokens[index - 1] ?? "");
+    if (code && (table.hasVatColumn || afterRate) && rate === null && classification === undefined && (token.length > 1 || index === tokens.length - 1 || numbers.length > 0)) { rate = code.rate; classification = code.classification; continue; }
     // A VAT code this parser does not know ("64.92 12.98 AB 77.90"), between two figures in a table with a VAT column.
     if (table.hasVatColumn && /^[A-Z]{1,3}$/.test(token) && numbers.length && index > 0 && numberToken(tokens[index - 1], false)) continue;
     const number = numberToken(token, currencyNext);
@@ -455,6 +474,9 @@ function cleanName(value: string) {
   if (split && alnum(split[1]) === alnum(split[2]).slice(0, alnum(split[1]).length)) name = name.slice(split[1].length);
   // Normalize spacing around parentheses (e.g. "Temple Wines(Cash & Carry) Ltd" -> "Temple Wines (Cash & Carry) Ltd")
   name = name.replace(/\s*\(\s*/g, " (").replace(/\s*\)\s*/g, ") ");
+  // "Invoice To" and "Ship To" columns merged by OCR: "ACME LTD ACME LTD" -> "ACME LTD".
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2 && words.length % 2 === 0 && words.slice(0, words.length / 2).join(" ").toLowerCase() === words.slice(words.length / 2).join(" ").toLowerCase()) name = words.slice(0, words.length / 2).join(" ");
   return name.replace(/^[^A-Za-z0-9]+|[,:;|\s\-–]+$/g, "").replace(/\s+/g, " ").trim();
 }
 const usableName = (value: string) => value.length >= 2 && value.length <= 100 && letters(value) >= 2 && !parseFlexibleDate(value);
@@ -704,7 +726,12 @@ function assignFromVatAnalysis(open: ExtractedInvoiceLine[], groups: { rate: num
 
 // ---------------------------------------------------------------- entry point
 
-export function extractInvoiceFields(text: string, context: ExtractionContext = {}): ExtractedInvoiceFields {
+export function extractInvoiceFields(input: string, context: ExtractionContext = {}): ExtractedInvoiceFields {
+  // Photos: a second, sparse OCR reading follows a form feed. It reads boxed
+  // and white-on-dark totals well but loses table rows, so it only fills gaps.
+  const split = input.indexOf("\f");
+  const text = split < 0 ? input : input.slice(0, split);
+  const extra = split < 0 ? null : extractInvoiceFields(input.slice(split + 1).replace(/\f/g, ""), context);
   const rows = toRows(text);
   const notes: string[] = [];
   const { hits, totalRows } = readTotals(rows);
@@ -728,6 +755,24 @@ export function extractInvoiceFields(text: string, context: ExtractionContext = 
       if (replaced) notes.push("Totals were checked against the VAT analysis box. Check them against the original.");
     }
   }
+  // Totals the main reading missed, from the sparse reading. Never replaces a
+  // consistent set; a net is taken only when it agrees with the item lines.
+  if (extra && !(read.net !== null && read.vat !== null && read.gross !== null && close(read.net + read.vat, read.gross))) {
+    const more = extra.read;
+    if (read.gross === null && more.gross !== null) read.gross = more.gross;
+    if (read.net === null && more.net !== null && (linesNet === null || close(more.net, linesNet, 0.02))) read.net = more.net;
+    if (read.vat === null && more.vat !== null && read.gross !== null && read.net !== null && close(read.net + more.vat, read.gross)) read.vat = more.vat;
+  }
+
+  const tableStart = rows.findIndex((row) => headerOrder(row) !== null);
+  const customer = readCustomer(rows);
+  const vatNumbers = readVatNumbers(rows, customer.row, context, notes);
+  // No total found, and the document never mentions VAT at all (no VAT number,
+  // no VAT column): a UK supplier that is not VAT registered cannot charge VAT,
+  // so the total is the items and the VAT is zero.
+  if (read.gross === null && read.vat === null && linesNet !== null && !vatNumbers.supplier && !extra?.supplierVatNumber && !/\bv\.?\s?a\.?\s?t\b/i.test(input) && lines.every((line) => !line.vatRate)) {
+    read.vat = 0; read.gross = read.net ?? linesNet;
+  }
 
   const net = read.net ?? (read.gross !== null && read.vat !== null ? round2(read.gross - read.vat) : linesNet);
   const vat = read.vat ?? (net !== null && read.gross !== null && read.gross - net > -0.005 ? round2(read.gross - net) : null);
@@ -748,11 +793,13 @@ export function extractInvoiceFields(text: string, context: ExtractionContext = 
     }
   }
   if (linesNet !== null && net !== null && !close(linesNet, net, 0.02)) notes.push("The line items do not add up to the invoice net total. A line may be missing or misread.");
+  // Every line has its own rate, but the VAT they make differs from the invoice total: lines are missing (often a second page).
+  else if (lines.length && lines.every((line) => line.vatRate !== null) && vat !== null) {
+    const linesVat = lines.reduce((sum, line) => sum + line.netAmount * line.vatRate! / 100, 0);
+    if (!close(linesVat, vat, Math.max(0.05, 0.01 * lines.length))) notes.push("The invoice total does not match the items read. The invoice may have more pages, or an item may be missing or misread. Check the totals against the original.");
+  }
 
-  const tableStart = rows.findIndex((row) => headerOrder(row) !== null);
-  const customer = readCustomer(rows);
-  const vatNumbers = readVatNumbers(rows, customer.row, context, notes);
-  const supplierName = readSupplier(rows, customer.name, context, tableStart);
+  const supplierName = readSupplier(rows, customer.name, context, tableStart) || extra?.supplierName || "";
 
   const invoiceNumber = firstLabelled(rows, [
     "(?:tax\\s+)?invoice\\s*(?:number|num\\.?|no\\.?|n[°º]\\.?|#|id|ref(?:erence)?\\.?)",
@@ -762,19 +809,19 @@ export function extractInvoiceFields(text: string, context: ExtractionContext = 
     // Not "Invoice Total 1201.08", "Invoice Date", "Invoice To".
     "(?:tax\\s+)?invoices?(?!\\s*(?:total|date|to\\b|value|amount|address))",
     "(?<!(?:payment|supplier|customer|order|your|our|po|bank)\\s)(?:reference|ref\\.?)(?:\\s*(?:number|no\\.?))?"
-  ], acceptReference(true)) ?? "";
+  ], acceptReference(true)) ?? extra?.invoiceNumber ?? "";
 
   const invoiceDate = firstLabelled(rows, [
     "invoice\\s+date|date\\s+of\\s+invoice|inv\\.?\\s+date|tax\\s+point(?:\\s+date)?|date\\s+of\\s+issue|issue\\s+date|issued(?:\\s+on)?|document\\s+date|dated",
     "(?<!(?:due|delivery|order|payment|shipping|ship|despatch|dispatch|supply|printed|print|expiry|valid)\\s)date"
-  ], acceptDate) ?? (() => {
+  ], acceptDate) ?? extra?.invoiceDate ?? (() => {
     for (const row of rows) {
       if (/\b(?:due|deliver\w*|order\w*|expir\w*|valid|printed)\b/i.test(row.text)) continue;
       for (const match of row.text.matchAll(new RegExp(`(?<![\\d/.-])(?:${DATE})(?![\\d/-])`, "gi"))) { const date = parseFlexibleDate(match[0]); if (date) return date; }
     }
     return null;
   })();
-  const dueDate = firstLabelled(rows, ["due\\s+date|date\\s+due|payment\\s+due(?:\\s+(?:date|by|on))?|pay(?:ment)?\\s+by|due\\s+(?:by|on)", "due"], acceptDate);
+  const dueDate = firstLabelled(rows, ["due\\s+date|date\\s+due|payment\\s+due(?:\\s+(?:date|by|on))?|pay(?:ment)?\\s+by|due\\s+(?:by|on)", "due"], acceptDate) ?? extra?.dueDate ?? null;
 
   const explicitCurrency = text.match(/\bcurrency\s*[:\-]?\s*(GBP|EUR|USD)\b/i)?.[1].toUpperCase() as "GBP" | "EUR" | "USD" | undefined;
   const counts: ["GBP" | "EUR" | "USD", number][] = [["GBP", (text.match(/£|\bGBP\b/g) ?? []).length], ["EUR", (text.match(/€|\bEUR\b/g) ?? []).length], ["USD", (text.match(/\$|\bUSD\b/g) ?? []).length]];
@@ -782,7 +829,7 @@ export function extractInvoiceFields(text: string, context: ExtractionContext = 
   const currency = explicitCurrency ?? (counts[0][1] > 0 && counts[0][1] > counts[1][1] ? counts[0][0] : null);
 
   return {
-    supplierName, supplierVatNumber: vatNumbers.supplier, customerName: customer.name, customerVatNumber: vatNumbers.customer,
+    supplierName, supplierVatNumber: vatNumbers.supplier || extra?.supplierVatNumber || "", customerName: customer.name || extra?.customerName || "", customerVatNumber: vatNumbers.customer,
     invoiceNumber, invoiceDate, dueDate, currency,
     read, net, vat, gross, lines,
     vatNeedsReview: lines.length ? lines.some((line) => line.vatRate === null) : read.vat === null,

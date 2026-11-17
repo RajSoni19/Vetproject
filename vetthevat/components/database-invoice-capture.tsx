@@ -40,11 +40,13 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     const timer = window.setTimeout(() => abort.abort(), 120000);
     try {
       setStatus("Reading the document"); setProgress(5);
-      const text = await extractDocumentText(chosen, abort.signal, (message, percent) => { setStatus(message); setProgress(percent); });
+      const notes: string[] = [];
+      const text = await extractDocumentText(chosen, abort.signal, (message, percent) => { setStatus(message); setProgress(percent); }, notes);
       if (abort.signal.aborted) return;
       if (!text.trim()) { setError("No readable text was found. Try a clearer photo, or enter the invoice manually."); return; }
       setProgress(95);
-      setDraft(invoiceDraftFromText(text, chosen.name, { companyName }));
+      const parsed = invoiceDraftFromText(text, chosen.name, { companyName });
+      setDraft(notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed);
       setProgress(100);
     } catch (reason) {
       if (!abort.signal.aborted || controller.current === abort) setError(reason instanceof Error ? reason.message : "The document could not be read.");

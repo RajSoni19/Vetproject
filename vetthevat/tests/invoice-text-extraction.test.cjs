@@ -477,3 +477,64 @@ test('invoice number is never taken from "Invoice Total" when the number label i
   assert.notEqual(fields.invoiceNumber, '185.99');
   assert.ok(!/^\d+\.\d{2}$/.test(fields.invoiceNumber), fields.invoiceNumber);
 });
+
+// Shapes seen in real phone photos of supplier invoices (all values synthetic).
+test('"20.0% S" sets the VAT rate even when OCR garbled the table heading', () => {
+  const fields = extractInvoiceFields(rows([
+    ['Vat Invoice 32558'], ['ACTIVITY', 'DESCRIPTION', 'var av RATE Mou'],
+    ['CF02', 'CENTREFEED ROLL BLUE 175mm X 150m-1 20.0% S', '2 10.99', '21.98'],
+    ['TP01', 'Soft Toilet Roll 2ply - 1x40', '20.0% S', '1', '11.50', '11.50']
+  ]));
+  assert.deepEqual(fields.lines.map(line => [line.quantity, line.unitPrice, line.vatRate]), [[2, 10.99, 20], [1, 11.5, 20]]);
+  assert.ok(fields.lines.every(line => !/20\.0%/.test(line.description)), fields.lines.map(line => line.description).join(' | '));
+});
+
+test('amount due printed under its heading ("PLEASE PAY" / "GBP 404.30")', () => {
+  const fields = extractInvoiceFields(rows([
+    ['INVOICE TO', 'SHIP TO'], ['SYNTHETIC CATERING', 'SYNTHETIC CATERING', 'DATE', 'PLEASE PAY', 'DUE DATE'], ['LTD', 'LTD', '17/11/2026', 'GBP 120.00', '17/11/2026'],
+    ['Code', 'Description', 'Qty', 'Rate', 'Amount'], ['A1', 'Napkins 1X2000', '1', '100.00', '100.00']
+  ]));
+  assert.equal(fields.gross, 120);
+  assert.equal(fields.vat, 20);
+});
+
+test('carton units, a decimal point lost by OCR, a "Total Qty" row and a reference split by OCR', () => {
+  const fields = extractInvoiceFields(rows([
+    'Invoice SYNUK/26-27/ 1390', ['Invoice Date', 'Due Date'], ['17/11/2026', '17/11/2026'],
+    ['SR', 'CATEGORY', 'DESCRIPTION', 'WT', 'CASE', 'QUANTITY', 'UNIT PRICE', 'AMOUNT'],
+    ['1 FROZEN [DKB1] DEEP KABABS HARA', '0.300 | 18', '1.00 CTN', '67.58', '£67.58'],
+    ['2 FROZEN [IJPS] PUNJABI SAMOSA', '1.050 | 4', '2.00 CTN', '27.46', '£5492'],
+    ['Total Qty', '3', '£12250'], ['Total', '£122.50']
+  ]));
+  assert.equal(fields.invoiceNumber, 'SYNUK/26-27/1390');
+  assert.deepEqual(fields.lines.map(line => [line.quantity, line.unitPrice, line.netAmount]), [[1, 67.58, 67.58], [2, 27.46, 54.92]]);
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [122.5, 0, 122.5]);
+});
+
+test('price and amount merged into one cell by OCR still give the item; boxed footer is not an item', () => {
+  const fields = extractInvoiceFields(rows([
+    ['Code', 'Qty', 'Description', 'Unit Pack Size Unit Price', 'Value'],
+    ['51010', '1', 'COBRA BEER KEG', '11Gal', '1', '154.99 154.99'],
+    ['Cod', 'VAT Analysis', 'Bank Details', 'G', '154.99'], ['e Rate', 'Goods', 'Vat [Bank Name Nat west', 'oods', '; 3 89']
+  ]));
+  assert.deepEqual(fields.lines.map(line => [line.description, line.quantity, line.unitPrice]), [['COBRA BEER KEG', 1, 154.99]]);
+});
+
+test('supplementary sparse reading fills totals the main reading missed, never replacing consistent ones', () => {
+  const main = rows([['Invoice Number:', '291156'], ['Code', 'Qty', 'Description', 'Unit Price', 'Value'], ['51010', '1', 'COBRA BEER KEG', '154.99', '154.99'], ['51011', '1', 'KINGFISHER KEG', '172.99', '172.99'], ['{linvoice Total', '443 3'], '36']);
+  const sparse = ['VAT Analysis', 'Goods', '327.98', 'VAT', '65.60', 'Invoice Total', '393.58'].join('\n');
+  const fields = extractInvoiceFields(main + '\n\f\n' + sparse);
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [327.98, 65.6, 393.58]);
+  assert.ok(fields.lines.every(line => line.vatRate === 20));
+  assert.equal(fields.lines.length, 2, 'sparse text adds no items');
+  const consistent = extractInvoiceFields(rows([['Goods', '100.00'], ['VAT', '20.00'], ['Invoice Total', '120.00']]) + '\n\f\n' + ['Invoice Total', '999.99'].join('\n'));
+  assert.equal(consistent.gross, 120);
+});
+
+test('lines that do not make the invoice total are flagged (likely a second page)', () => {
+  const fields = extractInvoiceFields(rows([
+    ['DESCRIPTION', 'VAT', 'QTY', 'RATE', 'AMOUNT'], ['Napkins', '20.0% S', '1', '100.00', '100.00'], ['PLEASE PAY', 'GBP 180.00']
+  ]));
+  assert.equal(fields.gross, 180);
+  assert.ok(fields.notes.some(note => /more pages/.test(note)), fields.notes.join(' | '));
+});
