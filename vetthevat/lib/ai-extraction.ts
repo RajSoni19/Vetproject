@@ -1,0 +1,83 @@
+import "server-only";
+// The only place that talks to an AI provider. To add another provider, keep
+// this function's signature; the route and the browser do not change.
+import { GoogleGenAI, MediaResolution, ThinkingLevel, type GenerateContentParameters } from "@google/genai";
+import { AI_INVOICE_JSON_SCHEMA, AI_INVOICE_PROMPT, parseAiInvoice, type AiInvoice, type AiUsage } from "@/lib/ai-invoice";
+
+export type AiPage = { mimeType: string; bytes: Uint8Array };
+export type AiFailureCode = "NOT_CONFIGURED" | "TIMEOUT" | "RATE_LIMITED" | "PROVIDER_ERROR" | "INVALID_RESPONSE";
+export class AiExtractionError extends Error {
+  readonly code: AiFailureCode;
+  readonly providerStatus: number | null;
+  constructor(code: AiFailureCode, providerStatus: number | null = null) { super(code); this.name = "AiExtractionError"; this.code = code; this.providerStatus = providerStatus; }
+}
+
+type GenerateResult = { text?: string; usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number; totalTokenCount?: number } };
+export type GeminiClient = { models: { generateContent(request: GenerateContentParameters): Promise<GenerateResult> } };
+export type ExtractOptions = {
+  env?: Readonly<Record<string, string | undefined>>;
+  client?: GeminiClient;
+  timeoutMs?: number;
+  retryDelayMs?: number;
+};
+
+export const DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite";
+// Below the browser's 30 seconds, so a slow request still falls back cleanly.
+const DEFAULT_TIMEOUT_MS = 25000;
+const MAX_OUTPUT_TOKENS = 16000;
+
+export const aiExtractionConfigured = (env: Readonly<Record<string, string | undefined>> = process.env) => Boolean(env.GEMINI_API_KEY?.trim());
+
+function errorStatus(error: unknown) {
+  const status = (error as { status?: unknown } | null)?.status;
+  return typeof status === "number" ? status : null;
+}
+const count = (value: number | undefined) => typeof value === "number" ? value : null;
+
+export async function extractWithGemini(pages: readonly AiPage[], options: ExtractOptions = {}): Promise<{ invoice: AiInvoice; usage: AiUsage; model: string }> {
+  const env = options.env ?? process.env, apiKey = env.GEMINI_API_KEY?.trim();
+  if (!apiKey && !options.client) throw new AiExtractionError("NOT_CONFIGURED");
+  const model = env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
+  const client: GeminiClient = options.client ?? new GoogleGenAI({ apiKey });
+  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS, retryDelayMs = options.retryDelayMs ?? 1000;
+  const abort = new AbortController(), timer = setTimeout(() => abort.abort(), timeoutMs);
+  const request = {
+    model,
+    contents: [{ role: "user", parts: [
+      ...pages.map((page) => ({ inlineData: { mimeType: page.mimeType, data: Buffer.from(page.bytes).toString("base64") } })),
+      { text: AI_INVOICE_PROMPT }
+    ] }],
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: AI_INVOICE_JSON_SCHEMA,
+      // Photos need high resolution for small print; for PDFs Google advises medium.
+      // Thinking is at its lowest level because thinking tokens are billed as output.
+      mediaResolution: pages.every((page) => page.mimeType === "application/pdf") ? MediaResolution.MEDIA_RESOLUTION_MEDIUM : MediaResolution.MEDIA_RESOLUTION_HIGH,
+      thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+      abortSignal: abort.signal
+    }
+  };
+  // Abandons the wait even if a client ignores the abort signal.
+  const timedOut = new Promise<never>((_, reject) => abort.signal.addEventListener("abort", () => reject(new AiExtractionError("TIMEOUT")), { once: true }));
+  const call = () => Promise.race([client.models.generateContent(request), timedOut]);
+  try {
+    let result: GenerateResult;
+    try { result = await call(); }
+    catch (error) {
+      if (errorStatus(error) !== 503 || abort.signal.aborted) throw error;
+      await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]);
+      result = await call();
+    }
+    let invoice: AiInvoice;
+    try { invoice = parseAiInvoice(JSON.parse(result.text ?? "")); }
+    catch { throw new AiExtractionError("INVALID_RESPONSE"); }
+    const usage = result.usageMetadata;
+    return { invoice, model, usage: { promptTokens: count(usage?.promptTokenCount), outputTokens: count(usage?.candidatesTokenCount), thinkingTokens: count(usage?.thoughtsTokenCount), totalTokens: count(usage?.totalTokenCount) } };
+  } catch (error) {
+    if (error instanceof AiExtractionError) throw error;
+    if (abort.signal.aborted) throw new AiExtractionError("TIMEOUT");
+    const status = errorStatus(error);
+    throw new AiExtractionError(status === 429 ? "RATE_LIMITED" : "PROVIDER_ERROR", status);
+  } finally { clearTimeout(timer); }
+}
