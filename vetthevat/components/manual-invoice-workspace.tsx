@@ -99,11 +99,12 @@ export function ManualInvoiceWorkspace({companyId,path,initialInvoiceId,onSaved,
  <section aria-label="Items" className="overflow-hidden rounded-lg border border-line">
   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-wash px-4 py-3">
    <h3 className="text-sm font-semibold">Items ({lines.length})</h3>
-   <label className="flex items-center gap-2 text-sm">Prices on the {capturedDraft?.receipt?'receipt':'invoice'}
+   {/* Set automatically when the document is read; shown only when a line total disagrees with the document or items differ. */}
+   {!lines.every(l=>l.pricing===lines[0].pricing)||lines.some(line=>{const a=lineAmounts(line),p=line.printed!==undefined&&line.printed!==''?Number(line.printed):null;return a&&p!==null&&Math.abs(p-(line.pricing==='inclusive'?a.gross:a.net))>=0.011;})?<label className="flex items-center gap-2 text-sm">Prices on the {capturedDraft?.receipt?'receipt':'invoice'}
     <select className="field-control w-auto" value={lines.every(l=>l.pricing===lines[0].pricing)?lines[0].pricing:'mixed'} disabled={busy} onChange={e=>{if(e.target.value!=='mixed')setLines(old=>old.map(l=>({...l,pricing:e.target.value})));}}>
      {lines.every(l=>l.pricing===lines[0].pricing)?null:<option value="mixed">Mixed (per item)</option>}
      <option value="exclusive">Exclude VAT</option><option value="inclusive">Include VAT (till receipts)</option>
-    </select></label>
+    </select></label>:null}
   </div>
   <div className="max-h-[70vh] overflow-y-auto">
    <div className={`sticky top-0 z-10 hidden gap-x-2 gap-y-1 border-b border-line bg-white px-4 py-2 text-xs font-semibold text-muted lg:grid lg:grid-cols-[1.5rem_repeat(3,minmax(0,1fr))_minmax(0,1.7fr)_3rem_2.5rem]`}>

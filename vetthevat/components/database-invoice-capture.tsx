@@ -67,7 +67,6 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   // Chosen before scanning; kept for the next scan (several invoices from one supplier).
   const [supplierId, setSupplierId] = useState("");
   const supplierRef = useRef<ChosenSupplier | undefined>(undefined);
-  const [aiAvailable, setAiAvailable] = useState(false);
   const aiCheck = useRef<Promise<boolean> | null>(null), aiReading = useRef<AiReading | null>(null), aiFailed = useRef(false);
   const controller = useRef<AbortController | null>(null);
   const pagesRef = useRef<Page[]>([]);
@@ -82,7 +81,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     aiCheck.current ??= businessData(companyId, "invoice-extract").then(result => result?.available === true, () => false);
     return aiCheck.current;
   }
-  useEffect(() => { aiCheck.current = null; let active = true; void checkAi().then(available => { if (active) setAiAvailable(available); }); return () => { active = false; }; }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { aiCheck.current = null; void checkAi(); }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function chooseSupplier(id: string) {
     setSupplierId(id);
@@ -231,7 +230,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   return <div className="grid min-w-0 gap-6">
     {!draft ? <Card className="p-5">
       <h2 className="text-xl font-bold">Scan or upload a supplier invoice or receipt</h2>
-      <p className="mt-1 text-sm text-muted">{aiAvailable ? "Photos and scanned PDFs are sent securely to Google Gemini to be read. PDFs with real text are read on this device, and are sent only if their totals cannot be confirmed." : "The invoice or till receipt is read on this device."} You check every value before it is saved to your company records. For an invoice with more than one page, start with page 1; you can add the other pages next.</p>
+      <p className="mt-1 text-sm text-muted">Upload a PDF or photo. Check the details before saving. For multi-page invoices, start with page 1 and add the rest next.</p>
       <label className="mt-4 grid gap-1 text-sm font-semibold">Supplier (optional)
         <select className="field-control" value={supplierId} disabled={reading} onChange={e => chooseSupplier(e.target.value)}>
           <option value="">Not sure / new supplier – read it from the document</option>
