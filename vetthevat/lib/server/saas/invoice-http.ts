@@ -32,10 +32,10 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
       // All purchase invoices (newest first): ORS list, dashboard and bank matching.
       const access=await requireBusinessScope(request,request.headers.get("x-company-id"),"reports:read",services);
       return services.database.scoped({...access,permission:"reports:read"},async tx=>({items:(await tx.query(
-        `SELECT i.id::text AS id,i.number,i.issued_on::text AS issued_on,c.name AS supplier_name,i.net::text AS net,i.vat::text AS vat,i.gross::text AS gross,i.currency
+        `SELECT i.id::text AS id,i.number,i.issued_on::text AS issued_on,c.name AS supplier_name,i.net::text AS net,i.vat::text AS vat,i.gross::text AS gross,i.currency,i.state
            FROM business.invoices i JOIN business.counterparties c ON c.company_id=i.company_id AND c.id=i.contact_id
           WHERE i.company_id=$1 AND i.direction='purchase' AND i.kind='invoice' AND i.deleted_at IS NULL
-          ORDER BY i.issued_on DESC LIMIT 5000`,[access.companyId])).rows.map(r=>({id:String(r.id),number:String(r.number),issuedOn:String(r.issued_on),supplierName:String(r.supplier_name),net:Number(r.net),vat:Number(r.vat),gross:Number(r.gross),currency:String(r.currency)}))}));
+          ORDER BY i.issued_on DESC LIMIT 5000`,[access.companyId])).rows.map(r=>({id:String(r.id),number:String(r.number),issuedOn:String(r.issued_on),supplierName:String(r.supplier_name),net:Number(r.net),vat:Number(r.vat),gross:Number(r.gross),currency:String(r.currency),state:String(r.state)}))}));
     }
     if(request.method==="GET"&&url.pathname==="/api/business/price-comparison"){
       const access=await requireBusinessScope(request,request.headers.get("x-company-id"),"reports:read",services);
