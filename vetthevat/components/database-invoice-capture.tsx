@@ -1,16 +1,19 @@
 "use client";
-// Scan / upload an invoice, read it in the browser, then review and save it to
-// the company's database through ManualInvoiceWorkspace. Nothing is stored
-// until the person presses Save. Multi-page invoices: each page is read in
-// turn and all pages become one invoice (items from every page, totals usually
-// on the last).
+// Scan / upload an invoice, read it, then review and save it to the company's
+// database through ManualInvoiceWorkspace. Nothing is stored until the person
+// presses Save. PDFs with real text are read here, and go to the AI reader only if
+// their totals do not reconcile. Photos and scanned PDFs go to the AI reader, all
+// pages together; if it is unavailable they are read on this device.
 import { useEffect, useRef, useState } from "react";
 import { Camera, ExternalLink, FileUp, Loader2, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ManualInvoiceWorkspace } from "@/components/manual-invoice-workspace";
-import { extractDocumentText } from "@/lib/document-extraction";
-import { invoiceDraftFromText, type ChosenSupplier, type InvoiceDraft } from "@/lib/captured-invoice-draft";
+import { documentNeedsReading, extractDocumentText, preparePagesForUpload } from "@/lib/document-extraction";
+import { hasTotalsProblem, invoiceDraftFromAi, invoiceDraftFromText, type ChosenSupplier, type InvoiceDraft } from "@/lib/captured-invoice-draft";
+import { parseAiInvoice, type AiInvoice } from "@/lib/ai-invoice";
+import { businessData, businessForm } from "@/lib/browser-business";
+import { aiCacheKey, readAiCache, writeAiCache } from "@/lib/ai-invoice-cache";
 
 type SupplierOption = { id: string; name: string; vat_number: string | null; status: string };
 // The company's saved active suppliers (a few pages of 100).
@@ -33,11 +36,17 @@ async function loadSuppliers(companyId: string) {
 const HMRC_VAT_CHECK = "https://www.tax.service.gov.uk/check-vat-number/enter-vat-details";
 const ACCEPTED = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 const MAX_PAGES = 10;
+const AI_TIMEOUT_MS = 30000;
+const AI_FALLBACK_NOTE = "The AI reader was unavailable, so this was read on this device.";
 const money = (value: number | null, currency: string) => value === null ? "" : new Intl.NumberFormat("en-GB", { style: "currency", currency: currency || "GBP" }).format(value);
 const ukDate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }) : "";
 
 // One read page: the main reading and the supplementary (totals) reading, split at the form feed.
-type Page = { id: number; file: File; preview: string; main: string; sparse: string; notes: string[] };
+// needsReading: a photo or scanned PDF (not a PDF with a real text layer). hasText: the on-device reading has been done.
+type Page = { id: number; file: File; preview: string; main: string; sparse: string; notes: string[]; needsReading: boolean; hasText: boolean };
+type AiReading = { ids: string; invoice: AiInvoice; pageCount: number };
+const browserStore = () => { try { return window.localStorage; } catch { return null; } };
+const pageIds = (pages: Page[]) => pages.map(page => page.id).join("-");
 
 // All pages as one document: main readings in page order, then all supplementary readings after one form feed.
 export function combinedPageText(pages: { main: string; sparse: string }[]) {
@@ -57,6 +66,8 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   // Chosen before scanning; kept for the next scan (several invoices from one supplier).
   const [supplierId, setSupplierId] = useState("");
   const supplierRef = useRef<ChosenSupplier | undefined>(undefined);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const aiCheck = useRef<Promise<boolean> | null>(null), aiReading = useRef<AiReading | null>(null), aiFailed = useRef(false);
   const controller = useRef<AbortController | null>(null);
   const pagesRef = useRef<Page[]>([]);
   const nextId = useRef(1);
@@ -66,19 +77,83 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   useEffect(() => () => { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); }, []);
   useEffect(() => { let active = true; void loadSuppliers(companyId).then(list => { if (active) setSuppliers(list); }, () => undefined); return () => { active = false; }; }, [companyId]);
 
+  function checkAi() {
+    aiCheck.current ??= businessData(companyId, "invoice-extract").then(result => result?.available === true, () => false);
+    return aiCheck.current;
+  }
+  useEffect(() => { aiCheck.current = null; let active = true; void checkAi().then(available => { if (active) setAiAvailable(available); }); return () => { active = false; }; }, [companyId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function chooseSupplier(id: string) {
     setSupplierId(id);
     const found = suppliers.find(item => item.id === id);
     supplierRef.current = found ? { id: found.id, name: found.name, vatNumber: found.vat_number ?? "" } : undefined;
   }
 
+  function buildDraft(next: Page[]): InvoiceDraft {
+    const source = next.length > 1 ? `${next[0].file.name} (+${next.length - 1} more page${next.length > 2 ? "s" : ""})` : next[0].file.name;
+    const context = { companyName, supplier: supplierRef.current };
+    const ai = aiReading.current?.ids === pageIds(next) ? aiReading.current : null;
+    const parsed = ai ? invoiceDraftFromAi(ai.invoice, source, { ...context, pageCount: ai.pageCount, readBy: "gemini" })
+      : invoiceDraftFromText(combinedPageText(next), source, { ...context, ...(next.some(page => page.file.type === "application/pdf") ? {} : { pageCount: next.length }), readBy: next.some(page => page.needsReading) ? "tesseract" : "pdf-text" });
+    const notes = [...new Set([...(!ai && aiFailed.current ? [AI_FALLBACK_NOTE] : []), ...(ai ? [] : next.flatMap(page => page.notes))])];
+    return notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed;
+  }
+
   function show(next: Page[]) {
     pagesRef.current = next; setPages(next);
-    if (!next.length) { setDraft(null); return; }
-    const source = next.length > 1 ? `${next[0].file.name} (+${next.length - 1} more page${next.length > 2 ? "s" : ""})` : next[0].file.name;
-    const parsed = invoiceDraftFromText(combinedPageText(next), source, { companyName, supplier: supplierRef.current });
-    const notes = [...new Set(next.flatMap(page => page.notes))];
-    setDraft(notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed);
+    setDraft(next.length ? buildDraft(next) : null);
+  }
+
+  // All pages together, in one request; a repeat of the same files uses the saved reading.
+  // Nothing to read, or any failure, returns false: the caller reads on this device.
+  async function readWithAi(list: Page[], abort: AbortController, force = false) {
+    aiFailed.current = false;
+    if ((!force && !list.some(page => page.needsReading)) || !await checkAi()) return false;
+    const files = list.map(page => page.file), store = browserStore();
+    let cacheKey: string | null = null;
+    try {
+      cacheKey = await aiCacheKey(companyId, files);
+      const saved = store ? readAiCache(store, cacheKey) : null;
+      if (saved) { aiReading.current = { ids: pageIds(list), ...saved }; return true; }
+    } catch { cacheKey = null; }
+    const attempt = new AbortController(), stop = () => attempt.abort(), timer = window.setTimeout(stop, AI_TIMEOUT_MS);
+    abort.signal.addEventListener("abort", stop, { once: true });
+    try {
+      setStatus("Reading invoice…"); setProgress(30);
+      const upload = await preparePagesForUpload(files, attempt.signal), form = new FormData();
+      upload.pages.forEach((part, index) => form.append("page", part, `page-${index + 1}.${part.type === "application/pdf" ? "pdf" : "jpg"}`));
+      setProgress(55);
+      const result = await businessForm(companyId, "invoice-extract", form, attempt.signal);
+      const reading = { invoice: parseAiInvoice(result?.invoice), pageCount: upload.pageCount };
+      aiReading.current = { ids: pageIds(list), ...reading };
+      if (store && cacheKey) { try { writeAiCache(store, cacheKey, reading); } catch { /* storage full or blocked */ } }
+      return true;
+    } catch {
+      if (!abort.signal.aborted) aiFailed.current = true;
+      return false;
+    } finally { window.clearTimeout(timer); abort.signal.removeEventListener("abort", stop); }
+  }
+
+  // The on-device reading, for every page that does not have one yet.
+  async function readOnDevice(list: Page[], abort: AbortController) {
+    for (const [index, page] of list.entries()) {
+      if (page.hasText) continue;
+      const label = list.length > 1 ? `Page ${index + 1}: ` : "", notes: string[] = [];
+      setStatus(list.length > 1 ? `Reading page ${index + 1}` : "Reading the document"); setProgress(5);
+      const text = await extractDocumentText(page.file, abort.signal, (message, percent) => { setStatus(label + message); setProgress(percent); }, notes);
+      if (abort.signal.aborted) return false;
+      const split = text.indexOf("\f");
+      Object.assign(page, { main: split < 0 ? text : text.slice(0, split).trim(), sparse: split < 0 ? "" : text.slice(split + 1).trim(), notes, hasText: true });
+    }
+    return true;
+  }
+
+  // A text PDF whose totals do not reconcile gets one AI reading, kept only if it reconciles.
+  async function recheckTextPdf(list: Page[], abort: AbortController) {
+    if (list.some(page => page.needsReading) || !hasTotalsProblem(buildDraft(list))) return;
+    setStatus("Double-checking the totals"); setProgress(90);
+    if (await readWithAi(list, abort, true) && hasTotalsProblem(buildDraft(list))) aiReading.current = null;
+    aiFailed.current = false;
   }
 
   // addPage: keep the pages already read and add this one as the next page.
@@ -89,36 +164,48 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     if (!ACCEPTED.includes(chosen.type)) { setError("Choose a PDF, JPG, PNG or WEBP file."); return; }
     if (!chosen.size || chosen.size > 10 * 1024 * 1024) { setError("Choose a file no larger than 10 MB."); return; }
     if (addPage && pagesRef.current.length >= MAX_PAGES) { setError(`An invoice can have up to ${MAX_PAGES} pages.`); return; }
-    if (!addPage) { pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); show([]); }
+    if (!addPage) { pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; show([]); }
     const abort = new AbortController(); controller.current = abort;
-    const timer = window.setTimeout(() => abort.abort(), 120000);
+    const timer = window.setTimeout(() => abort.abort(), 150000);
     const preview = URL.createObjectURL(chosen);
     let kept = false;
     try {
-      const pageNumber = pagesRef.current.length + 1;
-      setStatus(pageNumber > 1 ? `Reading page ${pageNumber}` : "Reading the document"); setProgress(5);
-      const notes: string[] = [];
-      const text = await extractDocumentText(chosen, abort.signal, (message, percent) => { setStatus(pageNumber > 1 ? `Page ${pageNumber}: ${message}` : message); setProgress(percent); }, notes);
+      setStatus("Reading the document"); setProgress(5);
+      const needsReading = await documentNeedsReading(chosen, abort.signal);
+      const page: Page = { id: nextId.current++, file: chosen, preview, main: "", sparse: "", notes: [], needsReading, hasText: false };
+      const list = [...pagesRef.current, page];
+      if (!await readWithAi(list, abort)) {
+        if (abort.signal.aborted || !await readOnDevice(list, abort)) return;
+        if (!(page.main + page.sparse).trim()) { setError("No readable text was found. Try a clearer photo, or enter the invoice manually."); return; }
+        await recheckTextPdf(list, abort);
+      }
       if (abort.signal.aborted) return;
-      if (!text.trim()) { setError("No readable text was found. Try a clearer photo, or enter the invoice manually."); return; }
       setProgress(95);
-      const split = text.indexOf("\f");
-      const page: Page = { id: nextId.current++, file: chosen, preview, main: split < 0 ? text : text.slice(0, split).trim(), sparse: split < 0 ? "" : text.slice(split + 1).trim(), notes };
       kept = true;
-      show([...pagesRef.current, page]);
+      show(list);
       setProgress(100);
     } catch (reason) {
       if (!abort.signal.aborted || controller.current === abort) setError(reason instanceof Error ? reason.message : "The document could not be read.");
     } finally { window.clearTimeout(timer); if (!kept) URL.revokeObjectURL(preview); if (controller.current === abort) setStatus(""); }
   }
 
-  function removePage(id: number) {
-    const page = pagesRef.current.find(item => item.id === id);
+  async function removePage(id: number) {
+    const page = pagesRef.current.find(item => item.id === id), list = pagesRef.current.filter(item => item.id !== id);
     if (page) URL.revokeObjectURL(page.preview);
-    show(pagesRef.current.filter(item => item.id !== id));
+    const wasAi = aiReading.current !== null;
+    aiReading.current = null;
+    if (!wasAi || !list.length) { show(list); return; }
+    // The AI reading covered the removed page, so read the remaining pages again.
+    controller.current?.abort();
+    const abort = new AbortController(); controller.current = abort;
+    try {
+      setError("");
+      if (await readWithAi(list, abort) || (!abort.signal.aborted && await readOnDevice(list, abort))) show(list);
+    } catch (reason) { if (!abort.signal.aborted) setError(reason instanceof Error ? reason.message : "The document could not be read."); }
+    finally { if (controller.current === abort) setStatus(""); }
   }
 
-  function reset() { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); show([]); setError(""); setStatus(""); setProgress(0); }
+  function reset() { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; show([]); setError(""); setStatus(""); setProgress(0); }
 
   const vatDigits = (draft?.supplierVatNumber ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^GB/, "");
   const reading = Boolean(status);
@@ -132,7 +219,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   return <div className="grid min-w-0 gap-6">
     {!draft ? <Card className="p-5">
       <h2 className="text-xl font-bold">Scan or upload a supplier invoice or receipt</h2>
-      <p className="mt-1 text-sm text-muted">The invoice or till receipt is read on this device. You check every value before it is saved to your company records. For an invoice with more than one page, start with page 1; you can add the other pages next.</p>
+      <p className="mt-1 text-sm text-muted">{aiAvailable ? "Photos and scanned PDFs are sent securely to Google Gemini to be read. PDFs with real text are read on this device, and are sent only if their totals cannot be confirmed." : "The invoice or till receipt is read on this device."} You check every value before it is saved to your company records. For an invoice with more than one page, start with page 1; you can add the other pages next.</p>
       <label className="mt-4 grid gap-1 text-sm font-semibold">Supplier (optional)
         <select className="field-control" value={supplierId} disabled={reading} onChange={e => chooseSupplier(e.target.value)}>
           <option value="">Not sure / new supplier – read it from the document</option>
@@ -167,7 +254,6 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
                 onClick={() => { void navigator.clipboard?.writeText(vatDigits).then(() => setCopied(true), () => undefined); }}><ExternalLink className="h-3.5 w-3.5" />Check with HMRC</a> : null}
               {copied ? <span className="text-xs text-muted">Number copied — paste it into HMRC&apos;s checker.</span> : null}</dd></div>
         </dl>
-        {draft.warnings.length ? <ul className="mt-3 grid gap-2">{draft.warnings.map(w => <li key={w} className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{w}</li>)}</ul> : null}
         <div className="mt-4 rounded-lg border border-line p-3">
           <p className="text-sm font-semibold">Does this invoice have more pages?</p>
           <p className="mt-0.5 text-xs text-muted">Add each page before editing below; the items and totals are read again from all pages together.</p>
@@ -182,7 +268,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
       </Card>
       <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[0.85fr_1.15fr]">
         <Card className="grid min-w-0 gap-3 overflow-hidden p-2">{pages.map((page, index) => <div key={page.id} className="min-w-0">
-          {pages.length > 1 ? <div className="flex items-center justify-between px-1 pb-1 text-xs text-muted"><span className="font-semibold">Page {index + 1}</span>{index > 0 ? <button type="button" className="underline" disabled={reading} onClick={() => removePage(page.id)}>Remove page</button> : null}</div> : null}
+          {pages.length > 1 ? <div className="flex items-center justify-between px-1 pb-1 text-xs text-muted"><span className="font-semibold">Page {index + 1}</span>{index > 0 ? <button type="button" className="underline" disabled={reading} onClick={() => void removePage(page.id)}>Remove page</button> : null}</div> : null}
           {page.file.type === "application/pdf"
             ? <iframe title={`Uploaded invoice page ${index + 1}`} src={page.preview} className="h-[70vh] w-full rounded" />
             : <img src={page.preview} alt={`Uploaded invoice page ${index + 1}`} className="max-h-[70vh] w-full rounded object-contain" />}
