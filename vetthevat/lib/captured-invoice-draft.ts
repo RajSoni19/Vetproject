@@ -92,12 +92,16 @@ export const hasTotalsProblem = (draft: InvoiceDraft) => draft.summary.gross ===
 
 const sameName = (a: string, b: string) => a.toLowerCase().replace(/[^a-z0-9]/g, "") === b.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-function aiLine(line: AiInvoiceLine, rate: number | null, inclusive: boolean) {
-  const discount = line.discount ?? 0, amount = line.amount;
+type AiDraftLine = ExtractedInvoiceLine & { amountNotPrinted?: boolean };
+
+function aiLine(line: AiInvoiceLine, rate: number | null, inclusive: boolean): AiDraftLine {
+  const amount = line.amount;
   let quantity = line.quantity;
   if (quantity === null && line.unit_price && amount !== null) { const whole = amount / line.unit_price; if (whole >= 1 && closeTo(whole, Math.round(whole), 0.001)) quantity = Math.round(whole); }
   quantity ??= 1;
   const unitPrice = line.unit_price ?? (amount !== null ? Math.round(Math.abs(amount) / quantity * 10000) / 10000 : 0);
+  // A member price each ("Cc £12.00") fixes the discount exactly.
+  const discount = line.offer_price !== null && line.offer_price < unitPrice ? round2(quantity * (unitPrice - line.offer_price)) : line.discount ?? 0;
   const calculated = lineTotal(quantity, unitPrice, discount);
   // The printed amount is usually before the discount shown under the item; some documents print it after.
   const paid = amount === null ? null : closeTo(amount, calculated) ? amount : round2(amount - discount);
@@ -106,13 +110,41 @@ function aiLine(line: AiInvoiceLine, rate: number | null, inclusive: boolean) {
   return { description, quantity, unitPrice, netAmount: paid ?? calculated, vatRate: rate, inclusive, ...(discount ? { discount } : {}), ...(paid === null ? { amountNotPrinted: true } : {}) };
 }
 
+// A receipt that misses its total because a member price each was returned as the
+// discount ("Cc £10.00" as 10.00 off): apply the fewest such corrections that make
+// the lines equal the printed total exactly. Otherwise nothing changes.
+function repairOfferPrices(lines: AiDraftLine[], total: number | null) {
+  if (total === null) return;
+  const paid = (list: AiDraftLine[]) => round2(list.reduce((sum, line) => sum + line.netAmount, 0));
+  if (closeTo(paid(lines), total)) return;
+  const candidates = lines.flatMap((line, index) => line.discount && line.discount < line.unitPrice ? [index] : []);
+  if (!candidates.length || candidates.length > 12) return;
+  const masks = Array.from({ length: 2 ** candidates.length - 1 }, (_, mask) => mask + 1).sort((a, b) => a.toString(2).replace(/0/g, "").length - b.toString(2).replace(/0/g, "").length);
+  for (const mask of masks) {
+    const trial = lines.map((line) => ({ ...line }));
+    candidates.forEach((index, bit) => {
+      if (!(mask & (1 << bit))) return;
+      const line = trial[index], discount = round2(line.quantity * (line.unitPrice - (line.discount as number)));
+      Object.assign(line, { discount, netAmount: lineTotal(line.quantity, line.unitPrice, discount) });
+    });
+    if (closeTo(paid(trial), total)) { lines.splice(0, lines.length, ...trial); return; }
+  }
+}
+
 export function invoiceDraftFromAi(ai: AiInvoice, fileName: string, context: DraftContext = {}): InvoiceDraft {
-  const inclusive = ai.prices_include_vat, notes: string[] = [];
+  const notes: string[] = [];
   const rows = ai.vat_summary.filter((row) => row.rate !== null);
   const byCode = new Map(rows.flatMap((row) => row.code ? [[row.code.toUpperCase(), row.rate as number] as const] : []));
   const onlyRate = new Set(rows.map((row) => row.rate)).size === 1 ? rows[0].rate : null;
-  const lines = ai.lines.map((line) => aiLine(line, line.vat_rate ?? (line.vat_code ? byCode.get(line.vat_code.toUpperCase()) : undefined) ?? onlyRate, inclusive));
+  const lines = ai.lines.map((line) => aiLine(line, line.vat_rate ?? (line.vat_code ? byCode.get(line.vat_code.toUpperCase()) : undefined) ?? onlyRate, false));
+  const statedVat = ai.vat_total ?? (ai.vat_summary.length && ai.vat_summary.every((row) => row.vat !== null) ? round2(ai.vat_summary.reduce((sum, row) => sum + (row.vat as number), 0)) : null);
+  const itemsTotal = lines.reduce((sum, line) => sum + line.netAmount, 0);
+  // Receipts include VAT. An invoice does so only if its own figures prove it: the
+  // items already equal the total, with VAT charged on top of nothing.
+  const inclusive = ai.document_type === "receipt" ? ai.prices_include_vat : ai.prices_include_vat && ai.gross_total !== null && (statedVat ?? 0) > 0 && closeTo(itemsTotal, ai.gross_total, 0.05);
+  for (const line of lines) line.inclusive = inclusive;
 
+  if (inclusive) repairOfferPrices(lines, ai.gross_total);
   const paid = round2(lines.reduce((sum, line) => sum + line.netAmount, 0));
   const beforeDiscount = round2(lines.reduce((sum, line) => sum + line.netAmount + (line.discount ?? 0), 0));
   const rated = lines.length > 0 && lines.every((line) => line.vatRate !== null);

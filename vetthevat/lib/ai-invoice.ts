@@ -9,6 +9,7 @@ export type AiInvoiceLine = {
   unit: string | null;
   unit_price: number | null;
   discount: number | null;
+  offer_price: number | null;
   amount: number | null;
   vat_rate: number | null;
   vat_code: string | null;
@@ -40,10 +41,10 @@ Copy every number exactly as printed. If a value is not printed or is unreadable
 Never calculate, infer or guess a value that is not on the page.
 Return one entry in lines for each item, in printed order, joining a description that wraps onto several rows. A quantity printed before the name belongs in quantity, not in description.
 amount is the line amount as printed, before any discount shown beneath the item.
-Discount lines (e.g. '-£6.00' or 'Cc £12.00' under an item) belong to the item above them: put the money taken off, as a positive number, in that item's discount field, not as a separate line.
+Lines under an item belong to that item and are never separate lines. unit_price is the normal price each (e.g. '£15.00 each'). offer_price is a member or offer price each (e.g. 'Cc £12.00' means 12.00); it is NOT a discount. discount is only the money taken off, printed as a minus amount (e.g. '-£6.00' means 6.00).
 vat_rate is the percentage printed on the line. vat_code is a VAT letter printed on the line (e.g. A, B, S, Z). Copy any VAT rate table into vat_summary.
 subtotal, net_total and vat_total must each be a figure actually printed with its own label; never work them out from other figures, and use null if not printed. subtotal is the figure printed as Subtotal. net_total is the goods total excluding VAT. gross_total is the final amount to pay (Total, Please pay, Balance due).
-prices_include_vat is true for till receipts and any document whose item prices already include VAT.
+prices_include_vat is true for till receipts, and for an invoice only if it states that its prices include VAT. Otherwise it is false.
 VAT: if no VAT number or VAT amount is shown, set vat_number and vat_total to null.
 page_info is the page marking exactly as printed (e.g. "Page 1 / 2"), or null.`;
 
@@ -60,8 +61,8 @@ export const AI_INVOICE_JSON_SCHEMA = {
       type: "array",
       items: {
         type: "object",
-        properties: { description: { type: "string" }, quantity: money, unit: text, unit_price: money, discount: money, amount: money, vat_rate: money, vat_code: text },
-        required: ["description", "quantity", "unit", "unit_price", "discount", "amount", "vat_rate", "vat_code"]
+        properties: { description: { type: "string" }, quantity: money, unit: text, unit_price: money, discount: money, offer_price: money, amount: money, vat_rate: money, vat_code: text },
+        required: ["description", "quantity", "unit", "unit_price", "discount", "offer_price", "amount", "vat_rate", "vat_code"]
       }
     },
     vat_summary: {
@@ -96,7 +97,7 @@ export function parseAiInvoice(value: unknown): AiInvoice {
   const lines = source.lines.slice(0, MAX_LINES).flatMap((raw): AiInvoiceLine[] => {
     const line = record(raw), description = line && textValue(line.description, 2000);
     if (!line || !description) return [];
-    return [{ description, quantity: positive(line.quantity) || null, unit: textValue(line.unit, 20), unit_price: positive(line.unit_price), discount: positive(line.discount), amount: numberValue(line.amount), vat_rate: positive(line.vat_rate), vat_code: textValue(line.vat_code, 4) }];
+    return [{ description, quantity: positive(line.quantity) || null, unit: textValue(line.unit, 20), unit_price: positive(line.unit_price), discount: positive(line.discount), offer_price: positive(line.offer_price), amount: numberValue(line.amount), vat_rate: positive(line.vat_rate), vat_code: textValue(line.vat_code, 4) }];
   });
   const vatSummary = (Array.isArray(source.vat_summary) ? source.vat_summary : []).slice(0, 10).flatMap((raw): AiVatSummaryRow[] => {
     const row = record(raw);

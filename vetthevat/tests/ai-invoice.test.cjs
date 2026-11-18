@@ -10,7 +10,7 @@ const { invoiceExtractHandler, INVOICE_EXTRACT_LIMITS } = loadSource('lib/server
 
 // All parties and amounts are synthetic.
 const today = new Date('2026-11-18T12:00:00Z');
-const line = (extra) => ({ description: 'Item', quantity: 1, unit: null, unit_price: null, discount: null, amount: null, vat_rate: null, vat_code: null, ...extra });
+const line = (extra) => ({ description: 'Item', quantity: 1, unit: null, unit_price: null, discount: null, offer_price: null, amount: null, vat_rate: null, vat_code: null, ...extra });
 const invoice = (extra = {}) => parseAiInvoice({ document_type: 'invoice', supplier_name: 'Example Foods Ltd', customer_name: 'Example Bistro Ltd', vat_number: null, invoice_number: 'A-1', invoice_date: '2026-11-17', due_date: null, prices_include_vat: false, lines: [], vat_summary: [], subtotal: null, net_total: null, vat_total: null, gross_total: null, page_info: null, ...extra });
 const draft = (extra, context = {}) => invoiceDraftFromAi(invoice(extra), 'scan.jpg', { today, pageCount: 1, readBy: 'gemini', ...context });
 
@@ -71,6 +71,26 @@ test('receipt discounts stay on their items and reconcile to subtotal and total'
   assert.equal(result.supplierVatNumber, 'GB220430231');
   assert.deepEqual([result.lines[0].discount, result.lines[0].printed, result.lines[0].pricing], ['6', '24.00', 'inclusive']);
   assert.ok(!result.warnings.some(w => /may be missing|check digit/.test(w)));
+});
+
+test('member prices give exact discounts, and one returned as a discount is repaired from the total', () => {
+  const offer = draft({ document_type: 'receipt', prices_include_vat: true, lines: [line({ quantity: 3, unit_price: 22.75, offer_price: 10, discount: 10, amount: 68.25 })], gross_total: 30 });
+  assert.deepEqual([offer.lines[0].discount, offer.lines[0].printed], ['38.25', '30.00']);
+  const wrong = draft({ document_type: 'receipt', prices_include_vat: true, lines: [line({ quantity: 3, unit_price: 22.75, discount: 10, amount: 68.25 }), line({ quantity: 2, unit_price: 15, discount: 6, amount: 30 })], gross_total: 54 });
+  assert.deepEqual(wrong.lines.map(l => [l.discount, l.printed]), [['38.25', '30.00'], ['6', '24.00']]);
+  assert.ok(!wrong.warnings.some(w => /may be missing/.test(w)));
+  const unknown = draft({ document_type: 'receipt', prices_include_vat: true, lines: [line({ quantity: 1, unit_price: 5, discount: 1, amount: 5 })], gross_total: 99 });
+  assert.equal(unknown.lines[0].discount, '1');
+  assert.ok(unknown.warnings.some(w => /may be missing/.test(w)));
+});
+
+test('an invoice is only treated as VAT-inclusive when its figures prove it', () => {
+  const noVat = draft({ prices_include_vat: true, lines: [line({ quantity: 1, unit_price: 67.58, amount: 67.58 })], gross_total: 67.58 });
+  assert.equal(noVat.lines[0].pricing, 'exclusive');
+  const onTop = draft({ prices_include_vat: true, lines: [line({ quantity: 1, unit_price: 100, amount: 100, vat_rate: 20 })], vat_total: 20, gross_total: 120 });
+  assert.equal(onTop.lines[0].pricing, 'exclusive');
+  const included = draft({ prices_include_vat: true, lines: [line({ quantity: 1, unit_price: 120, amount: 120, vat_rate: 20 })], vat_total: 20, gross_total: 120 });
+  assert.equal(included.lines[0].pricing, 'inclusive');
 });
 
 test('VAT codes use the printed VAT table; a bad VAT number is flagged', () => {

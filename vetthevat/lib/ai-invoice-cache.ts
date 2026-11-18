@@ -4,7 +4,7 @@
 import { parseAiInvoice, type AiInvoice } from "@/lib/ai-invoice";
 
 export const AI_CACHE_TTL_MS = 86400000;
-const PREFIX = "vtv-ai-invoice:v1:", MAX_ENTRIES = 50;
+const PREFIX = "vtv-ai-invoice:v2:", MAX_ENTRIES = 50;
 type CacheStore = Pick<Storage, "getItem" | "setItem" | "removeItem" | "key" | "length">;
 export type CachedReading = { invoice: AiInvoice; pageCount: number };
 

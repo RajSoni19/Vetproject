@@ -14,6 +14,7 @@ import { hasTotalsProblem, invoiceDraftFromAi, invoiceDraftFromText, type Chosen
 import { parseAiInvoice, type AiInvoice } from "@/lib/ai-invoice";
 import { businessData, businessForm } from "@/lib/browser-business";
 import { aiCacheKey, readAiCache, writeAiCache } from "@/lib/ai-invoice-cache";
+import { printedPageCount } from "@/lib/invoice-checks";
 
 type SupplierOption = { id: string; name: string; vat_number: string | null; status: string };
 // The company's saved active suppliers (a few pages of 100).
@@ -116,17 +117,28 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
       const saved = store ? readAiCache(store, cacheKey) : null;
       if (saved) { aiReading.current = { ids: pageIds(list), ...saved }; return true; }
     } catch { cacheKey = null; }
-    const attempt = new AbortController(), stop = () => attempt.abort(), timer = window.setTimeout(stop, AI_TIMEOUT_MS);
+    const attempt = new AbortController(), stop = () => attempt.abort();
+    let timer = window.setTimeout(stop, AI_TIMEOUT_MS);
     abort.signal.addEventListener("abort", stop, { once: true });
     try {
       setStatus("Reading invoice…"); setProgress(30);
       const upload = await preparePagesForUpload(files, attempt.signal), form = new FormData();
       upload.pages.forEach((part, index) => form.append("page", part, `page-${index + 1}.${part.type === "application/pdf" ? "pdf" : "jpg"}`));
       setProgress(55);
-      const result = await businessForm(companyId, "invoice-extract", form, attempt.signal);
-      const reading = { invoice: parseAiInvoice(result?.invoice), pageCount: upload.pageCount };
+      const send = async () => parseAiInvoice((await businessForm(companyId, "invoice-extract", form, attempt.signal))?.invoice);
+      const unreconciled = (value: AiInvoice) => hasTotalsProblem(invoiceDraftFromAi(value, "", { companyName, pageCount: upload.pageCount }));
+      let invoice = await send(), clean = !unreconciled(invoice);
+      // Totals do not reconcile and no page is known to be missing: read it once more.
+      if (!clean && (printedPageCount(invoice.page_info) ?? 0) <= upload.pageCount) {
+        setStatus("Double-checking the totals"); setProgress(75);
+        window.clearTimeout(timer); timer = window.setTimeout(stop, AI_TIMEOUT_MS);
+        try { const second = await send(); if (!unreconciled(second)) { invoice = second; clean = true; } }
+        catch { if (abort.signal.aborted) throw new Error("Stopped."); }
+      }
+      const reading = { invoice, pageCount: upload.pageCount };
       aiReading.current = { ids: pageIds(list), ...reading };
-      if (store && cacheKey) { try { writeAiCache(store, cacheKey, reading); } catch { /* storage full or blocked */ } }
+      // Only a reading that reconciles is reused; anything else is read afresh next time.
+      if (clean && store && cacheKey) { try { writeAiCache(store, cacheKey, reading); } catch { /* storage full or blocked */ } }
       return true;
     } catch {
       if (!abort.signal.aborted) aiFailed.current = true;
@@ -266,8 +278,8 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
           {progressBox}{errorBox}
         </div>
       </Card>
-      <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <Card className="grid min-w-0 gap-3 overflow-hidden p-2">{pages.map((page, index) => <div key={page.id} className="min-w-0">
+      <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[0.6fr_1.4fr]">
+        <Card className="grid min-w-0 gap-3 overflow-hidden p-2 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto">{pages.map((page, index) => <div key={page.id} className="min-w-0">
           {pages.length > 1 ? <div className="flex items-center justify-between px-1 pb-1 text-xs text-muted"><span className="font-semibold">Page {index + 1}</span>{index > 0 ? <button type="button" className="underline" disabled={reading} onClick={() => void removePage(page.id)}>Remove page</button> : null}</div> : null}
           {page.file.type === "application/pdf"
             ? <iframe title={`Uploaded invoice page ${index + 1}`} src={page.preview} className="h-[70vh] w-full rounded" />
