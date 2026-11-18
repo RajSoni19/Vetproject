@@ -57,7 +57,7 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
     </div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {tiles.map(([Icon, label, value, hint]) => <Card key={label} className="p-4">
+      {tiles.map(([Icon, label, value, hint]) => <Card key={label} className="stat-tile p-4">
         <div className="flex items-center justify-between"><p className="text-sm font-semibold text-muted">{label}</p><Icon className="h-4 w-4 text-brand-700" aria-hidden /></div>
         <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p><p className="text-xs text-muted">{hint}</p></Card>)}
     </div>
@@ -66,7 +66,7 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
       {([["/app/invoices/upload", Camera, "Scan an invoice", "Photo or PDF — details read for you"],
         ["/app/ors/prices", Scale, "Compare prices", "Cheapest supplier for each product"],
         ["/app/bank-matching", Landmark, "Match bank payments", "See the VAT in each payment"]] as const).map(([href, Icon, title, text]) =>
-        <Link key={href} href={href} className="group flex items-center gap-3 rounded-xl border border-line bg-white p-4 hover:border-brand-500">
+        <Link key={href} href={href} className="quick-link group flex items-center gap-3 rounded-xl border border-line bg-white p-4 hover:border-brand-500">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon className="h-5 w-5" /></span>
           <span className="min-w-0 flex-1"><span className="block font-semibold">{title}</span><span className="block text-xs text-muted">{text}</span></span>
           <ArrowRight className="h-4 w-4 text-muted group-hover:text-brand-700" /></Link>)}

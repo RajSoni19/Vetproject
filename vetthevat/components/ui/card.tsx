@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-lg border border-line bg-white shadow-subtle", className)} {...props} />;
+  return <div className={cn("ui-card rounded-lg border border-line bg-white shadow-subtle", className)} {...props} />;
 }
 
 export function Badge({ children, tone = "green" }: { children: React.ReactNode; tone?: "green" | "amber" | "red" | "blue" | "grey" }) {

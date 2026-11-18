@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUp, BarChart3, CheckCircle2, ChevronRight, Download, Fi
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { PriceComparison, ProductComparison } from "@/lib/price-comparison";
+import { matchesProductSearch, type PriceComparison, type ProductComparison } from "@/lib/price-comparison";
 import { normalizePhone, whatsappNumber, whatsappOrderMessage, type SupplierOrder } from "@/lib/supplier-orders";
 import { SupplierOrderHistory } from "@/components/supplier-order-history";
 
@@ -87,7 +87,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   const supplierColumns = useMemo(() => (data?.suppliers ?? []).slice(0, 4), [data]);
   const products = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return (data?.products ?? []).filter(p => !q || p.name.toLowerCase().includes(q) || p.suppliers.some(s => s.supplierName.toLowerCase().includes(q)));
+    return (data?.products ?? []).filter(p => !q || matchesProductSearch([p.name, ...(p.aliases ?? [])], q) || p.suppliers.some(s => s.supplierName.toLowerCase().includes(q)));
   }, [data, query]);
   const groups = useMemo<Group[]>(() => {
     const map = new Map<string, Group>();
@@ -186,7 +186,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
             <tbody>{products.map(product => {
               const inOrder = order.find(line => line.key === product.key);
               return <tr key={product.key} className="border-t border-line align-middle">
-                <td className="py-3 pr-3 font-semibold">{product.name}</td>
+                <td className="py-3 pr-3 font-semibold">{product.name}{product.aliases?.length ? <span className="block text-xs font-normal text-muted" title="Different spellings on supplier invoices, compared as one product">Also: {product.aliases.join(", ")}</span> : null}</td>
                 <td className="px-2 text-muted">{packSize(product.name)}</td>
                 {supplierColumns.map(s => { const price = product.suppliers.find(p => p.supplierId === s.id);
                   return <td key={s.id} className="px-2 py-2">{price ? <button type="button" onClick={() => add(product, s.id)} title={`Order from ${s.name}`} className={`w-full rounded-lg px-2 py-1.5 text-center tabular-nums ${price.cheapest && product.suppliers.length > 1 ? "border-2 border-emerald-400 bg-emerald-50" : "hover:bg-wash"}`}>

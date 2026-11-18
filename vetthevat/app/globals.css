@@ -41,8 +41,6 @@ body {
 .workspace[data-mode="ors"] .mode-selected,
 .workspace[data-mode="ors"] .mobile-mode,
 .workspace[data-mode="ors"] .mobile-bottom-nav [aria-current] { color: #c2410c; }
-.workspace[data-mode="ors"] .nav-item-active { background-color: #fff7ed; color: #c2410c; }
-.workspace[data-mode="ors"] .nav-item-active .nav-marker { background-color: #f97316; }
 .workspace[data-mode="ors"] .notification-count { background-color: #f97316; }
 .workspace[data-mode="ors"] .workflow-primary { background-color: #f97316; }
 .workspace[data-mode="ors"] .workflow-primary:hover { background-color: #c2410c; }
@@ -108,6 +106,23 @@ body {
   .financial-table tbody tr:last-child td { @apply border-b-0; }
   .money { @apply whitespace-nowrap text-right tabular-nums; }
 }
+
+/* Area themes: white boxes on a light tint of the area colour. Green for VAT,
+   orange for ORS; both come from the --brand-* values switched by data-mode. */
+.workspace { background: linear-gradient(180deg, rgb(var(--brand-100) / 0.6) 0, rgb(var(--brand-50)) 340px, rgb(var(--brand-50)) 100%); }
+.workspace-sidebar { background: linear-gradient(180deg, #fff 0%, #fff 55%, rgb(var(--brand-50)) 100%); border-right-color: rgb(var(--brand-100)); }
+.workspace-header { border-bottom-color: rgb(var(--brand-100)); box-shadow: inset 0 3px 0 rgb(var(--brand-500)); }
+.workspace .nav-item:hover { background-color: rgb(var(--brand-50)); color: rgb(var(--brand-800)); }
+.workspace .nav-item-active, .workspace .nav-item-active:hover { background-color: rgb(var(--brand-600)); color: #fff; box-shadow: 0 4px 12px -4px rgb(var(--brand-600) / 0.55); }
+.workspace .nav-item-active .nav-marker { background-color: #fff; }
+.workspace-main .border-line { border-color: rgb(var(--brand-100)); }
+.workspace .ui-card { border-color: rgb(var(--brand-100)); box-shadow: 0 1px 2px rgb(var(--brand-900) / 0.04), 0 8px 20px -12px rgb(var(--brand-500) / 0.28); }
+.workspace .stat-tile { border-top: 4px solid rgb(var(--brand-500)); background: linear-gradient(155deg, #fff 55%, rgb(var(--brand-50)) 100%); }
+.workspace .quick-link { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.workspace .quick-link:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px rgb(var(--brand-600) / 0.45); border-color: rgb(var(--brand-500)); }
+.workspace .financial-table th { background-color: rgb(var(--brand-50)); color: rgb(var(--brand-800)); border-bottom-color: rgb(var(--brand-100)); }
+.workspace .financial-table tbody tr:hover { background-color: rgb(var(--brand-50) / 0.7); }
+.workspace .field-control:focus { border-color: rgb(var(--brand-500)); box-shadow: 0 0 0 3px rgb(var(--brand-500) / 0.15); outline: none; }
 
 .workspace :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; scroll-margin-top: 132px; scroll-margin-bottom: 90px; }
 .workspace input[type="checkbox"] { accent-color: rgb(var(--primary)); width: 16px; height: 16px; flex-shrink: 0; }

@@ -52,6 +52,16 @@ export function whatsappOrderMessage(order: { supplierName: string; lines: { qua
 export function whatsappNumber(phone: string | null) { const digits = (phone ?? "").replace(/\D/g, ""); return digits.startsWith("0") && !digits.startsWith("00") ? "44" + digits.slice(1) : digits.startsWith("00") ? digits.slice(2) : digits; }
 
 // Mobile number typed by a person -> "+447306361031" (UK numbers may start with 0), or null if it can't be a phone number.
+// UK Companies House number: 8 digits ("13600353"), or 2 letters + 6 digits
+// ("SC123456"). Short numbers get their leading zeros back. "" = none given;
+// false = not a valid number.
+export function normalizeCompanyNumber(input: unknown): string | false {
+  const value = String(input ?? "").toUpperCase().replace(/[\s.-]/g, "");
+  if (!value) return "";
+  const padded = /^\d{1,8}$/.test(value) ? value.padStart(8, "0") : value;
+  return /^(\d{8}|[A-Z]{2}\d{6})$/.test(padded) ? padded : false;
+}
+
 export function normalizePhone(input: unknown): string | null {
   if (typeof input !== "string") return null;
   const raw = input.trim();

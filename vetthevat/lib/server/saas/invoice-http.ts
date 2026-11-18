@@ -1,7 +1,7 @@
 // Prepared controller only. No route imports this module and proxy denies the
 // /api/business namespace until real authorization/persistence tests pass.
 import {comparePrices} from "@/lib/price-comparison";
-import {supplierOrderInput,supplierOrderStatusInput,SupplierOrderInputError,normalizePhone} from "@/lib/supplier-orders";
+import {supplierOrderInput,supplierOrderStatusInput,SupplierOrderInputError,normalizePhone,normalizeCompanyNumber} from "@/lib/supplier-orders";
 import {ApiError,apiV1,jsonBody,mutationHeaders} from "@/lib/server/api-v1";
 import {requireBusinessScope} from "@/lib/server/saas/request-context";
 import {boundedUpload} from "@/lib/server/stage1/documents";
@@ -61,12 +61,32 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
       const company=request.headers.get("x-company-id");
       if(request.method==="GET"){
         const access=await requireBusinessScope(request,company,"contacts:read",services);
-        return services.database.scoped(access,async tx=>({phone:(await tx.query("SELECT phone FROM business.company_contacts WHERE company_id=$1",[access.companyId])).rows[0]?.phone??null}));
+        // to_jsonb reads whichever columns exist, so this works before and after migration 053.
+        return services.database.scoped(access,async tx=>{const row=((await tx.query("SELECT to_jsonb(c) AS row FROM business.company_contacts c WHERE company_id=$1",[access.companyId])).rows[0]?.row??{}) as Record<string,string|null>;return {phone:row.phone??null,companyNumber:row.company_number??null,registeredAddress:row.registered_address??null};});
       }
       if(request.method==="PUT"){
-        const access=await requireBusinessScope(request,company,"contacts:write",services),body=await jsonBody(request,2000),phone=normalizePhone((body as Record<string,unknown>)?.phone);
-        if(!phone)throw new ApiError(400,"INVALID_REQUEST","Enter a valid mobile number, for example 07306 361031.");
-        return services.database.scoped(access,async tx=>{await tx.query("INSERT INTO business.company_contacts(company_id,phone) VALUES($1,$2) ON CONFLICT (company_id) DO UPDATE SET phone=EXCLUDED.phone,updated_at=now()",[access.companyId,phone]);return {phone};});
+        // Each field is optional: a missing field is left unchanged, an empty one is cleared.
+        const access=await requireBusinessScope(request,company,"contacts:write",services),body=(await jsonBody(request,4000) ?? {}) as Record<string,unknown>;
+        const phone=body.phone===undefined?undefined:normalizePhone(body.phone);
+        if(phone===null||phone==="")throw new ApiError(400,"INVALID_REQUEST","Enter a valid mobile number, for example 07306 361031.");
+        const companyNumber=body.companyNumber===undefined?undefined:normalizeCompanyNumber(body.companyNumber);
+        if(companyNumber===false)throw new ApiError(400,"INVALID_REQUEST","Enter the 8-character company number from Companies House, for example 13600353.");
+        const address=body.registeredAddress===undefined?undefined:String(body.registeredAddress??"").replace(/\s+/g," ").trim();
+        if(address!==undefined&&address.length>500)throw new ApiError(400,"INVALID_REQUEST","The registered office address is too long.");
+        return services.database.scoped(access,async tx=>{
+          if(companyNumber!==undefined||address!==undefined){
+            const ready=Number((await tx.query("SELECT count(*) FROM information_schema.columns WHERE table_schema='business' AND table_name='company_contacts' AND column_name IN ('company_number','registered_address')")).rows[0].count)===2;
+            if(!ready)throw new ApiError(503,"UNAVAILABLE","Company number and address can be saved once the database update is applied.");
+          }
+          const columns:string[]=[],values:unknown[]=[access.companyId];
+          const add=(column:string,value:unknown)=>{values.push(value);columns.push(column);};
+          if(phone!==undefined)add("phone",phone);
+          if(companyNumber!==undefined)add("company_number",companyNumber||null);
+          if(address!==undefined)add("registered_address",address||null);
+          if(columns.length)await tx.query(`INSERT INTO business.company_contacts(company_id,${columns.join(",")}) VALUES($1,${columns.map((_,i)=>"$"+(i+2)).join(",")}) ON CONFLICT (company_id) DO UPDATE SET ${columns.map(c=>`${c}=EXCLUDED.${c}`).join(",")},updated_at=now()`,values);
+          const row=((await tx.query("SELECT to_jsonb(c) AS row FROM business.company_contacts c WHERE company_id=$1",[access.companyId])).rows[0]?.row??{}) as Record<string,string|null>;
+          return {phone:row.phone??null,companyNumber:row.company_number??null,registeredAddress:row.registered_address??null};
+        });
       }
       throw new ApiError(405,"INVALID_REQUEST","Operation unavailable.");
     }

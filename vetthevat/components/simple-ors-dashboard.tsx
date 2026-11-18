@@ -39,11 +39,11 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
     <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">{companyName ? `${companyName} · ` : ""}Your purchasing at a glance, last 12 weeks</p></div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {([[Package, loading ? "…" : String(prices!.totals.products), "Products you buy", "From your supplier invoices", "bg-blue-50 text-blue-700"],
-        [Users, loading ? "…" : String(prices!.totals.suppliers), "Suppliers", "You bought from", "bg-indigo-50 text-indigo-700"],
-        [PoundSterling, loading ? "…" : money(prices!.totals.potentialSaving, currency), "You could save", "At the cheapest prices", "bg-emerald-50 text-emerald-700"],
-        [BarChart3, loading ? "…" : String(prices!.totals.alerts), "Price changes", "10% or more", "bg-amber-50 text-amber-700"]] as const).map(([Icon, value, label, hint, tone]) =>
-        <Card key={label} className="flex items-center gap-3 p-4"><span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${tone}`}><Icon className="h-6 w-6" /></span>
+      {([[Package, loading ? "…" : String(prices!.totals.products), "Products you buy", "From your supplier invoices", "bg-brand-100 text-brand-700"],
+        [Users, loading ? "…" : String(prices!.totals.suppliers), "Suppliers", "You bought from", "bg-brand-100 text-brand-700"],
+        [PoundSterling, loading ? "…" : money(prices!.totals.potentialSaving, currency), "You could save", "At the cheapest prices", "bg-brand-600 text-white"],
+        [BarChart3, loading ? "…" : String(prices!.totals.alerts), "Price changes", "10% or more", "bg-brand-100 text-brand-700"]] as const).map(([Icon, value, label, hint, tone]) =>
+        <Card key={label} className="stat-tile flex items-center gap-3 p-4"><span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${tone}`}><Icon className="h-6 w-6" /></span>
           <div className="min-w-0"><p className="text-2xl font-bold tabular-nums">{value}</p><p className="text-sm font-semibold">{label}</p><p className="text-xs text-muted">{hint}</p></div></Card>)}
     </div>
 
@@ -52,7 +52,7 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
         ["/app/ors/orders", Package, "Orders", "Sent to suppliers, mark delivered"],
         ["/app/ors/supplier-invoices/upload", Camera, "Scan supplier invoice", "Builds your product prices"],
         ["/app/ors/supplier-invoices", FileText, "Supplier invoices", "Everything you have saved"]] as const).map(([href, Icon, title, text]) =>
-        <Link key={href} href={href} className="group flex items-center gap-3 rounded-xl border border-line bg-white p-4 hover:border-brand-500">
+        <Link key={href} href={href} className="quick-link group flex items-center gap-3 rounded-xl border border-line bg-white p-4 hover:border-brand-500">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon className="h-5 w-5" /></span>
           <span className="min-w-0 flex-1"><span className="block font-semibold">{title}</span><span className="block text-xs text-muted">{text}</span></span>
           <ArrowRight className="h-4 w-4 text-muted group-hover:text-brand-700" /></Link>)}

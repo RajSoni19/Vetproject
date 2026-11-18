@@ -12,7 +12,7 @@ export type SupplierPrice = {
   changePercent: number | null; lowestPrice: number; observations: number; lastQuantity: number; cheapest: boolean;
 };
 export type ProductComparison = {
-  key: string; name: string; currency: string; suppliers: SupplierPrice[];
+  key: string; name: string; aliases: string[]; currency: string; suppliers: SupplierPrice[];
   bestSupplierId: string; bestPrice: number; highestPrice: number; savingPercent: number;
   lastPaidSupplierId: string; lastPaidPrice: number; lastQuantity: number; potentialSaving: number;
 };
@@ -27,13 +27,63 @@ export type PriceComparison = {
 const round = (value: number, places = 2) => Math.round((value + Number.EPSILON) * 10 ** places) / 10 ** places;
 
 // Same product across invoices and suppliers: upper-case words without
-// supplier stock codes, punctuation or repeated spaces.
-export function productKey(description: string) {
-  return description.toUpperCase()
+// supplier stock codes, punctuation, plurals, descriptive words such as
+// "loose" or "fresh", or word order. "Loose tomatoes" and "TOMATOES" share a key.
+const FILLER = ["LOOSE", "FRESH"];
+function singular(word: string) {
+  if (word.length < 4 || /\d/.test(word)) return word;
+  if (/OES?$/.test(word)) return word.replace(/OES?$/, "O");          // TOMATOES, TOMATOE -> TOMATO
+  if (/IES$/.test(word)) return word.slice(0, -3) + "Y";              // CHERRIES -> CHERRY
+  if (/(SS|X|CH|SH)ES$/.test(word)) return word.slice(0, -2);         // GLASSES -> GLASS
+  if (/[^SU]S$/.test(word)) return word.slice(0, -1);                 // ONIONS -> ONION
+  return word;
+}
+// Edit distance (insert, delete, change, or swap two neighbouring letters).
+function distance(a: string, b: string) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)] as number[]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[a.length][b.length];
+}
+// Supplier spelling mistakes: OKARA ~ OKRA, LOSEE ~ LOOSE. Sizes and short words must
+// match exactly, and short words must also keep their last letter (BREAD is not BREAM).
+export function similarWord(a: string, b: string) {
+  if (a === b) return true;
+  const shortest = Math.min(a.length, b.length);
+  if (shortest < 4 || /\d/.test(a + b) || a[0] !== b[0]) return false;
+  if (shortest <= 5) return a.at(-1) === b.at(-1) && distance(a, b) <= 1;
+  return distance(a, b) <= (shortest >= 7 ? 2 : 1);
+}
+const isFiller = (word: string) => FILLER.some(filler => word === filler || word.length >= 5 && word[0] === filler[0] && distance(word, filler) <= 2);
+function productWords(description: string) {
+  const words = description.toUpperCase()
     .replace(/^\s*[A-Z]{0,6}\d{3,}[A-Z0-9]*\s+/, "")      // leading stock code "51010 " / "CARTON1 "
     .replace(/[^A-Z0-9%./ ]+/g, " ")
     .replace(/\b(\d+)\s*(KG|G|L|LTR|LITRE|ML|CL|GAL)\b/g, "$1$2")
-    .replace(/\s+/g, " ").trim();
+    .replace(/\bCLASS\s+(1|I|ONE)\b/g, " ")
+    .split(/\s+/).filter(Boolean).map(singular);
+  const kept = words.filter(word => !isFiller(word));
+  return (kept.length ? kept : words).sort();
+}
+export function productKey(description: string) { return productWords(description).join(" "); }
+// Same product despite small spelling differences: every word pairs with a similar word.
+export function sameProduct(a: string, b: string) {
+  const left = a.split(" ").filter(Boolean), right = b.split(" ").filter(Boolean);
+  if (left.length !== right.length) return false;
+  const used = new Set<number>();
+  return left.every(word => { const at = right.findIndex((other, i) => !used.has(i) && similarWord(word, other)); if (at < 0) return false; used.add(at); return true; });
+}
+// Search that tolerates the same mistakes: every searched word is like a word of the name.
+export function matchesProductSearch(names: readonly string[], query: string) {
+  const wanted = productWords(query);
+  if (!wanted.length) return true;
+  return names.some(name => {
+    const text = name.toUpperCase(), words = productWords(name);
+    return text.includes(query.trim().toUpperCase()) || wanted.every(word => words.some(other => similarWord(word, other) || other.startsWith(word)));
+  });
 }
 
 export function comparePrices(rows: readonly PriceObservation[], options: { asOf: string; weeks?: number; thresholdPercent?: number }): PriceComparison {
@@ -42,7 +92,9 @@ export function comparePrices(rows: readonly PriceObservation[], options: { asOf
   const recent = rows.filter(row => row.issuedOn >= from && row.issuedOn <= to && row.unitPrice > 0 && row.quantity > 0 && productKey(row.description));
   const byProduct = new Map<string, PriceObservation[]>();
   for (const row of recent) {
-    const key = `${row.currency}|${productKey(row.description)}`;
+    const words = productKey(row.description);
+    let key = `${row.currency}|${words}`;
+    if (!byProduct.has(key)) key = [...byProduct.keys()].find(existing => existing.startsWith(`${row.currency}|`) && sameProduct(existing.slice(row.currency.length + 1), words)) ?? key;
     const list = byProduct.get(key) ?? []; list.push(row); byProduct.set(key, list);
   }
   const newestFirst = (a: PriceObservation, b: PriceObservation) => b.issuedOn.localeCompare(a.issuedOn) || b.invoiceNumber.localeCompare(a.invoiceNumber) || b.lineId.localeCompare(a.lineId);
@@ -51,7 +103,10 @@ export function comparePrices(rows: readonly PriceObservation[], options: { asOf
     const suppliers = new Map<string, PriceObservation[]>();
     for (const row of list) { const s = suppliers.get(row.supplierId) ?? []; s.push(row); suppliers.set(row.supplierId, s); }
     // Display name without the supplier's stock code ("51010 COBRA BEER KEG").
-    const name = [...list].sort(newestFirst)[0].description.trim().replace(/^\s*[A-Za-z]{0,6}\d{3,}[A-Za-z0-9]*\s+(?=\S)/, "");
+    const clean = (text: string) => text.trim().replace(/^\s*[A-Za-z]{0,6}\d{3,}[A-Za-z0-9]*\s+(?=\S)/, "");
+    const name = clean([...list].sort(newestFirst)[0].description);
+    // Other spellings grouped under this product, so people can see what was combined.
+    const aliases = [...new Map(list.map(row => [clean(row.description).toUpperCase(), clean(row.description)])).values()].filter(alias => alias.toUpperCase() !== name.toUpperCase());
     const prices: SupplierPrice[] = [...suppliers.values()].map(observations => {
       observations.sort(newestFirst);
       const latest = observations[0];
@@ -70,7 +125,7 @@ export function comparePrices(rows: readonly PriceObservation[], options: { asOf
     prices.sort((a, b) => a.latestPrice - b.latestPrice || a.supplierName.localeCompare(b.supplierName));
     const lastPaid = [...list].sort(newestFirst)[0];
     products.push({
-      key, name, currency: lastPaid.currency, suppliers: prices, bestSupplierId: best.supplierId, bestPrice, highestPrice,
+      key, name, aliases, currency: lastPaid.currency, suppliers: prices, bestSupplierId: best.supplierId, bestPrice, highestPrice,
       savingPercent: highestPrice > 0 ? round((highestPrice - bestPrice) / highestPrice * 100, 1) : 0,
       lastPaidSupplierId: lastPaid.supplierId, lastPaidPrice: lastPaid.unitPrice, lastQuantity: lastPaid.quantity,
       potentialSaving: round(Math.max(0, lastPaid.unitPrice - bestPrice) * lastPaid.quantity)

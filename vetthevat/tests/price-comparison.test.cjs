@@ -48,6 +48,34 @@ test('custom window and threshold; nothing outside the window counts', () => {
   assert.equal(comparePrices(rows, { asOf: '2026-11-13', weeks: 2 }).products[0].suppliers[0].observations, 1);
 });
 
+test('supplier spelling mistakes and "loose" are compared as one product', () => {
+  const { sameProduct, matchesProductSearch } = loadSource('lib/price-comparison');
+  const same = (a, b) => sameProduct(productKey(a), productKey(b));
+  assert.ok(same('Loose tomatoes', 'Tomatoes'));
+  assert.ok(same('Losee tomatoes', 'TOMATOES'));
+  assert.ok(same('Okara', 'Okra'));
+  assert.ok(same('Red onions', 'onion red'));
+  assert.ok(same('Corriander', 'Coriander'));
+  assert.ok(!same('Bread', 'Bream'));
+  assert.ok(!same('Beef', 'Beer'));
+  assert.ok(!same('Tomatoes 6kg', 'Tomatoes 5kg'));
+  assert.ok(!same('Cherry tomatoes', 'Tomatoes'));
+  const result = comparePrices([
+    obs('rk', 'Loose tomatoes', 1.20, '2026-11-01'), obs('vbns', 'Tomatoes', 1.05, '2026-11-02'),
+    obs('costco', 'Losee tomatoes', 1.10, '2026-11-03'), obs('rk', 'Okara', 3.00, '2026-11-01'), obs('vbns', 'Okra', 2.70, '2026-11-02')
+  ], { asOf: '2026-11-13' });
+  assert.equal(result.products.length, 2);
+  const tomatoes = result.products.find(p => /tomato/i.test(p.name));
+  assert.equal(tomatoes.suppliers.length, 3);
+  assert.equal(tomatoes.bestSupplierId, 'vbns');
+  assert.equal(tomatoes.name, 'Losee tomatoes');
+  assert.deepEqual(tomatoes.aliases.sort(), ['Loose tomatoes', 'Tomatoes']);
+  assert.ok(matchesProductSearch([tomatoes.name, ...tomatoes.aliases], 'tomatos'));
+  assert.ok(matchesProductSearch(['Okara'], 'okra'));
+  assert.ok(matchesProductSearch(['Tomatoes'], 'tom'));
+  assert.ok(!matchesProductSearch(['Okara'], 'tomato'));
+});
+
 test('display name drops the supplier stock code', () => {
   assert.equal(comparePrices([obs('temple', '10442 Cobra Beer 24x330ml', 18.99, '2026-11-01')], { asOf: '2026-11-13' }).products[0].name, 'Cobra Beer 24x330ml');
 });
