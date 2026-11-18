@@ -639,7 +639,7 @@ function repairVatOcr(text: string) {
   });
 }
 
-function validUkVat(digits: string) {
+export function validUkVat(digits: string) {
   if (digits.length < 9) return false;
   const sum = [8, 7, 6, 5, 4, 3, 2].reduce((total, weight, index) => total + weight * Number(digits[index]), 0) + Number(digits.slice(7, 9));
   return sum % 97 === 0 || (sum + 55) % 97 === 0;
