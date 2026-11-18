@@ -2,6 +2,7 @@
 import { maxDocumentPages, validateDocumentSignature } from "@/lib/document-validation";
 import { layoutPositionedText, mergeImageOcr, normalizeDocumentText, pdfTextNeedsImageOcr } from "@/lib/document-text-layout";
 import { flattenLighting, textRegion, type OcrWordBox } from "@/lib/ocr-image";
+import { MAX_AI_PAGES, MAX_AI_REQUEST_BYTES } from "@/lib/invoice-checks";
 
 type Progress = (message: string, percent: number) => void;
 const maxPixels = 9000000;
@@ -43,6 +44,94 @@ function wordBoxes(data: unknown): OcrWordBox[] {
 function medianWordHeight(words: OcrWordBox[]) {
   const heights = words.filter((word) => word.confidence >= 55 && /[A-Za-z0-9]{2,}/.test(word.text)).map((word) => word.y1 - word.y0).sort((a, b) => a - b);
   return heights.length >= 8 ? heights[Math.floor(heights.length / 2)] : null;
+}
+
+// A PDF page with no usable text layer is a picture of a document.
+const pageLooksScanned = (text: string) => text.replace(/[^a-z0-9]/gi, "").length < 40 || !/\b(invoice|subtotal|total|vat|quotation|receipt)\b/i.test(text);
+
+async function openPdf(file: File, signal: AbortSignal) {
+  const pdfjs = await abortable(import("pdfjs-dist/legacy/build/pdf.mjs"), signal);
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.mjs", import.meta.url).toString();
+  const loading = pdfjs.getDocument({ data: new Uint8Array(await abortable(file.arrayBuffer(), signal)) });
+  try { return { loading, pdf: await abortable(loading.promise, signal) }; }
+  catch (error) { await loading.destroy().catch(() => undefined); throw error; }
+}
+
+// Photos and scanned PDFs need reading; a PDF with a real text layer does not.
+export async function documentNeedsReading(file: File, signal: AbortSignal) {
+  validateDocumentSignature(file.type, file.size, new Uint8Array(await abortable(file.slice(0, 1024).arrayBuffer(), signal)));
+  if (file.type !== "application/pdf") return true;
+  const { loading, pdf } = await openPdf(file, signal);
+  try {
+    for (let number = 1; number <= pdf.numPages; number++) {
+      const page = await abortable(pdf.getPage(number), signal), content = await abortable(page.getTextContent(), signal);
+      const text = normalizeDocumentText(layoutPositionedText(content.items.flatMap((item) => "str" in item ? [{ str: item.str, x: item.transform[4], y: item.transform[5], width: item.width, height: item.height || Math.abs(item.transform[3]) }] : [])));
+      page.cleanup();
+      if (pageLooksScanned(text)) return true;
+    }
+    return false;
+  } finally { await loading.destroy().catch(() => undefined); }
+}
+
+// Sizes tried for each page until all pages fit in one request.
+const uploadSizes: readonly [number, number][] = [[2400, 0.85], [2000, 0.8], [1600, 0.75], [1280, 0.7], [1000, 0.65]];
+type PageSource = { width: number; height: number; draw(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): Promise<void> };
+const newCanvas = (width: number, height: number) => { const canvas = document.createElement("canvas"); canvas.width = Math.max(1, Math.round(width)); canvas.height = Math.max(1, Math.round(height)); return canvas; };
+const jpeg = (canvas: HTMLCanvasElement, quality: number) => new Promise<Blob>((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("The page could not be prepared.")), "image/jpeg", quality));
+
+// What is sent to the AI reader: PDFs as they are when they fit in one request,
+// otherwise every page as a JPEG, sized so the whole invoice fits.
+export async function preparePagesForUpload(files: readonly File[], signal: AbortSignal) {
+  const limit = MAX_AI_REQUEST_BYTES - 40000, minimumPhotoBytes = 150000;
+  const pdfs = files.filter((file) => file.type === "application/pdf"), photoCount = files.length - pdfs.length;
+  const pdfBytes = pdfs.reduce((sum, file) => sum + file.size, 0);
+  const sendPdfs = pdfs.length > 0 && (photoCount ? (limit - pdfBytes) / photoCount >= minimumPhotoBytes : pdfBytes <= limit);
+  const sources: PageSource[] = [], cleanups: (() => void | Promise<void>)[] = [];
+  let pageCount = 0;
+  try {
+    for (const file of files) {
+      if (file.type !== "application/pdf") {
+        const bitmap = await abortable(createImageBitmap(file), signal);
+        cleanups.push(() => bitmap.close());
+        sources.push({ width: bitmap.width, height: bitmap.height, draw: async (context, canvas) => context.drawImage(bitmap, 0, 0, canvas.width, canvas.height) });
+        pageCount++;
+        continue;
+      }
+      const { loading, pdf } = await openPdf(file, signal);
+      cleanups.push(() => loading.destroy().catch(() => undefined));
+      pageCount += pdf.numPages;
+      if (pageCount > MAX_AI_PAGES) throw new Error("Too many pages to send together.");
+      if (sendPdfs) continue;
+      for (let number = 1; number <= pdf.numPages; number++) {
+        const page = await abortable(pdf.getPage(number), signal), base = page.getViewport({ scale: 1 });
+        sources.push({ width: base.width * 3, height: base.height * 3, draw: async (context, canvas) => { await abortable(page.render({ canvas, canvasContext: context, viewport: page.getViewport({ scale: canvas.width / base.width }) }).promise, signal); } });
+      }
+    }
+    if (!pageCount || pageCount > MAX_AI_PAGES) throw new Error("Too many pages to send together.");
+    const budget = sources.length ? Math.floor((limit - (sendPdfs ? pdfBytes : 0)) / sources.length) : 0, pages: Blob[] = sendPdfs ? [...pdfs] : [];
+    for (const source of sources) {
+      const scale = Math.min(1, uploadSizes[0][0] / Math.max(source.width, source.height));
+      const master = newCanvas(source.width * scale, source.height * scale), context = master.getContext("2d");
+      if (!context) throw new Error("Image rendering is unavailable.");
+      context.fillStyle = "white"; context.fillRect(0, 0, master.width, master.height);
+      context.imageSmoothingEnabled = true; context.imageSmoothingQuality = "high";
+      await source.draw(context, master);
+      let page: Blob | null = null;
+      for (const [longSide, quality] of uploadSizes) {
+        const shrink = Math.min(1, longSide / Math.max(master.width, master.height)), canvas = newCanvas(master.width * shrink, master.height * shrink), target = canvas.getContext("2d");
+        if (!target) throw new Error("Image rendering is unavailable.");
+        target.imageSmoothingEnabled = true; target.imageSmoothingQuality = "high";
+        target.drawImage(master, 0, 0, canvas.width, canvas.height);
+        const blob = await abortable(jpeg(canvas, quality), signal);
+        canvas.width = canvas.height = 0;
+        if (blob.size <= budget) { page = blob; break; }
+      }
+      master.width = master.height = 0;
+      if (!page) throw new Error("This page is too large to send.");
+      pages.push(page);
+    }
+    return { pages, pageCount };
+  } finally { for (const cleanup of cleanups) await cleanup(); }
 }
 
 // notes: reading-quality advice for the person (added to the draft's warnings).
@@ -133,7 +222,7 @@ export async function extractDocumentText(file: File, signal: AbortSignal, progr
         const page = await abortable(pdf.getPage(number), signal);
         const content = await abortable(page.getTextContent(), signal);
         let text = normalizeDocumentText(layoutPositionedText(content.items.flatMap((item) => "str" in item ? [{ str: item.str, x: item.transform[4], y: item.transform[5], width: item.width, height: item.height || Math.abs(item.transform[3]) }] : [])));
-        const scanned = text.replace(/[^a-z0-9]/gi, "").length < 40 || !/\b(invoice|subtotal|total|vat|quotation|receipt)\b/i.test(text);
+        const scanned = pageLooksScanned(text);
         // Mixed pages: real text for the item lines, but the letterhead (logo,
         // VAT number) or totals box is a picture. OCR the page and add what the
         // text layer lacks; the text layer stays authoritative for amounts.

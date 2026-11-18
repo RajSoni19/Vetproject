@@ -1,23 +1,29 @@
-// Converts text read from an invoice or till receipt (browser OCR / PDF text)
-// into the line format the database invoice API accepts (lib/server/saas/vat.ts
-// vatLine). VAT treatment is never guessed: a line whose rate the document does
-// not evidence becomes "not-evidenced" (rate 0, no VAT claimed until a person
-// reviews it).
-import { extractInvoiceFields, type ExtractedInvoiceLine } from "@/lib/invoice-text-extraction";
+// Converts what was read from an invoice or till receipt (PDF text, on-device
+// OCR, or the AI reader) into the line format the database invoice API accepts
+// (lib/server/saas/vat.ts vatLine). VAT treatment is never guessed: a line whose
+// rate the document does not evidence becomes "not-evidenced" (rate 0, no VAT
+// claimed until a person reviews it).
+import { extractInvoiceFields, validUkVat, type ExtractedInvoiceFields, type ExtractedInvoiceLine } from "@/lib/invoice-text-extraction";
+import { closeTo, dateWarning, lineTotal, missingPageWarning, pageInfoFromText, round2, totalsWarning } from "@/lib/invoice-checks";
+import type { AiInvoice, AiInvoiceLine } from "@/lib/ai-invoice";
 
 // printed: the line amount exactly as printed on the document (the AMOUNT column),
 // shown next to the calculated amount so a misread is visible. Not sent to the API.
 export type DraftLine = { description: string; quantity: string; unitPrice: string; discount: string; rate: string; treatment: string; pricing: string; printed?: string };
+export type InvoiceReader = "pdf-text" | "gemini" | "tesseract";
 export type InvoiceDraft = {
   supplierName: string; supplierVatNumber: string; number: string; issuedOn: string; dueOn: string; currency: string;
   lines: DraftLine[]; warnings: string[]; source: string;
   // supplierId: a saved supplier the person chose before scanning.
   supplierId?: string; receipt?: boolean;
+  // How the document was read (source above is the file name).
+  readBy?: InvoiceReader;
   summary: { net: number | null; vat: number | null; gross: number | null; customerName: string };
 };
 // A saved supplier chosen before scanning: its name and VAT number are used
 // instead of the ones read from the document.
 export type ChosenSupplier = { id: string; name: string; vatNumber: string };
+export type DraftContext = { companyName?: string; companyVatNumber?: string; supplier?: ChosenSupplier; pageCount?: number; today?: Date; readBy?: InvoiceReader };
 
 // Decimal strings within the API's bounds (quantity/price 4 dp, discount 2 dp).
 const decimal = (value: number, places: number) => {
@@ -28,17 +34,30 @@ const decimal = (value: number, places: number) => {
 // "Greek style yogurt Skg": 5 read as S right before a unit.
 const cleanDescription = (value: string) => value.replace(/(^|[\s(x×])[Ss](?=(?:kg|g|ml|cl|ltr|lt)\b)/g, "$15").slice(0, 2000);
 
-export function draftLine(line: ExtractedInvoiceLine): DraftLine {
-  const base = { description: cleanDescription(line.description), quantity: decimal(line.quantity, 4), unitPrice: decimal(line.unitPrice, 4), discount: decimal(line.discount ?? 0, 2), pricing: line.inclusive ? "inclusive" : "exclusive", printed: line.netAmount.toFixed(2) };
-  if (line.vatRate === null) return { ...base, rate: "0", treatment: "not-evidenced" };
+export function draftLine(line: ExtractedInvoiceLine & { amountNotPrinted?: boolean }): DraftLine {
+  const base: DraftLine = { description: cleanDescription(line.description), quantity: decimal(line.quantity, 4), unitPrice: decimal(line.unitPrice, 4), discount: decimal(line.discount ?? 0, 2), rate: "0", treatment: "not-evidenced", pricing: line.inclusive ? "inclusive" : "exclusive", printed: line.netAmount.toFixed(2) };
+  if (line.amountNotPrinted) delete base.printed;
+  if (line.vatRate === null) return base;
   if (line.taxClassification === "Exempt") return { ...base, rate: "0", treatment: "exempt" };
   if (line.taxClassification === "Out of scope") return { ...base, rate: "0", treatment: "outside" };
   if (line.vatRate === 0) return { ...base, rate: "0", treatment: "zero" };
   return { ...base, rate: decimal(line.vatRate, 2), treatment: line.vatRate <= 5 ? "reduced" : "standard" };
 }
 
-export function invoiceDraftFromText(text: string, fileName: string, context: { companyName?: string; companyVatNumber?: string; supplier?: ChosenSupplier } = {}): InvoiceDraft {
-  const fields = extractInvoiceFields(text, context);
+const TOTALS_PROBLEM = /^A page or item may be missing|line items do not add up|invoice total does not match the items/i;
+
+// What the read lines say the document should total, whichever way it was read.
+function linesTotal(fields: ExtractedInvoiceFields) {
+  let goods = 0, lineVat = 0;
+  for (const line of fields.lines) {
+    goods += line.netAmount;
+    const rate = line.vatRate ?? 0;
+    lineVat += line.netAmount * rate / (line.inclusive ? 100 + rate : 100);
+  }
+  return round2(fields.lines.every((line) => line.inclusive) ? goods : goods + (fields.vat ?? lineVat));
+}
+
+function draftFromFields(fields: ExtractedInvoiceFields, fileName: string, context: DraftContext, pageInfo: string | null) {
   const lines = fields.lines.map(draftLine);
   // No line table found: one line carrying the invoice net, so totals are kept.
   if (!lines.length && fields.net !== null && fields.net > 0) {
@@ -50,6 +69,8 @@ export function invoiceDraftFromText(text: string, fileName: string, context: { 
   const chosen = context.supplier;
   // With a chosen supplier, notes about the supplier VAT number read from the document no longer apply.
   const warnings = fields.notes.filter((note) => !(chosen && /^VAT number/.test(note)));
+  const totals = fields.lines.length && !warnings.some((warning) => TOTALS_PROBLEM.test(warning)) ? totalsWarning(linesTotal(fields), fields.gross, fields.lines.length) : null;
+  for (const warning of [totals, missingPageWarning(pageInfo, context.pageCount), dateWarning(fields.invoiceDate, context.today)]) if (warning) warnings.push(warning);
   const missing = [!chosen && !fields.supplierName && "supplier", !fields.invoiceNumber && (fields.receipt ? "receipt number" : "invoice number"), !fields.invoiceDate && (fields.receipt ? "receipt date" : "invoice date"), fields.gross === null && "gross total"].filter(Boolean);
   if (missing.length) warnings.push(`Not found on the document: ${missing.join(", ")}. Enter them from the original.`);
   if (lines.some(line => line.treatment === "not-evidenced")) warnings.push("VAT not evidenced on some lines — no VAT is claimed for them unless you choose the correct VAT before confirming.");
@@ -57,7 +78,74 @@ export function invoiceDraftFromText(text: string, fileName: string, context: { 
   return {
     supplierName: chosen?.name ?? fields.supplierName, supplierVatNumber: chosen ? chosen.vatNumber : fields.supplierVatNumber, number: fields.invoiceNumber,
     issuedOn: fields.invoiceDate ?? "", dueOn: fields.dueDate ?? "", currency: fields.currency ?? "",
-    lines, warnings, source: fileName, ...(chosen ? { supplierId: chosen.id } : {}), ...(fields.receipt ? { receipt: true } : {}),
+    lines, warnings: [...new Set(warnings)], source: fileName, ...(chosen ? { supplierId: chosen.id } : {}), ...(fields.receipt ? { receipt: true } : {}), ...(context.readBy ? { readBy: context.readBy } : {}),
     summary: { net: fields.net, vat: fields.vat, gross: fields.gross, customerName: fields.customerName }
+  } satisfies InvoiceDraft;
+}
+
+export function invoiceDraftFromText(text: string, fileName: string, context: DraftContext = {}): InvoiceDraft {
+  return draftFromFields(extractInvoiceFields(text, context), fileName, context, pageInfoFromText(text));
+}
+
+// The reading did not reconcile: its totals disagree, or no usable items or total were found.
+export const hasTotalsProblem = (draft: InvoiceDraft) => draft.summary.gross === null || draft.warnings.some((warning) => TOTALS_PROBLEM.test(warning) || /^Line breakdown not detected/.test(warning));
+
+const sameName = (a: string, b: string) => a.toLowerCase().replace(/[^a-z0-9]/g, "") === b.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+function aiLine(line: AiInvoiceLine, rate: number | null, inclusive: boolean) {
+  const discount = line.discount ?? 0, amount = line.amount;
+  let quantity = line.quantity;
+  if (quantity === null && line.unit_price && amount !== null) { const whole = amount / line.unit_price; if (whole >= 1 && closeTo(whole, Math.round(whole), 0.001)) quantity = Math.round(whole); }
+  quantity ??= 1;
+  const unitPrice = line.unit_price ?? (amount !== null ? Math.round(Math.abs(amount) / quantity * 10000) / 10000 : 0);
+  const calculated = lineTotal(quantity, unitPrice, discount);
+  // The printed amount is usually before the discount shown under the item; some documents print it after.
+  const paid = amount === null ? null : closeTo(amount, calculated) ? amount : round2(amount - discount);
+  // "2 Demo Drink" with quantity 2: the number is the quantity, not part of the name.
+  const description = line.description.startsWith(`${quantity} `) && /^[A-Za-z]/.test(line.description.slice(String(quantity).length + 1)) ? line.description.slice(String(quantity).length + 1) : line.description;
+  return { description, quantity, unitPrice, netAmount: paid ?? calculated, vatRate: rate, inclusive, ...(discount ? { discount } : {}), ...(paid === null ? { amountNotPrinted: true } : {}) };
+}
+
+export function invoiceDraftFromAi(ai: AiInvoice, fileName: string, context: DraftContext = {}): InvoiceDraft {
+  const inclusive = ai.prices_include_vat, notes: string[] = [];
+  const rows = ai.vat_summary.filter((row) => row.rate !== null);
+  const byCode = new Map(rows.flatMap((row) => row.code ? [[row.code.toUpperCase(), row.rate as number] as const] : []));
+  const onlyRate = new Set(rows.map((row) => row.rate)).size === 1 ? rows[0].rate : null;
+  const lines = ai.lines.map((line) => aiLine(line, line.vat_rate ?? (line.vat_code ? byCode.get(line.vat_code.toUpperCase()) : undefined) ?? onlyRate, inclusive));
+
+  const paid = round2(lines.reduce((sum, line) => sum + line.netAmount, 0));
+  const beforeDiscount = round2(lines.reduce((sum, line) => sum + line.netAmount + (line.discount ?? 0), 0));
+  const rated = lines.length > 0 && lines.every((line) => line.vatRate !== null);
+  const linesVat = rated ? round2(lines.reduce((sum, line) => { const rate = line.vatRate as number; return sum + line.netAmount * rate / (inclusive ? 100 + rate : 100); }, 0)) : null;
+  const summaryVat = ai.vat_summary.length && ai.vat_summary.every((row) => row.vat !== null) ? round2(ai.vat_summary.reduce((sum, row) => sum + (row.vat as number), 0)) : null;
+  const tolerance = Math.max(0.05, 0.01 * lines.length);
+  const matchesLines = (value: number) => closeTo(value, paid, tolerance) || closeTo(value, beforeDiscount, tolerance);
+  // A goods total that disagrees with the lines is not trusted (the model may have
+  // worked it out backwards from the amount to pay): the lines are shown instead.
+  const statedNet = inclusive ? null : ai.net_total ?? ai.subtotal;
+  const linesRule = lines.length > 0 && statedNet !== null && !matchesLines(statedNet);
+  const vat = linesRule ? linesVat ?? ai.vat_total ?? summaryVat : ai.vat_total ?? summaryVat ?? linesVat;
+  const expected = inclusive ? paid : round2(paid + (vat ?? 0));
+  const gross = ai.gross_total ?? (lines.length ? expected : null);
+  const net = inclusive ? ai.net_total ?? (gross !== null && vat !== null ? round2(gross - vat) : null) : linesRule ? paid : statedNet ?? (lines.length ? paid : null);
+
+  const totals = lines.length ? totalsWarning(expected, ai.gross_total, lines.length) : null;
+  const shown = linesRule ? statedNet : inclusive && lines.length > 0 && ai.subtotal !== null && !matchesLines(ai.subtotal) ? ai.subtotal : null;
+  if (totals) notes.push(totals);
+  else if (shown !== null) notes.push(`A page or item may be missing: the items come to £${paid.toFixed(2)} but the document shows £${shown.toFixed(2)}.`);
+
+  const vatNumber = (ai.vat_number ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  const digits = vatNumber.replace(/^(?:GB|XI)/, "");
+  if (vatNumber && (!/^\d{9}(?:\d{3})?$/.test(digits) || !validUkVat(digits))) notes.push(`VAT number ${vatNumber} does not pass the HMRC check digit test. It may have been misread; check it against the original.`);
+
+  const customerName = ai.customer_name ?? "";
+  const supplier = ai.supplier_name ?? "";
+  const notSupplier = (context.companyName && sameName(supplier, context.companyName)) || (customerName && sameName(supplier, customerName));
+  const fields: ExtractedInvoiceFields = {
+    supplierName: notSupplier ? "" : supplier, supplierVatNumber: vatNumber, customerName, customerVatNumber: "",
+    invoiceNumber: ai.invoice_number ?? "", invoiceDate: ai.invoice_date, dueDate: ai.due_date, currency: "GBP",
+    read: { net: ai.net_total, vat: ai.vat_total, gross: ai.gross_total }, net, vat, gross, lines,
+    vatNeedsReview: !rated, notes, ...(ai.document_type === "receipt" ? { receipt: true } : {})
   };
+  return draftFromFields(fields, fileName, context, ai.page_info);
 }
