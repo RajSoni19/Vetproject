@@ -109,8 +109,15 @@ test('accountant Excel: VAT only on verified payments, UK dates, links, safe tex
     { id: 't2', date: '2026-11-03', description: '=HACK()', amount: 30, direction: 'out' },
     { id: 't3', date: '2026-11-04', description: 'CARD SALES', amount: 9, direction: 'in' }
   ], invoices);
-  assert.deepEqual(periodOptions(rows).map(p => p.key), ['all', 'm:2026-11', 'm:2026-10', 'q:2026-Q4']);
+  assert.deepEqual(periodOptions(rows).map(p => p.key), ['all', 'm:2026-11', 'm:2026-10', 'q:2026-Q4', 'y:2026', 'custom']);
   assert.equal(rowsInPeriod(rows, 'm:2026-11').length, 1);
+  assert.equal(rowsInPeriod(rows, 'y:2026').length, 2);                       // money in is never exported
+  assert.equal(rowsInPeriod(rows, 'custom').length, 0);                       // nothing until both dates are chosen
+  const { customPeriodKey, customPeriodLabel } = loadSource('lib/bank-vat-export');
+  assert.equal(customPeriodKey('2026-11-30', '2026-10-02'), 'c:2026-10-02:2026-11-30'); // entered the wrong way round
+  assert.equal(rowsInPeriod(rows, customPeriodKey('2026-10-02', '2026-10-31')).length, 1); // inclusive of both ends
+  assert.equal(rowsInPeriod(rows, customPeriodKey('2026-10-03', '2026-11-02')).length, 0);
+  assert.equal(customPeriodLabel('c:2026-10-02:2026-11-30'), '02/10/2026 – 30/11/2026');
   const book = XLSX.read(XLSX.write(accountantWorkbook(rows, { company: 'Demo', statement: 's.csv', period: 'All dates', origin: 'https://app.test' }), { type: 'buffer', bookType: 'xlsx' }), { cellNF: true });
   const sheet = book.Sheets['Bank VAT'];
   assert.deepEqual(['A1', 'B1', 'C1', 'D1', 'E1', 'F1'].map(c => sheet[c].v), ['Date', 'Supplier', 'Amount', 'Verified', 'VAT', 'Net']);

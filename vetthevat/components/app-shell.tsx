@@ -67,7 +67,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         "Marketplace": "मार्केटप्लेस",
         "Account settings": "खाता सेटिंग्स",
         "Live workspace": "लाइव कार्यक्षेत्र",
-        "Connected to PostgreSQL": "PostgreSQL से कनेक्टेड",
+        "All changes saved": "सभी बदलाव सेव हैं",
         "Operations, Stock & Ordering active": "संचालन, स्टॉक और ऑर्डरिंग सक्रिय",
         "VAT & Invoice management active": "VAT और चालान प्रबंधन सक्रिय"
       };
@@ -96,7 +96,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         { href: "/app/ors/shopping", label: "Marketplace", group: "Sales" },
         { href: "/app/settings", label: "Settings", group: "Organisation" },
       ]
-    : workspaceNavigation.filter((item) => vatGroups.includes(item.group) && (softwareAdministrator || !item.href.startsWith("/app/admin")));
+    : workspaceNavigation.filter((item) => !item.hidden && vatGroups.includes(item.group) && (softwareAdministrator || !item.href.startsWith("/app/admin")));
 
   const navigation = (
     <nav aria-label="Workspace navigation" className="workspace-navigation">
@@ -105,7 +105,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         if (!items.length) return null;
         return (
           <div key={group}>
-            <p className="nav-group">{tr(group)}</p>
+            <p className="nav-group">{tr(group === "Insights" ? "Accounts" : group)}</p>
             {items.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/app/dashboard" && item.href !== "/app/ors/orders" && pathname.startsWith(item.href));
               return (
@@ -172,7 +172,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         <div className="sidebar-footer">
           <span className="local-dot" />
           {tr("Live workspace")}
-          <p>{tr("Connected to PostgreSQL")}</p>
+          <p>{tr("All changes saved")}</p>
           <Link href="/app/settings" className="mt-3 inline-flex items-center gap-2 text-sm font-medium">
             {tr("Account settings")} <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>

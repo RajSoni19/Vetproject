@@ -1,11 +1,13 @@
 // Pure contract validation. No business endpoint is enabled by these helpers.
 import { randomUUID } from "node:crypto";
 import { DatabaseError, decimalString } from "@/lib/server/database-core";
+import { friendlyErrorMessage } from "@/lib/friendly-errors";
 export class ApiError extends Error {
   readonly status: number;
   readonly code: "INVALID_REQUEST" | "UNAUTHENTICATED" | "FORBIDDEN" | "CONFLICT" | "UNAVAILABLE" | "RATE_LIMITED";
   readonly retryAfterSeconds?: number;
-  constructor(status: number, code: ApiError["code"], message: string, retryAfterSeconds?:number) { super(message); this.name = "ApiError"; this.status=status; this.code=code; this.retryAfterSeconds=retryAfterSeconds; }
+  // Messages reach the people using the app, so technical wording is turned into plain words.
+  constructor(status: number, code: ApiError["code"], message: string, retryAfterSeconds?:number) { super(friendlyErrorMessage(message)); this.name = "ApiError"; this.status=status; this.code=code; this.retryAfterSeconds=retryAfterSeconds; }
 }
 export function uuid(value: unknown): string {
   if (typeof value !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) throw new ApiError(400,"INVALID_REQUEST","A valid identifier is required.");

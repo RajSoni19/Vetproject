@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Invoice } from "@/lib/domain";
 import { dashboardOverview } from "@/lib/dashboard-overview";
 import { formatCurrency } from "@/lib/utils";
@@ -9,9 +8,7 @@ export function DashboardPosition({ rows }: { rows: Invoice[] }) {
   const overview = dashboardOverview(rows);
   return <section className="mb-7" aria-labelledby="recorded-vat-heading">
     <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-      <div><h2 id="recorded-vat-heading" className="text-lg font-semibold tracking-tight">Recorded VAT position</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-muted">Reviewed and confirmed invoices matching your filters. Purchase and sale direction must be explicitly recorded.</p></div>
-      <Link href="/app/vat" className="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700">Open VAT breakdown →</Link>
-    </div>
+      <div><h2 id="recorded-vat-heading" className="text-lg font-semibold tracking-tight">Recorded VAT position</h2><p className="mt-1 max-w-2xl text-xs leading-5 text-muted">Reviewed and confirmed invoices matching your filters. Purchase and sale direction must be explicitly recorded.</p></div>    </div>
     <div className="grid gap-4 xl:grid-cols-2">{overview.currencies.map(total => <Card key={total.currency} className="min-w-0 overflow-hidden" data-vat-position={total.currency}>
       <div className="flex items-center justify-between border-b border-line bg-brand-50 px-5 py-3"><h3 className="text-sm font-semibold">{total.currency}</h3><span className="text-xs text-brand-800">Reviewed local records</span></div>
       <dl className="grid gap-5 p-5 sm:grid-cols-2">{([

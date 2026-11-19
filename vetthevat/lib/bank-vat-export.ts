@@ -17,12 +17,25 @@ export type PeriodOption = { key: string; label: string };
 export function periodOptions(rows: readonly MatchedTransaction[]): PeriodOption[] {
   const months = [...new Set(payments(rows).map((row) => row.date.slice(0, 7)))].sort().reverse();
   const quarters = [...new Set(months.map((month) => `${month.slice(0, 4)}-Q${quarterOf(+month.slice(5))}`))].sort().reverse();
+  const years = [...new Set(months.map((month) => month.slice(0, 4)))];
   return [{ key: "all", label: "All dates" },
     ...months.map((month) => ({ key: `m:${month}`, label: `${MONTHS[+month.slice(5) - 1]} ${month.slice(0, 4)}` })),
-    ...quarters.map((quarter) => { const first = (+quarter.slice(-1) - 1) * 3; return { key: `q:${quarter}`, label: `${MONTHS[first]}–${MONTHS[first + 2]} ${quarter.slice(0, 4)}` }; })];
+    ...quarters.map((quarter) => { const first = (+quarter.slice(-1) - 1) * 3; return { key: `q:${quarter}`, label: `${MONTHS[first]}–${MONTHS[first + 2]} ${quarter.slice(0, 4)}` }; }),
+    ...years.map((year) => ({ key: `y:${year}`, label: `Year ${year}` })),
+    { key: "custom", label: "Custom dates…" }];
+}
+
+// Keys: "all", "m:YYYY-MM", "q:YYYY-Qn", "y:YYYY", or "c:YYYY-MM-DD:YYYY-MM-DD" (inclusive custom range).
+export function customPeriodKey(from: string, to: string) { const [start, end] = [from, to].sort(); return `c:${start}:${end}`; }
+export function customPeriodLabel(key: string) {
+  const [, from, to] = key.split(":"), uk = (iso: string) => iso.split("-").reverse().join("/");
+  return from && to ? `${uk(from)} – ${uk(to)}` : "Custom dates";
 }
 
 export function rowsInPeriod(rows: readonly MatchedTransaction[], key: string) {
+  if (key === "custom") return [];
+  if (key.startsWith("c:")) { const [, from, to] = key.split(":"); return payments(rows).filter((row) => row.date >= from && row.date <= to); }
+  if (key.startsWith("y:")) return payments(rows).filter((row) => row.date.startsWith(key.slice(2)));
   return payments(rows).filter((row) => key === "all" || (key.startsWith("m:") ? row.date.startsWith(key.slice(2)) : `${row.date.slice(0, 4)}-Q${quarterOf(+row.date.slice(5, 7))}` === key.slice(2)));
 }
 

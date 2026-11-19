@@ -10,7 +10,7 @@ import { CheckCircle2, Download, FileSpreadsheet, HelpCircle, RefreshCw, Trash2,
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { applyDecisions, matchSummary, matchTransactions, nameKey, namesSupplier, parseStatementRows, type BankTransaction, type MatchDecisions, type MatchedTransaction, type NameMemory, type PayableInvoice } from "@/lib/bank-matching";
-import { accountantWorkbook, periodOptions, rowsInPeriod, verifiedVat } from "@/lib/bank-vat-export";
+import { accountantWorkbook, customPeriodKey, customPeriodLabel, periodOptions, rowsInPeriod, verifiedVat } from "@/lib/bank-vat-export";
 
 const money = (value: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(value);
 const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
@@ -36,7 +36,7 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState<Filter>("All");
-  const [period, setPeriod] = useState("all");
+  const [period, setPeriod] = useState("all"), [customFrom, setCustomFrom] = useState(""), [customTo, setCustomTo] = useState("");
 
   async function loadInvoices() {
     const response = await fetch("/api/business/payable-invoices", { headers: { "x-company-id": companyId }, cache: "no-store", signal: AbortSignal.timeout(30000) });
@@ -90,11 +90,13 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
 
   const rows = useMemo(() => applyDecisions(matchTransactions(transactions, invoices, names), decisions, invoices), [transactions, invoices, names, decisions]);
   const periods = useMemo(() => periodOptions(rows), [rows]);
-  const selected = useMemo(() => rowsInPeriod(rows, period), [rows, period]);
+  // "Custom dates" uses the From and To boxes; nothing is selected until both are filled.
+  const periodKey = period === "custom" && customFrom && customTo ? customPeriodKey(customFrom, customTo) : period;
+  const selected = useMemo(() => rowsInPeriod(rows, periodKey), [rows, periodKey]);
   const summary = useMemo(() => matchSummary(selected), [selected]);
   const visible = selected.filter(row => filter === "All" || row.status === filter);
   const unverified = summary.possible + summary.missing;
-  const periodLabel = periods.find(item => item.key === period)?.label ?? "All dates";
+  const periodLabel = periodKey.startsWith("c:") ? customPeriodLabel(periodKey) : periods.find(item => item.key === period)?.label ?? "All dates";
 
   // Confirming a different name teaches it for the next statement.
   function verify(row: MatchedTransaction, invoiceId: string) {
@@ -154,6 +156,8 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
           <div className="flex flex-wrap items-end gap-2">
             <label className="grid gap-1 text-xs font-semibold text-muted">Period
               <select className="field-control min-w-40 text-sm" value={period} onChange={e => setPeriod(e.target.value)}>{periods.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
+            {period === "custom" ? <><label className="grid gap-1 text-xs font-semibold text-muted">From<input type="date" className="field-control text-sm" value={customFrom} max={customTo || undefined} onChange={e => setCustomFrom(e.target.value)} /></label>
+              <label className="grid gap-1 text-xs font-semibold text-muted">To<input type="date" className="field-control text-sm" value={customTo} min={customFrom || undefined} onChange={e => setCustomTo(e.target.value)} /></label></> : null}
             <Button type="button" variant="outline" disabled={busy} onClick={() => void recheck()}><RefreshCw className="h-4 w-4" />Check again</Button>
             <Button type="button" onClick={exportForAccountant} disabled={!selected.length}><Download className="h-4 w-4" />Export for accountant</Button>
             <Button type="button" variant="ghost" aria-label="Remove statement" title="Remove statement" onClick={clearStatement}><Trash2 className="h-4 w-4" /></Button>

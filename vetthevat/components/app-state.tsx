@@ -263,7 +263,7 @@ export function AppStateProvider({ children, storageNamespace }: { children: Rea
     requireCompany(member.companyId);
     const issues = validateMember(member, state.teamMembers); if (issues.length) throw new Error(issues.join(" "));
     const previous = state.teamMembers.find((item) => item.id === member.id && item.companyId === member.companyId);
-    if (!previous && member.status !== "Invitation Draft") throw new Error("A new local member must be an invitation draft. Invitation delivery is not configured.");
+    if (!previous && member.status !== "Invitation Draft") throw new Error("Invitations can't be sent yet.");
     if ((previous?.status === "Invitation Draft" || previous?.lastActive === "Never (local draft)") && (member.status === "Active" || member.status === "Invited")) throw new Error("A local invitation draft cannot become a delivered invitation or authenticated member without the backend.");
     commit(activity({ ...state, teamMembers: [...state.teamMembers.filter((item) => item.id !== member.id || item.companyId !== member.companyId), member] }, "Member record saved locally", member.email));
   }

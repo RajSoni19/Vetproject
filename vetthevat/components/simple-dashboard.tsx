@@ -6,10 +6,10 @@ import { ArrowRight, Camera, FileText, Landmark, PoundSterling, Receipt, Scale, 
 import { Card } from "@/components/ui/card";
 import type { PayableInvoice } from "@/lib/bank-matching";
 
-type Period = "month" | "quarter" | "year";
+type Period = "month" | "quarter" | "year" | "custom";
 const money = (value: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(value);
 const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
-function periodStart(period: Period) {
+function periodStart(period: Exclude<Period, "custom">) {
   const now = new Date(), y = now.getUTCFullYear(), m = now.getUTCMonth();
   const start = period === "month" ? new Date(Date.UTC(y, m, 1)) : period === "quarter" ? new Date(Date.UTC(y, m - (m % 3), 1)) : new Date(Date.UTC(y, m - 11, 1));
   return start.toISOString().slice(0, 10);
@@ -19,6 +19,8 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
   const [invoices, setInvoices] = useState<PayableInvoice[] | null>(null);
   const [alerts, setAlerts] = useState<number | null>(null);
   const [period, setPeriod] = useState<Period>("quarter");
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const [customFrom, setCustomFrom] = useState(() => periodStart("quarter")), [customTo, setCustomTo] = useState(todayIso);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -33,10 +35,12 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
   }, [companyId]);
 
   const stats = useMemo(() => {
-    const from = periodStart(period), list = (invoices ?? []).filter(i => i.issuedOn >= from);
+    // Custom: inclusive From and To dates; swapped if entered the wrong way round.
+    const [from, to] = period === "custom" ? [customFrom, customTo].sort() : [periodStart(period), "9999-12-31"];
+    const list = (invoices ?? []).filter(i => i.issuedOn >= from && i.issuedOn <= to);
     const sum = (pick: (i: PayableInvoice) => number) => Math.round(list.reduce((s, i) => s + pick(i), 0) * 100) / 100;
     return { vat: sum(i => i.vat), gross: sum(i => i.gross), count: list.length, suppliers: new Set(list.map(i => i.supplierName)).size };
-  }, [invoices, period]);
+  }, [invoices, period, customFrom, customTo]);
 
   if (error) return <Card className="p-6"><p role="alert" className="text-sm text-red-800">{error}</p></Card>;
   const loading = invoices === null;
@@ -51,10 +55,14 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
     <div className="flex flex-wrap items-center justify-between gap-3">
       <h2 className="text-xl font-bold">{companyName ? `Welcome back, ${companyName}` : "Overview"}</h2>
       <div className="flex rounded-lg border border-line bg-white p-1 text-sm" role="tablist" aria-label="Period">
-        {([["month", "This month"], ["quarter", "This quarter"], ["year", "12 months"]] as [Period, string][]).map(([value, label]) =>
+        {([["month", "This month"], ["quarter", "This quarter"], ["year", "12 months"], ["custom", "Custom"]] as [Period, string][]).map(([value, label]) =>
           <button key={value} type="button" role="tab" aria-selected={period === value} onClick={() => setPeriod(value)} className={`min-h-9 rounded-md px-3 font-semibold ${period === value ? "bg-brand-700 text-white" : "text-muted"}`}>{label}</button>)}
       </div>
     </div>
+    {period === "custom" ? <div className="flex flex-wrap items-end justify-end gap-3">
+      <label className="grid gap-1 text-xs font-semibold">From<input type="date" className="field-control" value={customFrom} max={customTo || undefined} onChange={e => setCustomFrom(e.target.value)} /></label>
+      <label className="grid gap-1 text-xs font-semibold">To<input type="date" className="field-control" value={customTo} min={customFrom || undefined} onChange={e => setCustomTo(e.target.value)} /></label>
+    </div> : null}
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {tiles.map(([Icon, label, value, hint]) => <Card key={label} className="stat-tile p-4">

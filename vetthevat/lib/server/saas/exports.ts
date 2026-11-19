@@ -20,6 +20,8 @@ function linkColumn(sheet:XLSX.WorkSheet,column:number,firstRow:number,targets:(
     if(cell)cell.l={Target:target,Tooltip:"Open the invoice PDF (sign in to VET THE VAT)"};
   });
 }
+// Plain names for VAT types in Excel downloads.
+const TREATMENT_NAMES:Record<string,string>={standard:'Standard 20%',reduced:'Reduced 5%',zero:'Zero-rated 0%',exempt:'Exempt',outside:'Outside VAT',['not-evidenced']:'No VAT shown'};
 export function exportReport(report:InvoiceReport,companyId:string,format:'pdf'|'xlsx',origin=""){
  if(format==='xlsx'){
   if(report.filters.status!=='confirmed')throw new ApiError(400,"INVALID_REQUEST","Excel exports include only confirmed, human-reviewed invoices.");
@@ -28,7 +30,7 @@ export function exportReport(report:InvoiceReport,companyId:string,format:'pdf'|
    spreadsheetText(row.number),spreadsheetText(row.contact),row.issued_on,row.due_on??"",row.currency,
    spreadsheetText(row.direction),spreadsheetText(row.state),row.net,row.vat_evidenced??"",
    spreadsheetText(row.vat_claim_status),row.gross,
-   row.payment_status==='unavailable'?'Unavailable — schema approval pending':spreadsheetText(row.payment_status),
+   row.payment_status==='unavailable'?'Not recorded':spreadsheetText(row.payment_status),
    spreadsheetText(row.payment_method),row.amount_paid??"",row.balance_due??"",
    spreadsheetText(row.original_document_reference),
    origin ? "Open invoice PDF" : ""
@@ -37,7 +39,7 @@ export function exportReport(report:InvoiceReport,companyId:string,format:'pdf'|
   const lineRows=[lineHeaders,...report.lineItems.map(row=>[
    spreadsheetText(row.invoice_number),spreadsheetText(row.supplier),row.invoice_date,row.position,
    spreadsheetText(row.description),row.quantity,row.unit_price,row.discount,
-   spreadsheetText(row.treatment),row.treatment==="not-evidenced"?"":row.rate,spreadsheetText(row.pricing),row.net,row.treatment==="not-evidenced"?"":row.vat,row.gross
+   spreadsheetText(TREATMENT_NAMES[row.treatment]??row.treatment),row.treatment==="not-evidenced"?"":row.rate,spreadsheetText(row.pricing==="inclusive"?"Includes VAT":row.pricing==="exclusive"?"Excludes VAT":row.pricing),row.net,row.treatment==="not-evidenced"?"":row.vat,row.gross
   ])];
   const summarySheet=XLSX.utils.aoa_to_sheet(invoiceRows);
   if(origin)linkColumn(summarySheet,invoiceHeaders.length-1,1,report.items.map(row=>invoicePdfLink(origin,row.id)));

@@ -234,7 +234,7 @@ test('Excel report loads persisted company-scoped lines without payment schema a
  assert.match(lineQuery.sql,/i\.company_id=\$1/);assert.match(lineQuery.sql,/i\.state='confirmed'/);assert.deepEqual(lineQuery.values,[company,[invoiceId]]);
  await parseSql(base.sql);await parseSql(lineQuery.sql);
  const {exportReport}=loadSource('lib/server/saas/exports'),XLSX=require('xlsx'),book=XLSX.read(exportReport(result,company,'xlsx').bytes);
- assert.equal(book.Sheets['Invoice Summary'].L2.v,'Unavailable — schema approval pending');
+ assert.equal(book.Sheets['Invoice Summary'].L2.v,'Not recorded');
  assert.equal(book.Sheets['Invoice Summary'].N2.v,'');assert.equal(book.Sheets['Invoice Summary'].N2.f,undefined);assert.equal(XLSX.utils.sheet_to_json(book.Sheets['Invoice Line Items']).length,12);
 });
 test('INV-000110 extraction regression preserves explicitly present invoice facts and does not infer VAT',()=>{

@@ -94,7 +94,7 @@ export function InvoiceEditor({ initialInvoice, onCancel, onSaved, onRetry, show
     try {
       const now = new Date().toISOString();
       const action = confirmed ? "Invoice confirmed" : "Invoice draft saved";
-      const event = { id: crypto.randomUUID(), user: "Workspace user", action, entity: invoice.invoiceNumber || invoice.id, details: "Saved and synchronized with database and price intelligence tables.", createdAt: now };
+      const event = { id: crypto.randomUUID(), user: "Workspace user", action, entity: invoice.invoiceNumber || invoice.id, details: "Invoice saved.", createdAt: now };
       const saved: Invoice = { ...invoice, vatBreakdown: buildVATBreakdown(invoice.lineItems), status: confirmed ? "Reviewed" : "Draft", processingStatus: confirmed ? "Confirmed" : "Ready for Review", reviewStatus: confirmed ? "Reviewed" : "Needs Review", warnings: confirmed ? [] : invoice.warnings, updatedAt: now, activity: [...invoice.activity, event] };
       saveInvoice(saved);
       baseline.current = JSON.stringify(invoice);
@@ -131,7 +131,7 @@ export function InvoiceEditor({ initialInvoice, onCancel, onSaved, onRetry, show
         } catch {}
       }
 
-      showToast({ title: confirmed ? "Invoice confirmed" : "Draft saved", description: "Saved and synchronized to database. Line items recorded in purchasing intelligence.", tone: "success" });
+      showToast({ title: confirmed ? "Invoice confirmed" : "Draft saved", description: "Saved. Its items are now included in price comparison.", tone: "success" });
       if (onSaved) onSaved(saved); else router.push(`/app/invoices/${saved.id}`);
     } catch (reason) { setErrors([reason instanceof Error ? reason.message : "Invoice could not be saved."]); }
     finally { submitting.current = false; setBusy(false); }
@@ -139,7 +139,7 @@ export function InvoiceEditor({ initialInvoice, onCancel, onSaved, onRetry, show
 
   return <Card className="min-w-0 p-5">
     <h2 className="text-xl font-semibold tracking-tight">{source ? "Review extracted invoice" : "Invoice details"}</h2>
-    <p className="mt-2 text-sm text-muted">Local workspace. Review values before confirming; save incomplete records as drafts.</p>
+    <p className="mt-2 text-sm text-muted">Check the details before confirming. Not finished? Save it as a draft.</p>
     {source ? <p className="mt-2 text-xs text-muted">Extraction uses heuristic field matching, not calibrated confidence. Customer defaults come from the selected business and must be checked against the source.</p> : null}
     <InvoiceHeadline invoice={invoice} />
     {invoice.warnings.length ? <div className="mt-4 grid gap-2">{invoice.warnings.map((warning) => <p key={warning.id} className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{warning.title}: {warning.description}</p>)}</div> : null}

@@ -115,6 +115,8 @@ body {
 .workspace .nav-item:hover { background-color: rgb(var(--brand-50)); color: rgb(var(--brand-800)); }
 .workspace .nav-item-active, .workspace .nav-item-active:hover { background-color: rgb(var(--brand-600)); color: #fff; box-shadow: 0 4px 12px -4px rgb(var(--brand-600) / 0.55); }
 .workspace .nav-item-active .nav-marker { background-color: #fff; }
+/* Letter box on a menu item: white box with area-coloured letter when active. */
+.workspace .nav-item-active .nav-letter, .workspace [aria-current="page"] .nav-letter { background-color: #fff; color: rgb(var(--brand-700)); }
 .workspace-main .border-line { border-color: rgb(var(--brand-100)); }
 .workspace .ui-card { border-color: rgb(var(--brand-100)); box-shadow: 0 1px 2px rgb(var(--brand-900) / 0.04), 0 8px 20px -12px rgb(var(--brand-500) / 0.28); }
 .workspace .stat-tile { border-top: 4px solid rgb(var(--brand-500)); background: linear-gradient(155deg, #fff 55%, rgb(var(--brand-50)) 100%); }

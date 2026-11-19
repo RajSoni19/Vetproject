@@ -134,7 +134,7 @@ export function invoiceService(database:CompanyDatabase){
       }));
     },
     list(scope:CompanyScope,search:URLSearchParams){const f=listInput(search);return scoped(scope,["invoices:read"],async tx=>{
-      const rows=(await tx.query(`SELECT id::text,contact_id::text,direction,kind,number,issued_on::text,due_on::text,currency,state,net::text,vat::text,gross::text,version FROM business.invoices WHERE company_id=$1${liveFilter} AND ($2::uuid IS NULL OR id>$2) AND ($3::text IS NULL OR direction=$3) AND ($4::text IS NULL OR state=$4) AND ($5::uuid IS NULL OR contact_id=$5) AND ($6::text IS NULL OR strpos(lower(number),lower($6))>0) ORDER BY id LIMIT $7`,[tx.companyId,f.after,f.direction,f.status,f.contactId,f.query,f.limit+1])).rows;
+      const rows=(await tx.query(`SELECT id::text,contact_id::text,coalesce(contact_snapshot->>'name','') AS contact_name,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS') AS created_at,direction,kind,number,issued_on::text,due_on::text,currency,state,net::text,vat::text,gross::text,version FROM business.invoices WHERE company_id=$1${liveFilter} AND ($2::uuid IS NULL OR id>$2) AND ($3::text IS NULL OR direction=$3) AND ($4::text IS NULL OR state=$4) AND ($5::uuid IS NULL OR contact_id=$5) AND ($6::text IS NULL OR strpos(lower(number),lower($6))>0) ORDER BY id LIMIT $7`,[tx.companyId,f.after,f.direction,f.status,f.contactId,f.query,f.limit+1])).rows;
       return {items:rows.slice(0,f.limit),after:rows.length>f.limit?String(rows[f.limit-1].id):null};
     });},
     detail(scope:CompanyScope,idValue:string){const id=uuid(idValue).toLowerCase();return scoped(scope,["invoices:read"],async tx=>{

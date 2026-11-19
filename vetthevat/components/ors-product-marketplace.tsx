@@ -45,7 +45,7 @@ export function OrsProductMarketplace({companyId,enabled,mode,orderId}:Props){
   if(!enabled||!companyId)return;const revision=++generation.current;setLoading(true);
   try{
    if(mode==="orders"){
-    const [data,saved]=await Promise.all([request("/api/ors/shopping/orders"+(orderId?"/"+orderId:"")),request("/api/ors/shopping/cart")]);if(revision!==generation.current)return;setCart(saved);setOrders(data.items);setOrderLines(data.lines??[]);setDispatches(data.actions??[]);setStorageNotice(data.ready?"":"Shopping order history is not configured for this installation.");
+    const [data,saved]=await Promise.all([request("/api/ors/shopping/orders"+(orderId?"/"+orderId:"")),request("/api/ors/shopping/cart")]);if(revision!==generation.current)return;setCart(saved);setOrders(data.items);setOrderLines(data.lines??[]);setDispatches(data.actions??[]);setStorageNotice(data.ready?"":"Order history isn't available yet.");
    }else{
     const [catalogue,saved,current]=await Promise.all([request("/api/ors/shopping/catalogue"),request("/api/ors/shopping/cart"),request("/api/ors/shopping/offers")]);
     if(revision!==generation.current)return;setProducts(catalogue);setCart(saved);

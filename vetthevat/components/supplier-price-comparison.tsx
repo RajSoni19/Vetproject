@@ -158,12 +158,12 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   return <div className="grid min-w-0 grid-cols-1 gap-5">
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">Prices from your own supplier invoices · last {data.window.weeks} weeks</p></div>
-      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option></select>
+      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option><option value={52}>Last year</option></select>
     </div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {([[Package, String(data.totals.products), "Total products", "Across all suppliers", "bg-blue-50 text-blue-700"],
-        [Users, String(data.totals.suppliers), "Active suppliers", "In your database", "bg-indigo-50 text-indigo-700"],
+        [Users, String(data.totals.suppliers), "Active suppliers", "From your invoices", "bg-indigo-50 text-indigo-700"],
         [PoundSterling, money(data.totals.potentialSaving, currency), "Estimated savings", "Buying at the cheapest price", "bg-emerald-50 text-emerald-700"],
         [BarChart3, String(data.totals.alerts), "Price changes", `${data.window.thresholdPercent}%+ in ${data.window.weeks} weeks`, "bg-amber-50 text-amber-700"]] as const).map(([Icon, value, label, hint, tone]) =>
         <Card key={label} className="flex items-center gap-3 p-4"><span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${tone}`}><Icon className="h-6 w-6" /></span>
