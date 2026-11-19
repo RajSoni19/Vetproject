@@ -39,7 +39,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         "Dashboard": "डैशबोर्ड",
         "Invoices": "चालान",
         "Upload & OCR": "अपलोड और OCR",
-        "Create Invoice": "चालान बनाएँ",
+        "Create Invoice": "चालान बनाएँ", "Create Manual Invoice": "मैन्युअल चालान बनाएँ",
         "OCR Review": "OCR समीक्षा",
         "Documents": "दस्तावेज़",
         "Customers": "ग्राहक",

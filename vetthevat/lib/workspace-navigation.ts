@@ -6,7 +6,7 @@ export const workspaceNavigation: {href:string;label:string;key?:MessageKey;grou
   { href: "/app/dashboard", label: "Dashboard", key:"navDashboard", group: "Workspace" },
   { href: "/app/invoices", label: "Invoices", key:"navInvoices", group: "Workspace" },
   { href: "/app/invoices/upload", label: "Upload & OCR", group: "Workspace" },
-  { href: "/app/invoices/new", label: "Create Invoice", group: "Workspace" },
+  { href: "/app/invoices/new", label: "Create Manual Invoice", group: "Workspace" },
   { href: "/app/invoices/review", label: "OCR Review", group: "Workspace" },
   { href: "/app/documents", label: "Documents", key:"navDocuments", group: "Workspace" },
   // Hidden from the menu for now (client request); the page still works at /app/customers.
