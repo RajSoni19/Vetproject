@@ -44,13 +44,15 @@ export function readCashAndCarry(text: string): CashAndCarryReading | null {
   if (items.length < 1 || !rates.size) return null;
 
   // A voided item cancels the earlier identical item; both are dropped.
-  const kept: Item[] = [], notes: string[] = [];
+  const kept: Item[] = [], notes: string[] = [], voided: string[] = [];
   for (const item of items) {
     if (!item.negative) { kept.push(item); continue; }
     const match = kept.findIndex((other) => other.code === item.code && Math.abs(other.value - item.value) < 0.005);
-    if (match >= 0) { kept.splice(match, 1); notes.push(`Voided item removed: ${item.description}.`); }
+    if (match >= 0) { kept.splice(match, 1); voided.push(item.description); }
     else kept.push({ ...item, value: -item.value, quantity: -item.quantity });
   }
+  // One short line: cancelled items need no action, the totals already leave them out.
+  if (voided.length) notes.push(`${voided.length === 1 ? "1 item was" : `${voided.length} items were`} cancelled at the till and left out (${voided.join(", ")}). No action needed.`);
   const itemsTotal = round2(kept.reduce((sum, item) => sum + item.value, 0));
   const tableGoods = round2([...rates.values()].reduce((sum, group) => sum + group.goods, 0));
   const printedGoods = goods ?? tableGoods;
