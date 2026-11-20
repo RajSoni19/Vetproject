@@ -12,6 +12,7 @@
 import { parseInvoiceDate } from "@/lib/invoice-rules";
 import { parseDocumentMoney } from "@/lib/invoice-parsing";
 import { nameFromWebsite, readReceipt } from "@/lib/receipt-extraction";
+import { readCashAndCarry } from "@/lib/cash-and-carry-extraction";
 
 export type ExtractedTaxClassification = "Taxable" | "Zero-rated" | "Exempt" | "Out of scope";
 export type ExtractedInvoiceLine = {
@@ -755,8 +756,27 @@ function assignFromVatAnalysis(open: ExtractedInvoiceLine[], groups: { rate: num
 
 // ---------------------------------------------------------------- entry point
 
+// "Booker is the trading name of Booker Limited" -> "Booker".
+const tradingName = (name: string) => name.match(/^(.+?)\s+is\s+(?:the\s+|a\s+)?trading\s+name\s+of\b/i)?.[1].trim() || name;
+
 export function extractInvoiceFields(input: string, context: ExtractionContext = {}): ExtractedInvoiceFields {
-  const fields = extractDocumentFields(input, context);
+  const read = extractDocumentFields(input, context);
+  const fields = { ...read, supplierName: tradingName(read.supplierName) };
+  // Cash-and-carry invoices (Booker etc.): item codes, VAT codes and a VAT table.
+  // Used only when the items add up to the goods total printed on the invoice.
+  const wholesale = readCashAndCarry(input);
+  if (wholesale) {
+    const net = wholesale.goods, vat = wholesale.vat, gross = wholesale.gross;
+    return {
+      ...fields,
+      supplierName: tradingName(nameFromWebsite(fields.supplierName, input)),
+      currency: fields.currency ?? "GBP",
+      read: { net, vat, gross }, net, vat, gross,
+      lines: wholesale.lines,
+      vatNeedsReview: wholesale.lines.some((line) => line.vatRate === null),
+      notes: [...new Set([...fields.notes.filter((note) => /^VAT number/.test(note)), ...wholesale.notes])]
+    };
+  }
   // Till receipts: prices include VAT and items carry VAT codes. The receipt
   // reading is used when its items add up to a total the receipt prints, or
   // when the invoice reading found no items at all.
