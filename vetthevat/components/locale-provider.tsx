@@ -30,6 +30,7 @@ function localeToGoogleLang(loc: Locale): string {
   if (loc === "ar") return "ar";
   if (loc === "ur-PK") return "ur";
   if (loc === "pa-IN") return "pa";
+  if (loc === "ro-RO") return "ro";
   return "en";
 }
 

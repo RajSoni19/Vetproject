@@ -17,17 +17,17 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: marketingOrigin ? new URL(marketingOrigin) : undefined,
   title: {
-    default: "VET THE VAT | AI-Powered VAT & Invoicing Platform for UK Business",
+    default: "VET THE VAT | VAT and invoice management for UK businesses",
     template: "%s | VET THE VAT"
   },
-  description: "Automate invoice extraction, UK VAT reconciliation, HMRC compliance reviews, and supplier price intelligence with VET THE VAT.",
+  description: "Scan invoices and receipts, keep VAT records ready for your accountant, match bank payments and compare supplier prices with VET THE VAT.",
   keywords: [
     "VAT management",
     "UK VAT reconciliation",
     "invoice OCR",
     "Making Tax Digital",
     "supplier price comparison",
-    "ORS order requisition system",
+    "ORS order replenishment system",
     "SaaS invoicing software",
     "HMRC VAT returns",
     "invoice audit"
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
     telephone: false
   },
   openGraph: {
-    title: "VET THE VAT | AI-Powered VAT & Invoicing Platform for UK Business",
-    description: "Automate invoice extraction, UK VAT reconciliation, HMRC compliance reviews, and supplier price intelligence with VET THE VAT.",
+    title: "VET THE VAT | VAT and invoice management for UK businesses",
+    description: "Scan invoices and receipts, keep VAT records ready for your accountant, match bank payments and compare supplier prices with VET THE VAT.",
     url: marketingOrigin,
     siteName: "VET THE VAT",
     type: "website",

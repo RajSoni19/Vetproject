@@ -1,4 +1,4 @@
-import { Building2, Download, FileSpreadsheet, FileText, Mail, ReceiptText, ShieldCheck } from "lucide-react";
+import { Building2, Download, FileSpreadsheet, FileText, Landmark, ReceiptText, ShieldCheck } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,17 +6,17 @@ import { playStoreUrl } from "@/lib/site-links";
 
 export const metadata = {
   title: "Features",
-  description: "Core Vet the VAT features for data extraction, suppliers, VAT validation, email sharing, exports and reporting."
+  description: "VET THE VAT features: automatic invoice reading, VAT checks, bank matching, Excel exports and reporting."
 };
 
 const features = [
-  ["Easy data extraction", "Reduce manual entry by extracting invoice information into structured records.", FileText],
-  ["Company and supplier records", "Organise captured invoice data around the appropriate company and supplier.", Building2],
-  ["VAT validation", "Review supplier VAT registration details through supported validation services.", ReceiptText],
-  ["Email sharing", "Send processed invoices or records to designated email addresses, where supported.", Mail],
-  ["Excel and PDF exports", "Download supported formats for reporting and further processing.", FileSpreadsheet],
-  ["Period-based reporting", "Compile records for monthly, quarterly and annual reporting periods.", Download],
-  ["Security and data protection", "Protect business and invoice information with verified controls before making production claims.", ShieldCheck]
+  ["Automatic invoice reading", "Scan a PDF or photo and the supplier, date, items and VAT are read for you.", FileText],
+  ["Company and supplier records", "Every invoice is filed under the right company and supplier, with a full price history.", Building2],
+  ["VAT validation", "UK VAT numbers are checked automatically, with a one-click link to HMRC's official checker.", ReceiptText],
+  ["Bank matching", "Upload a bank statement and each payment is matched to its invoice, with the VAT added for you.", Landmark],
+  ["Excel and PDF exports", "Download your invoices to Excel or PDF, ready to send to your accountant.", FileSpreadsheet],
+  ["Period-based reporting", "See and download figures by month, quarter, year or your own dates.", Download],
+  ["Security and data protection", "Each company's data is private, connections are encrypted and every change is recorded.", ShieldCheck]
 ];
 
 export default function FeaturesPage() {
@@ -26,8 +26,8 @@ export default function FeaturesPage() {
         <section className="bg-[#f8fbfa] py-20">
           <div className="container-page max-w-4xl">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-700">Features</p>
-            <h1 className="mt-4 text-5xl font-bold leading-tight">Core features for invoice data and VAT workflows.</h1>
-            <p className="mt-6 text-lg leading-8 text-muted">A focused feature set for capturing invoice information, validating supplier VAT details where supported, and exporting organised records.</p>
+            <h1 className="mt-4 text-5xl font-bold leading-tight">Everything you need for invoices and VAT</h1>
+            <p className="mt-6 text-lg leading-8 text-muted">Everything you need to capture invoices, check VAT and keep your records ready for your accountant.</p>
           </div>
         </section>
         <section className="py-20">
@@ -47,11 +47,11 @@ export default function FeaturesPage() {
           <div className="container-page flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
               <h2 className="text-3xl font-bold">Ready to get started?</h2>
-              <p className="mt-2 text-white/75">Explore the product information or download the verified Android app.</p>
+              <p className="mt-2 text-white/75">Book a demo or download the Android app.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <ButtonLink href="/get-started" className="bg-white text-ink hover:bg-brand-50">Get Started</ButtonLink>
-              <ButtonLink href={playStoreUrl} target="_blank" rel="noopener noreferrer" variant="outline" className="border-white/25 bg-transparent text-white hover:bg-white hover:text-ink"><Download className="h-4 w-4" />Download App</ButtonLink>
+              <ButtonLink href="/get-started" className="bg-white text-ink hover:bg-brand-50">Get started</ButtonLink>
+              <ButtonLink href={playStoreUrl} target="_blank" rel="noopener noreferrer" variant="outline" className="border-white/25 bg-transparent text-white hover:bg-white hover:text-ink"><Download className="h-4 w-4" />Download the app</ButtonLink>
             </div>
           </div>
         </section>

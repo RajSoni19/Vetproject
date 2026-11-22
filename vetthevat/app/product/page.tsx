@@ -18,7 +18,7 @@ const productFeatures = [
       "Upload invoice files from a computer.",
       "Capture an invoice or receipt using a mobile phone.",
       "Scan paper documents.",
-      "Support multiple document formats, subject to accepted file types.",
+      "Upload PDFs, JPG, PNG or WEBP files, up to 20 pages per invoice.",
       "Organise captured documents under the relevant company and supplier."
     ],
     cta: "Explore the mobile app"
@@ -44,7 +44,7 @@ const productFeatures = [
     icon: BadgeCheck,
     items: [
       "Identify the supplier VAT number from the invoice.",
-      "Submit the VAT number to an appropriate verification service, where supported.",
+      "Open HMRC's official checker with one click to confirm a VAT number is registered.",
       "Display returned registration status and relevant verification details.",
       "Record the check date and result where the integration supports it.",
       "Flag missing, invalid or inconclusive results for manual review."
@@ -57,7 +57,7 @@ const productFeatures = [
     body: "Help users convert captured invoice information into structured records that can be reviewed and downloaded.",
     icon: FileSpreadsheet,
     items: [
-      "Export invoice records to Excel and PDF, where supported.",
+      "Export invoice records to Excel and PDF.",
       "Compile data by month, quarter or year.",
       "Filter records by company, supplier or reporting period.",
       "Share invoice records through email.",

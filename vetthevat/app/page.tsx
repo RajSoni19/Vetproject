@@ -54,10 +54,10 @@ export default function HomePage() {
             {/* Top Ribbon / Floating Badges */}
             <div className="mb-6 flex min-w-0 flex-wrap items-center justify-between gap-3">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-emerald-800 shadow-xs">
-                <Sparkles className="h-3.5 w-3.5 text-emerald-700" /> SAME BUSINESS · BIGGER POTENTIAL
+                <Sparkles className="h-3.5 w-3.5 text-emerald-700" /> Built for UK businesses
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/90 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-900 shadow-xs">
-                EVERY PENNY HELPS!
+                VAT and purchasing in one place
               </span>
             </div>
 
@@ -82,32 +82,32 @@ export default function HomePage() {
                 </h1>
 
                 <p className="mt-3 text-xl font-bold text-slate-700">
-                  Recover More VAT. <span className="text-amber-700">Buy Smarter.</span> Grow Faster.
+                  Claim more VAT. <span className="text-amber-700">Buy smarter.</span> Grow faster.
                 </p>
 
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600">
-                  The all-in-one platform for automated VAT receipt management, HMRC-compliant record keeping, and intelligent supplier price comparisons with 10–12 week price increase alerts.
+                  One place to capture invoices and receipts, keep your VAT records ready for your accountant, and compare supplier prices, with alerts when prices change.
                 </p>
 
                 {/* Key Benefits Horizontal Ticker */}
                 <div className="mt-6 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700 sm:grid-cols-3">
                   <div className="flex items-center gap-1.5 text-emerald-800">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Claim More VAT
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Claim the VAT you're owed
                   </div>
                   <div className="flex items-center gap-1.5 text-amber-900">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> Reduce Purchasing Costs
+                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> Lower purchasing costs
                   </div>
                   <div className="flex items-center gap-1.5 text-emerald-800">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Never Lose Another Receipt
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Never lose a receipt
                   </div>
                   <div className="flex items-center gap-1.5 text-amber-900">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> Automate Ordering
+                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> Order in a few clicks
                   </div>
                   <div className="flex items-center gap-1.5 text-emerald-800">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Full Audit & HMRC Ready
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /> Records ready for your accountant
                   </div>
                   <div className="flex items-center gap-1.5 text-amber-900">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> Complete Visibility
+                    <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" /> See all your spending
                   </div>
                 </div>
 
@@ -117,7 +117,7 @@ export default function HomePage() {
                     href="/get-started"
                     className="bg-emerald-700 px-6 py-3 font-bold text-white hover:bg-emerald-800 shadow-md"
                   >
-                    Book A Demo Today <ArrowRight className="h-4 w-4" />
+                    Book a demo <ArrowRight className="h-4 w-4" />
                   </ButtonLink>
 
                   <ButtonLink
@@ -125,7 +125,7 @@ export default function HomePage() {
                     variant="outline"
                     className="border-slate-300 font-semibold"
                   >
-                    Try Invoice Upload
+                    Try invoice upload
                   </ButtonLink>
 
                   <ButtonLink
@@ -133,7 +133,7 @@ export default function HomePage() {
                     variant="outline"
                     className="border-amber-300 bg-amber-50/50 font-semibold text-amber-950 hover:bg-amber-100"
                   >
-                    View Price Comparison
+                    View price comparison
                   </ButtonLink>
                 </div>
               </div>
@@ -156,13 +156,13 @@ export default function HomePage() {
           <div className="container-page">
             <div className="mx-auto max-w-2xl text-center">
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-800">
-                End-to-End Workflow
+                How it works
               </span>
               <h2 className="mt-2 text-3xl font-extrabold text-slate-950 sm:text-4xl">
-                How It Works: 6 Simple Steps
+                Six simple steps
               </h2>
               <p className="mt-2 text-sm text-slate-600">
-                From capture to purchasing intelligence and HMRC tax claims, everything happens seamlessly.
+                From scanning an invoice to claiming VAT and buying better, all in one place.
               </p>
             </div>
 
@@ -180,13 +180,13 @@ export default function HomePage() {
                     Capture
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Scan receipts and invoices from anywhere.
+                    Scan invoices and receipts wherever you are.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
                   <li className="flex items-center gap-1.5">✓ Camera</li>
-                  <li className="flex items-center gap-1.5">✓ PDF Uploads</li>
-                  <li className="flex items-center gap-1.5">✓ Gallery Import</li>
+                  <li className="flex items-center gap-1.5">✓ PDF upload</li>
+                  <li className="flex items-center gap-1.5">✓ Photo library</li>
                 </ul>
               </Card>
 
@@ -200,17 +200,17 @@ export default function HomePage() {
                     <ScanLine className="h-4 w-4 text-emerald-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-emerald-950">
-                    Smart Extraction
+                    Automatic reading
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    AI extracts and organises line item details.
+                    Supplier, date, items and VAT are read for you.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
-                  <li className="flex items-center gap-1.5">✓ Supplier Info</li>
-                  <li className="flex items-center gap-1.5">✓ VAT Amounts</li>
-                  <li className="flex items-center gap-1.5">✓ Items Purchased</li>
-                  <li className="flex items-center gap-1.5">✓ Dates & Values</li>
+                  <li className="flex items-center gap-1.5">✓ Supplier details</li>
+                  <li className="flex items-center gap-1.5">✓ VAT amounts</li>
+                  <li className="flex items-center gap-1.5">✓ Items purchased</li>
+                  <li className="flex items-center gap-1.5">✓ Dates and totals</li>
                 </ul>
               </Card>
 
@@ -224,17 +224,17 @@ export default function HomePage() {
                     <ShieldCheck className="h-4 w-4 text-emerald-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-emerald-950">
-                    Vet The Vat
+                    Check the VAT
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Validate, organise and prepare for VAT claims.
+                    Review each invoice and keep it ready for your VAT return.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
-                  <li className="flex items-center gap-1.5">✓ HMRC Compliant</li>
-                  <li className="flex items-center gap-1.5">✓ Secure Storage</li>
-                  <li className="flex items-center gap-1.5">✓ VAT Verification</li>
-                  <li className="flex items-center gap-1.5">✓ Full Audit Trail</li>
+                  <li className="flex items-center gap-1.5">✓ Digital records</li>
+                  <li className="flex items-center gap-1.5">✓ Secure storage</li>
+                  <li className="flex items-center gap-1.5">✓ VAT number checks</li>
+                  <li className="flex items-center gap-1.5">✓ Full change history</li>
                 </ul>
               </Card>
 
@@ -248,17 +248,17 @@ export default function HomePage() {
                     <Layers className="h-4 w-4 text-amber-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-amber-950">
-                    Purchasing Intel
+                    Purchasing insights
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Every purchase builds your product database.
+                    Every invoice builds your product price list.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
-                  <li className="flex items-center gap-1.5">✓ Product Library</li>
-                  <li className="flex items-center gap-1.5">✓ Supplier Tracking</li>
-                  <li className="flex items-center gap-1.5">✓ Purchase History</li>
-                  <li className="flex items-center gap-1.5">✓ Buying Trends</li>
+                  <li className="flex items-center gap-1.5">✓ Product list</li>
+                  <li className="flex items-center gap-1.5">✓ Supplier tracking</li>
+                  <li className="flex items-center gap-1.5">✓ Purchase history</li>
+                  <li className="flex items-center gap-1.5">✓ Buying trends</li>
                 </ul>
               </Card>
 
@@ -272,17 +272,17 @@ export default function HomePage() {
                     <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-indigo-950">
-                    Smart Matching
+                    Bank matching
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Import bank statements and match transactions.
+                    Upload a bank statement and match each payment to its invoice.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
-                  <li className="flex items-center gap-1.5">✓ Match VAT Invoices</li>
-                  <li className="flex items-center gap-1.5">✓ Match ORS Items</li>
-                  <li className="flex items-center gap-1.5">✓ Highlight Exceptions</li>
-                  <li className="flex items-center gap-1.5">✓ Missing Documents</li>
+                  <li className="flex items-center gap-1.5">✓ Payments matched to invoices</li>
+                  <li className="flex items-center gap-1.5">✓ VAT added automatically</li>
+                  <li className="flex items-center gap-1.5">✓ Differences flagged</li>
+                  <li className="flex items-center gap-1.5">✓ Missing invoices found</li>
                 </ul>
               </Card>
 
@@ -296,17 +296,17 @@ export default function HomePage() {
                     <TrendingUp className="h-4 w-4 text-amber-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-amber-950">
-                    Better Decisions
+                    Better decisions
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Actionable insights to grow your profitability.
+                    Clear insights that help you spend less.
                   </p>
                 </div>
                 <ul className="mt-4 space-y-1 text-[11px] font-medium text-slate-700">
-                  <li className="flex items-center gap-1.5">✓ Create Orders Faster</li>
-                  <li className="flex items-center gap-1.5">✓ Price Alerts</li>
-                  <li className="flex items-center gap-1.5">✓ Lower Costs</li>
-                  <li className="flex items-center gap-1.5">✓ Greater Profits</li>
+                  <li className="flex items-center gap-1.5">✓ Faster ordering</li>
+                  <li className="flex items-center gap-1.5">✓ Price alerts</li>
+                  <li className="flex items-center gap-1.5">✓ Lower costs</li>
+                  <li className="flex items-center gap-1.5">✓ Higher profits</li>
                 </ul>
               </Card>
             </div>
@@ -321,27 +321,27 @@ export default function HomePage() {
               <Card className="rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50/50 to-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white">
-                    PILLAR 1
+                    VAT
                   </span>
                   <span className="text-xs font-bold text-emerald-800">
-                    HMRC READY
+                    Ready for your VAT return
                   </span>
                 </div>
                 <h3 className="mt-4 text-2xl font-extrabold text-emerald-950">
-                  VET THE VAT — Maximise Your Claims
+                  VET THE VAT: claim what you're owed
                 </h3>
                 <p className="mt-2 text-sm text-slate-600">
-                  Capture every receipt and invoice. Never miss a single penny of reclaimable input VAT.
+                  Capture every invoice and receipt so no reclaimable VAT is missed.
                 </p>
 
                 <div className="mt-6 space-y-3">
                   {[
-                    "Claim every penny of VAT you're entitled to",
-                    "Never lose another paper receipt or digital PDF",
-                    "HMRC compliant digital audit trail & Making Tax Digital support",
-                    "Secure encrypted cloud storage with instant search",
-                    "Export to accountants with clickable original invoice links",
-                    "Multi-company support with granular staff roles"
+                    "Claim all the VAT you're entitled to",
+                    "Keep every receipt and PDF invoice in one place",
+                    "Digital records with a full change history",
+                    "Secure online records with quick search",
+                    "Excel exports for your accountant, with a link to each invoice",
+                    "Several companies in one account, with staff roles"
                   ].map((benefit) => (
                     <div key={benefit} className="flex items-start gap-2.5 text-xs font-semibold text-slate-800">
                       <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
@@ -355,9 +355,9 @@ export default function HomePage() {
                     href="/app/invoices/upload"
                     className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-950"
                   >
-                    Open VAT Workspace <ArrowRight className="h-3.5 w-3.5" />
+                    Open VAT workspace <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                  <span className="text-[11px] font-bold text-emerald-700">Safe. Secure. Compliant.</span>
+                  <span className="text-[11px] font-bold text-emerald-700">Secure and organised.</span>
                 </div>
               </Card>
 
@@ -365,27 +365,27 @@ export default function HomePage() {
               <Card className="rounded-2xl border-2 border-amber-300 bg-gradient-to-br from-amber-50/40 to-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="rounded-lg bg-amber-600 px-3 py-1 text-xs font-bold text-white">
-                    PILLAR 2
+                    Purchasing
                   </span>
                   <span className="text-xs font-bold text-amber-800">
-                    PURCHASING INTEL
+                    Buy smarter
                   </span>
                 </div>
                 <h3 className="mt-4 text-2xl font-extrabold text-amber-950">
-                  ORS — Order Replenishment System
+                  ORS: Order Replenishment System
                 </h3>
                 <p className="mt-2 text-sm text-slate-600">
-                  Compare multi-supplier prices, automate grouped purchase orders, and monitor 10–12 week price inflation.
+                  Compare supplier prices, send orders by WhatsApp or email, and track price changes over the last 12 weeks.
                 </p>
 
                 <div className="mt-6 space-y-3">
                   {[
-                    "Create and dispatch purchase orders in seconds",
-                    "Compare multiple supplier quotes side-by-side with Cheapest badges",
-                    "Automatic 10–12 week price increase alerts (>7–10% threshold)",
-                    "Group order lists by supplier automatically with one-click PO generation",
-                    "Full SKU and pack size price history tracking",
-                    "Direct savings recommendations: Save up to 16% on regular stock"
+                    "Create and send purchase orders in seconds",
+                    "Compare supplier prices side by side, with the cheapest highlighted",
+                    "Alerts when a price changes by 10% or more",
+                    "Orders grouped by supplier automatically",
+                    "Price history for every product and pack size",
+                    "See how much you could save on each product"
                   ].map((benefit) => (
                     <div key={benefit} className="flex items-start gap-2.5 text-xs font-semibold text-slate-800">
                       <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-600" />
@@ -399,9 +399,9 @@ export default function HomePage() {
                     href="/app/ors/prices"
                     className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950"
                   >
-                    Explore Price Comparison <ArrowRight className="h-3.5 w-3.5" />
+                    Explore price comparison <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                  <span className="text-[11px] font-bold text-amber-700">Better Prices. Higher Profits.</span>
+                  <span className="text-[11px] font-bold text-amber-700">Better prices, higher profits.</span>
                 </div>
               </Card>
             </div>
@@ -412,10 +412,10 @@ export default function HomePage() {
         <section className="bg-slate-50 py-16">
           <div className="container-page text-center">
             <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
-              Works For All UK Businesses
+              Built for UK businesses of every kind
             </h2>
             <p className="mt-2 text-xs text-slate-500">
-              Tailored workflows for sectors managing supplier invoices, trade purchases, and regular replenishments.
+              For any business that buys from suppliers and reorders regularly.
             </p>
 
             <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
@@ -456,17 +456,17 @@ export default function HomePage() {
               "Every receipt is a financial asset. Don't lose it."
             </span>
             <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">
-              Smarter Businesses Claim More VAT.
+              Smarter businesses claim more VAT.
             </h2>
             <p className="mt-4 mx-auto max-w-xl text-sm leading-relaxed text-emerald-200">
-              Join thousands of UK businesses saving time, preventing missed VAT claims, and cutting purchasing costs with Vet the VAT and ORS.
+              Save time, stop missing VAT claims and cut purchasing costs with VET THE VAT and ORS.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <ButtonLink
                 href="/get-started"
                 className="bg-emerald-500 px-8 py-3 text-sm font-bold text-slate-950 hover:bg-emerald-400 shadow-lg"
-              >Get Started Today <ArrowRight className="h-4 w-4" />
+              >Get started <ArrowRight className="h-4 w-4" />
               </ButtonLink>
               <ButtonLink
                 href={playStoreUrl}
@@ -475,7 +475,7 @@ export default function HomePage() {
                 variant="outline"
                 className="border-emerald-700 bg-white/10 text-white hover:bg-white/20"
               >
-                <Download className="h-4 w-4" /> Download Mobile App
+                <Download className="h-4 w-4" /> Download the app
               </ButtonLink>
             </div>
 

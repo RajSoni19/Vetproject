@@ -134,6 +134,6 @@ test('proxy retains exact public POST exceptions and delegates private authoriza
 });
 
 test('all Get Started link sources use dedicated page and client code contains no persistence or recipient',()=>{
- for(const file of ['components/public-shell.tsx','app/page.tsx','app/features/page.tsx'])assert.match(fs.readFileSync(file,'utf8'),/href="\/get-started"[^>]*>Get Started/);
+ for(const file of ['components/public-shell.tsx','app/page.tsx','app/features/page.tsx'])assert.match(fs.readFileSync(file,'utf8'),/href="\/get-started"[^>]*>Get started/i);
  const client=fs.readFileSync('components/lead-form.tsx','utf8');assert.doesNotMatch(client,/localStorage|sessionStorage|admin@vetthevat|SMTP_PASSWORD|DATABASE_URL/);assert.match(client,/idempotency-key/);assert.match(client,/consent/);
 });

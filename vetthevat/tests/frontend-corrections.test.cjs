@@ -7,7 +7,7 @@ test('catalogue specifies trial, paid limits, history, ORS and team without gran
  assert.deepEqual(catalog.trialTerms,{days:14,invoices:100,period:'trial',orsIncluded:true,cardRequired:false});
  assert.deepEqual(Object.values(catalog.subscriptionPlans).map(p=>[p.monthlyPrice,p.invoices,p.companies,p.membersIncludingOwner,p.historyDays]),[['9.00',30,2,2,90],['15.00',100,2,4,180],['25.00',300,3,6,null]]);
  assert.equal(catalog.planMonthlyPrice('Basic',true),'14.00');assert.equal(catalog.planMonthlyPrice('Starter',true),'15.00');assert.equal(catalog.subscriptionPlans.Starter.recommended,true);
- assert.ok(catalog.vatPlanFeatures.includes('Invoice uploads and OCR'));assert.ok(catalog.vatPlanFeatures.includes('Manual invoice creation'));assert.equal(catalog.subscriptionPlans.Starter.orsIncluded,true);assert.equal(catalog.subscriptionPlans.Growth.orsIncluded,true);
+ assert.ok(catalog.vatPlanFeatures.includes('Invoice and receipt scanning'));assert.ok(catalog.vatPlanFeatures.includes('Manual invoice creation'));assert.equal(catalog.subscriptionPlans.Starter.orsIncluded,true);assert.equal(catalog.subscriptionPlans.Growth.orsIncluded,true);
 });
 test('usage previews count unique creations across companies and use the comparison allowance',()=>{
  const {previewInvoiceUsage}=loadSource('tests/fixtures/subscription-preview');

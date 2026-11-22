@@ -8,7 +8,7 @@ import { useLocale } from "@/components/locale-provider";
 const displayNames: Record<Locale, string> = {
   "en-GB": "English", "gu-IN": "\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0", "hi-IN": "\u0939\u093F\u0928\u094D\u0926\u0940", "es-ES": "Espa\u00F1ol",
   "fr-FR": "Fran\u00E7ais", ar: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", "pt-PT": "Portugu\u00EAs", "de-DE": "Deutsch",
-  "it-IT": "Italiano", "pl-PL": "Polski", "ur-PK": "\u0627\u0631\u062F\u0648", "pa-IN": "\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40"
+  "it-IT": "Italiano", "pl-PL": "Polski", "ur-PK": "\u0627\u0631\u062F\u0648", "pa-IN": "\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40", "ro-RO": "Rom\u00E2n\u0103"
 };
 
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {

@@ -32,16 +32,16 @@ export function FeaturesView() {
     ? "Un conjunto de funciones diseñadas para capturar facturas, validar el IVA de los proveedores y exportar registros organizados."
     : isAr
     ? "مجموعة ميزات مخصصة لالتقاط بيانات الفواتير والتحقق من ضريبة الموردين وتصدير السجلات المنظمة."
-    : "A focused feature set for capturing invoice information, validating supplier VAT details where supported, and exporting organised records.";
+    : "Everything you need to capture invoices, check VAT and keep your records ready for your accountant.";
 
   const features = [
     {
-      title: isGu ? "સરળ ડેટા એક્સટ્રેક્શન" : isHi ? "आसान डेटा निष्कर्षण" : isEs ? "Extracción de datos sencilla" : isAr ? "استخراج بيانات سهل" : "Easy data extraction",
+      title: isGu ? "સરળ ડેટા એક્સટ્રેક્શન" : isHi ? "आसान डेटा निष्कर्षण" : isEs ? "Extracción de datos sencilla" : isAr ? "استخراج بيانات سهل" : "Automatic invoice reading",
       desc: isGu
         ? "ઇન્વૉઇસ માહિતીને સંરચિત રેકોર્ડ્સમાં ફેરવીને મેન્યુઅલ એન્ટ્રી ઘટાડો."
         : isHi
         ? "चालान जानकारी को संरचित रिकॉर्ड में बदलकर मैन्युअल प्रविष्टि कम करें।"
-        : "Reduce manual entry by extracting invoice information into structured records.",
+        : "Scan a PDF or photo and the supplier, date, items and VAT are read for you.",
       Icon: FileText
     },
     {
@@ -50,7 +50,7 @@ export function FeaturesView() {
         ? "મેળવેલા ઇન્વૉઇસ ડેટાને સંબંધિત કંપની અને સપ્લાયર આસપાસ ગોઠવો."
         : isHi
         ? "निकाले गए चालान डेटा को संबंधित कंपनी और आपूर्तिकर्ता के अनुसार व्यवस्थित करें।"
-        : "Organise captured invoice data around the appropriate company and supplier.",
+        : "Every invoice is filed under the right company and supplier, with a full price history.",
       Icon: Building2
     },
     {
@@ -59,16 +59,16 @@ export function FeaturesView() {
         ? "સમર્થિત માન્યતા સેવાઓ દ્વારા સપ્લાયર VAT નોંધણી વિગતોની સમીક્ષા કરો."
         : isHi
         ? "समर्थित सत्यापन सेवाओं के माध्यम से आपूर्तिकर्ता VAT पंजीकरण विवरण की समीक्षा करें।"
-        : "Review supplier VAT registration details through supported validation services.",
+        : "UK VAT numbers are checked automatically, with a one-click link to HMRC's official checker.",
       Icon: ReceiptText
     },
     {
-      title: isGu ? "ઇમેઇલ શેરિંગ" : isHi ? "ईमेल साझाकरण" : isEs ? "Compartir por correo" : isAr ? "مشاركة البريد الإلكتروني" : "Email sharing",
+      title: isGu ? "ઇમેઇલ શેરિંગ" : isHi ? "ईमेल साझाकरण" : isEs ? "Compartir por correo" : isAr ? "مشاركة البريد الإلكتروني" : "Bank matching",
       desc: isGu
         ? "પ્રક્રિયા કરેલા ઇન્વૉઇસ અથવા રેકોર્ડ્સ નિયુક્ત ઇમેઇલ સરનામાં પર મોકલો."
         : isHi
         ? "संसाधित चालान या रिकॉर्ड निर्दिष्ट ईमेल पते पर भेजें।"
-        : "Send processed invoices or records to designated email addresses, where supported.",
+        : "Upload a bank statement and each payment is matched to its invoice, with the VAT added for you.",
       Icon: Mail
     },
     {
@@ -77,7 +77,7 @@ export function FeaturesView() {
         ? "રિપોર્ટિંગ અને વધુ પ્રક્રિયા માટે સમર્થિત ફોર્મેટ્સ ડાઉનલોડ કરો."
         : isHi
         ? "रिपोर्टिंग और आगे की प्रक्रिया के लिए समर्थित प्रारूप डाउनलोड करें।"
-        : "Download supported formats for reporting and further processing.",
+        : "Download your invoices to Excel or PDF, ready to send to your accountant.",
       Icon: FileSpreadsheet
     },
     {
@@ -86,7 +86,7 @@ export function FeaturesView() {
         ? "માસિક, ત્રિમાસિક અને વાર્ષિક રિપોર્ટિંગ સમયગાળા માટે રેકોર્ડ્સ તૈયાર કરો."
         : isHi
         ? "मासिक, त्रैमासिक और वार्षिक रिपोर्टिंग अवधि के लिए रिकॉर्ड संकलित करें।"
-        : "Compile records for monthly, quarterly and annual reporting periods.",
+        : "See and download figures by month, quarter, year or your own dates.",
       Icon: Download
     },
     {
@@ -95,7 +95,7 @@ export function FeaturesView() {
         ? "ચકાસાયેલ નિયંત્રણો સાથે વ્યવસાય અને ઇન્વૉઇસ માહિતીનું રક્ષણ કરો."
         : isHi
         ? "सत्यापित नियंत्रणों के साथ व्यापार और चालान जानकारी को सुरक्षित रखें।"
-        : "Protect business and invoice information with verified controls before making production claims.",
+        : "Each company's data is private, connections are encrypted and every change is recorded.",
       Icon: ShieldCheck
     }
   ];

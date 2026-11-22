@@ -1,16 +1,15 @@
 import { SimplePublicPage } from "@/components/public-pages";
 
 export default function FaqPage() {
-  return <SimplePublicPage eyebrow="FAQ" title="Common questions about Vet the VAT." description="Clear customer-facing answers for invoice capture, VAT validation, reporting and data review." sections={[
-    { title: "What files can Vet the VAT read?", body: "Vet the VAT is intended to accept supported invoice and receipt formats. Exact formats, maximum file sizes and image quality requirements should be confirmed before launch. Uploaded documents should be legible." },
-    { title: "How can I download the extracted data?", body: "Processed invoice records can be prepared for supported Excel or PDF exports where the feature is enabled." },
-    { title: "Does Vet the VAT validate VAT registration?", body: "The product direction includes supplier VAT registration checks through supported verification services. Availability and returned information may differ by jurisdiction." },
-    { title: "Is Vet the VAT free to try?", body: "See the plan information page for the published allowance and feature comparison. This website does not activate trials or take payments." },
-    { title: "Is my data secure?", body: "The platform should protect invoice and business information through secure authentication, access permissions, file storage and data transfer controls. Specific controls should only be claimed once implemented." },
-    { title: "Is Vet the VAT GDPR compliant?", body: "GDPR positioning should be confirmed against the implemented service, data processing roles, retention settings and provider arrangements before publication." },
-    { title: "Can I organise records by month, quarter or year?", body: "Yes, the planned reporting workflow includes monthly, quarterly and annual reporting periods." },
-    { title: "Can I use Vet the VAT for UK and EU suppliers?", body: "The product is intended for UK and EU business workflows, with VAT verification depending on supported services and returned information." },
-    { title: "Can I process multiple companies?", body: "Published company allowances are listed on the pricing page. This temporary website does not provide account access or enforce entitlements." },
-    { title: "Will extracted data always be accurate?", body: "No extraction system is perfect. Users should review extracted values, resolve exceptions and confirm records before relying on them." }
+  return <SimplePublicPage eyebrow="FAQ" title="Frequently asked questions" description="Quick answers about scanning invoices, VAT, reports and your account." sections={[
+    { title: "What can I upload?", body: "PDF invoices and photos of invoices or till receipts (JPG, PNG or WEBP). Multi-page invoices of up to 20 pages are supported. Clear, well-lit photos give the best results." },
+    { title: "How do I get my data out?", body: "Download confirmed invoices to Excel by month, quarter, year or custom dates, or download any single invoice as a PDF. Each Excel row links back to its invoice." },
+    { title: "Does it check supplier VAT numbers?", body: "Every UK VAT number is checked for errors automatically, and one click opens HMRC's official VAT number checker to confirm it is registered." },
+    { title: "Is there a free trial?", body: "Yes. Your first company gets a free 14-day trial with all VAT and ordering features. No card is needed. See the pricing page for plans." },
+    { title: "Is my data secure?", body: "Each company's data is kept separate, and only people you invite can see it. All connections are encrypted, and every change to an invoice is recorded." },
+    { title: "How do you handle personal data?", body: "Please read our privacy notice for what we collect, why, and how long we keep it." },
+    { title: "Can I organise records by month, quarter or year?", body: "Yes. Dashboards, Excel downloads and bank matching all work by month, quarter, year or your own dates." },
+    { title: "Can I manage more than one company?", body: "Yes. One account can hold several companies, each with its own invoices, suppliers and team members." },
+    { title: "Will the details always be read correctly?", body: "Most invoices are read accurately, but no system is perfect. You check every value before an invoice is saved, and the app warns you when totals do not add up." }
   ]} />;
 }

@@ -10,7 +10,8 @@ export const locales = [
   { code: "it-IT", name: "Italiano", support: "partial" },
   { code: "pl-PL", name: "Polski", support: "partial" },
   { code: "ur-PK", name: "اردو", support: "partial" },
-  { code: "pa-IN", name: "ਪੰਜਾਬੀ", support: "partial" }
+  { code: "pa-IN", name: "ਪੰਜਾਬੀ", support: "partial" },
+  { code: "ro-RO", name: "Română", support: "partial" }
 ] as const;
 
 export type Locale = (typeof locales)[number]["code"];
@@ -980,6 +981,18 @@ export const messages = {
     workspace: "ਕਾਰਜ-ਥਾਂ", insights: "ਝਲਕ", organisation: "ਸੰਸਥਾ", dashboard: "ਡੈਸ਼ਬੋਰਡ",
     invoices: "ਇਨਵੌਇਸ", upload: "ਅੱਪਲੋਡ", new: "ਨਵਾਂ", vatManagement: "VAT ਪ੍ਰਬੰਧਨ",
     orsOrdering: "ORS ਆਰਡਰਿੰਗ", settings: "ਸੈਟਿੰਗਾਂ", chooseLanguage: "ਭਾਸ਼ਾ ਚੁਣੋ",
+    analyticsAutoUpdate: "Results load on entry and update when filters change.", refreshAnalytics: "Refresh analytics",
+    retryAnalytics: "Retry analytics", noData: "No data", noQualifyingRecords: "No qualifying records", loadingAnalytics: "Loading analytics"
+  },
+  "ro-RO": {
+    complete: "Traducere completă",
+    language: "Limbă", languageSupport: "Acoperirea traducerii", partial: "Traducere parțială",
+    home: "Acasă", product: "Produs", benefits: "Beneficii", howItWorks: "Cum funcționează",
+    pricing: "Prețuri", faqs: "Întrebări frecvente", signIn: "Autentificare", getStarted: "Începeți",
+    downloadApp: "Descărcați aplicația", contact: "Contact", support: "Asistență", mobileApp: "Aplicație mobilă",
+    workspace: "Spațiu de lucru", insights: "Analize", organisation: "Organizație", dashboard: "Panou",
+    invoices: "Facturi", upload: "Încărcare", new: "Nou", vatManagement: "Gestionare TVA",
+    orsOrdering: "Comenzi ORS", settings: "Setări", chooseLanguage: "Alegeți limba",
     analyticsAutoUpdate: "Results load on entry and update when filters change.", refreshAnalytics: "Refresh analytics",
     retryAnalytics: "Retry analytics", noData: "No data", noQualifyingRecords: "No qualifying records", loadingAnalytics: "Loading analytics"
   }

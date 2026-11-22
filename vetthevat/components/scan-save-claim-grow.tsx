@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { Camera, CloudUpload, Receipt, TrendingUp } from "lucide-react";
 
 const steps = [
-  { icon: Camera, title: "Scan", text: "Photo, PDF or gallery — every receipt and invoice captured in seconds." },
-  { icon: CloudUpload, title: "Save", text: "Supplier, date, net, VAT and gross read for you and stored securely." },
-  { icon: Receipt, title: "Claim", text: "HMRC-ready VAT records and a clean export for your accountant." },
+  { icon: Camera, title: "Scan", text: "Take a photo or upload a PDF of any invoice or receipt." },
+  { icon: CloudUpload, title: "Save", text: "Supplier, date, net, VAT and total are read for you and saved securely." },
+  { icon: Receipt, title: "Claim", text: "Organised VAT records and a clean Excel export for your accountant." },
   { icon: TrendingUp, title: "Grow", text: "Compare supplier prices, get price alerts and order at the best price." }
 ];
 

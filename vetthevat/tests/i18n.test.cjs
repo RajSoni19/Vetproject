@@ -12,7 +12,7 @@ function catalog(){
 
 test('listed locale messages are valid subsets and coverage labels remain honest',()=>{
  const {locales,messages}=catalog(),keys=Object.keys(messages['en-GB']).sort();
- assert.equal(locales.length,12);
+ assert.equal(locales.length,13);
  for(const locale of locales){assert.ok(Object.keys(messages[locale.code]).every(key=>keys.includes(key)),`${locale.code} has an unknown key`);assert.ok(locale.code==='en-GB'?locale.support==='complete':locale.support==='partial');}
 });
 

@@ -1,7 +1,7 @@
 // Owner-approved commercial terms. This catalogue never grants account access.
 export const vatPlanFeatures = [
-  "Supplier and customer management", "Invoice uploads and OCR", "Manual invoice creation",
-  "VAT calculations", "Quarterly and yearly VAT reports", "PDF, CSV and Excel exports"
+  "Supplier and customer management", "Invoice and receipt scanning", "Manual invoice creation",
+  "Automatic VAT calculations", "Quarterly and yearly VAT reports", "PDF, CSV and Excel exports"
 ] as const;
 export const trialTerms = { days: 14, invoices: 100, period: "trial", orsIncluded: true, cardRequired: false } as const;
 export const subscriptionPlans = {
