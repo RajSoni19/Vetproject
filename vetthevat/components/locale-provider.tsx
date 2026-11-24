@@ -9,12 +9,17 @@ const storageKey = "vtv.preferred-locale.v1";
 type LocaleContextValue = { locale: Locale; setLocale: (locale: Locale) => void; syncAccountLocale: () => Promise<boolean>; t: (key: MessageKey) => string };
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-function readStoredLocale(): Locale {
+// The language saved on this device, or null when none has been chosen here.
+function storedLocale(): Locale | null {
   try {
     const stored = window.localStorage.getItem(storageKey) ?? document.cookie.split("; ").find((part) => part.startsWith("vtv_locale="))?.split("=")[1];
     const candidate = stored ? decodeURIComponent(stored) : "";
-    return isLocale(candidate) ? candidate : "en-GB";
-  } catch { return "en-GB"; }
+    return isLocale(candidate) ? candidate : null;
+  } catch { return null; }
+}
+
+function readStoredLocale(): Locale {
+  return storedLocale() ?? "en-GB";
 }
 
 function localeToGoogleLang(loc: Locale): string {
@@ -193,7 +198,13 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       const body = await response.json();
       accountPreferenceEnabled.current = body.languagePreferenceEnabled === true;
       const preferred = body.profile?.preferredLocale;
-      if (accountPreferenceEnabled.current && isLocale(preferred)) {
+      // The language chosen on this device (for example on the public site before signing in)
+      // always wins and is saved to the account. The account's language is used only on a
+      // device where no language has been chosen yet.
+      const deviceChoice = storedLocale();
+      if (accountPreferenceEnabled.current && deviceChoice) {
+        if (preferred !== deviceChoice) queueAccountPreference(deviceChoice, writeSequence.current);
+      } else if (accountPreferenceEnabled.current && isLocale(preferred)) {
         if (writeSequence.current === sequenceAtStart) {
           chosenLocale.current = preferred;
           updateLocale(preferred);

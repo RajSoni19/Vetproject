@@ -4,6 +4,14 @@
 import type { Locale } from "@/lib/i18n/catalog";
 
 const originalTextMap = new WeakMap<Node, string>();
+// The text this translator last wrote into each node. A node whose text differs from it was
+// changed by the app (React), so that new text is the new original, never reverted.
+const writtenTextMap = new WeakMap<Node, string>();
+// Writes only real changes: writing identical text would still notify the observer and loop.
+function writeText(node: Text, value: string) {
+  writtenTextMap.set(node, value);
+  if (node.nodeValue !== value) node.nodeValue = value;
+}
 
 const hindiDictionary: Record<string, string> = {
   // Public Marketing & Header/Footer
@@ -419,8 +427,10 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
     }
   }
 
-  if (!originalTextMap.has(node)) {
+  // New node, or the app changed its text since we last translated it: that text is the original.
+  if (!originalTextMap.has(node) || writtenTextMap.get(node) !== text) {
     originalTextMap.set(node, text);
+    writtenTextMap.delete(node);
   }
 
   const orig = originalTextMap.get(node) ?? text;
@@ -431,7 +441,7 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
     const translated = dict[trimmed];
     const leadingSpace = orig.match(/^\s*/)?.[0] || "";
     const trailingSpace = orig.match(/\s*$/)?.[0] || "";
-    node.nodeValue = leadingSpace + translated + trailingSpace;
+    writeText(node, leadingSpace + translated + trailingSpace);
     return;
   }
 
@@ -445,17 +455,17 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
       matched = true;
     }
   }
-  if (matched) {
-    node.nodeValue = replaced;
-  }
+  writeText(node, matched ? replaced : orig);
 }
 
 function restoreTextNode(node: Text) {
   if (originalTextMap.has(node)) {
     const orig = originalTextMap.get(node);
-    if (orig !== undefined && node.nodeValue !== orig) {
+    // Only undo our own translation; text the app has since changed is already current.
+    if (orig !== undefined && writtenTextMap.get(node) === node.nodeValue && node.nodeValue !== orig) {
       node.nodeValue = orig;
     }
+    writtenTextMap.delete(node);
   }
 }
 

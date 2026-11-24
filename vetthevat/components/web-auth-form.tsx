@@ -7,6 +7,7 @@ import {Card} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {useLocale} from "@/components/locale-provider";
 import type {MessageKey} from "@/lib/i18n/catalog";
+import {clearWorkspaceCache} from "@/lib/workspace-cache";
 
 type Mode="login"|"register"|"forgot"|"reset"|"verify"|"verification";
 const views:Record<Mode,[MessageKey,MessageKey,string]>={login:["authLoginTitle","authLoginAction","/api/auth/session"],register:["authRegisterTitle","authRegisterAction","/api/auth/register"],forgot:["authForgotTitle","authForgotAction","/api/auth/forgot-password"],reset:["authResetTitle","authResetAction","/api/auth/reset-password"],verify:["authVerifyTitle","authVerifyAction","/api/auth/verify-email"],verification:["authVerificationTitle","authVerificationAction","/api/auth/verification"]};
@@ -24,7 +25,7 @@ export function WebAuthForm({mode,enabled,emailDeliveryEnabled=false,token,notic
    // Show the server's own reason (wrong details, too many attempts, unverified email...).
    if(!response.ok){const failure=await response.json().catch(()=>null);throw Error(response.status===429?"Too many attempts. Please wait a few minutes and try again.":failure?.error?.message||"");}
    const result=await response.json();
-   if(mode==="login"&&result.signedIn===true){if(onSignedIn){await onSignedIn();return;}const next=new URL(window.location.href).searchParams.get("next");window.location.replace(next==="/super-admin"||result.redirect==="/super-admin"?"/super-admin":"/app/dashboard");return;}
+   if(mode==="login"&&result.signedIn===true){clearWorkspaceCache();if(onSignedIn){await onSignedIn();return;}const next=new URL(window.location.href).searchParams.get("next");window.location.replace(next==="/super-admin"||result.redirect==="/super-admin"?"/super-admin":"/app/dashboard");return;}
    setMessage(mode==="verify"?t("authVerifySuccess"):mode==="reset"?t("authResetSuccess"):t("authRequestReceived"));setCompleted(true);form.reset();
   }catch(reason){setError(reason instanceof Error&&reason.message?reason.message:t("authRequestFailed"));}finally{pending.current=false;setBusy(false);}
  }
