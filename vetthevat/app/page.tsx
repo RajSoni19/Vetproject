@@ -272,7 +272,7 @@ export default function HomePage() {
                     <CheckCircle2 className="h-4 w-4 text-indigo-600" />
                   </div>
                   <h3 className="mt-3 text-sm font-extrabold uppercase tracking-wide text-indigo-950">
-                    Bank matching
+                    Bank VAT matching
                   </h3>
                   <p className="mt-1 text-xs text-slate-500">
                     Upload a bank statement and match each payment to its invoice.

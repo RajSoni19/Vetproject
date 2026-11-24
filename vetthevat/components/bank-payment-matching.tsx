@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { applyDecisions, matchSummary, matchTransactions, nameKey, namesSupplier, parseStatementRows, type BankTransaction, type MatchDecisions, type MatchedTransaction, type NameMemory, type PayableInvoice } from "@/lib/bank-matching";
 import { accountantWorkbook, customPeriodKey, customPeriodLabel, periodOptions, rowsInPeriod, verifiedVat } from "@/lib/bank-vat-export";
+import { parseAiStatement, statementTable } from "@/lib/ai-statement";
+import { businessForm } from "@/lib/browser-business";
+import { preparePagesForUpload } from "@/lib/document-extraction";
 
 const money = (value: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(value);
 const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
@@ -62,10 +65,22 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
     if (!file) return;
     setError(""); setNotice(""); setBusy(true);
     try {
-      if (file.size > 5 * 1024 * 1024) throw new Error("Choose a statement file no larger than 5 MB.");
-      if (!/\.(csv|xlsx|xls)$/i.test(file.name)) throw new Error("Choose a CSV or Excel (.xlsx / .xls) statement.");
-      const book = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: false, raw: file.name.toLowerCase().endsWith(".csv") });
-      const table = XLSX.utils.sheet_to_json<unknown[]>(book.Sheets[book.SheetNames[0]], { header: 1, raw: true, defval: "" });
+      const picture = /\.(pdf|jpe?g|png|webp)$/i.test(file.name) || /^image\/|application\/pdf/.test(file.type);
+      if (!picture && file.size > 5 * 1024 * 1024) throw new Error("Choose a statement file no larger than 5 MB.");
+      if (!picture && !/\.(csv|xlsx|xls)$/i.test(file.name)) throw new Error("Choose an Excel or CSV file, a PDF, or a photo of the statement.");
+      let table: unknown[][];
+      if (picture) {
+        // PDF or photo of the statement: read by the AI reader, then matched exactly like a spreadsheet.
+        setNotice("Reading the statement…");
+        const upload = await preparePagesForUpload([file], AbortSignal.timeout(60000)), form = new FormData();
+        upload.pages.forEach((part, index) => form.append("page", part, `page-${index + 1}.${part.type === "application/pdf" ? "pdf" : "jpg"}`));
+        form.append("kind", "statement");
+        const data = await businessForm(companyId, "invoice-extract", form, AbortSignal.timeout(45000)).catch(() => { throw new Error("The statement could not be read. Try a clearer photo, or download the statement as Excel or CSV from your online banking."); });
+        table = statementTable(parseAiStatement(data?.statement));
+      } else {
+        const book = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: false, raw: file.name.toLowerCase().endsWith(".csv") });
+        table = XLSX.utils.sheet_to_json<unknown[]>(book.Sheets[book.SheetNames[0]], { header: 1, raw: true, defval: "" });
+      }
       const parsed = parseStatementRows(table);
       if (parsed.error) throw new Error(parsed.error);
       if (!parsed.transactions.length) throw new Error("No rows with a date and amount were found in this file.");
@@ -128,11 +143,11 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
   return <div className="grid min-w-0 grid-cols-1 gap-5">
     <Card className="p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><h2 className="text-xl font-bold">Bank statement VAT matching</h2>
-          <p className="mt-1 max-w-2xl text-sm text-muted">Upload the statement from your accountant. Each payment is matched by amount to your saved invoices and the VAT is added. Check the results, then export Excel for your accountant.</p></div>
+        <div><h2 className="text-xl font-bold">Bank VAT matching</h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted">Upload your bank statement as Excel, CSV, PDF or a photo. Each payment is matched by amount to the saved invoices of the company selected above, and the VAT is added. Check the results, then export Excel for your accountant.</p></div>
         <div className="flex flex-wrap gap-2">
           <label className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-brand-700 px-4 text-sm font-semibold text-white ${busy ? "opacity-60" : ""}`}><Upload className="h-4 w-4" />{busy ? "Reading…" : transactions.length ? "Upload new statement" : "Upload statement"}
-            <input type="file" accept=".csv,.xlsx,.xls" aria-label="Upload bank statement" className="sr-only" disabled={busy} onChange={e => { void importFile(e.currentTarget.files?.[0]); e.currentTarget.value = ""; }} /></label>
+            <input type="file" accept=".csv,.xlsx,.xls,.pdf,.jpg,.jpeg,.png,.webp,image/*" aria-label="Upload bank statement" className="sr-only" disabled={busy} onChange={e => { void importFile(e.currentTarget.files?.[0]); e.currentTarget.value = ""; }} /></label>
           <Button type="button" variant="outline" onClick={downloadTemplate}><FileSpreadsheet className="h-4 w-4" />Template</Button>
         </div>
       </div>

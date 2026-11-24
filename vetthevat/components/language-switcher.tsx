@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Globe2 } from "lucide-react";
 import { locales, type Locale } from "@/lib/i18n/catalog";
 import { useLocale } from "@/components/locale-provider";
@@ -11,11 +11,19 @@ const displayNames: Record<Locale, string> = {
   "it-IT": "Italiano", "pl-PL": "Polski", "ur-PK": "\u0627\u0631\u062F\u0648", "pa-IN": "\u0A2A\u0A70\u0A1C\u0A3E\u0A2C\u0A40", "ro-RO": "Rom\u00E2n\u0103"
 };
 
-export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+// openUp: the list opens above the button (for a button fixed to the bottom of the screen).
+export function LanguageSwitcher({ compact = false, openUp = false }: { compact?: boolean; openUp?: boolean }) {
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
-  const menu = useRef<HTMLDivElement>(null);
+  const menu = useRef<HTMLDivElement>(null), root = useRef<HTMLDivElement>(null);
+  // Close when tapping or clicking anywhere else.
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: PointerEvent) => { if (root.current && !root.current.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [open]);
 
   function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Escape" && open) {
@@ -34,14 +42,14 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
     options[next]?.focus();
   }
 
-  return <div className={`relative ${compact ? "w-full" : "shrink-0"}`} onKeyDown={onKeyDown}>
+  return <div ref={root} className={`relative ${compact ? "w-full" : "shrink-0"}`} onKeyDown={onKeyDown}>
     <button ref={trigger} type="button" aria-label={t("chooseLanguage")} aria-haspopup="menu" aria-expanded={open}
       onClick={() => setOpen((value) => !value)}
       className={`inline-flex min-h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-white px-2.5 text-sm font-semibold text-ink hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 ${compact ? "" : "sm:w-auto"}`}>
       <span className="inline-flex min-w-0 items-center gap-2"><Globe2 className="h-4 w-4 shrink-0 text-brand-700" aria-hidden="true" /><span className="whitespace-nowrap">{displayNames[locale]}</span></span>
       <ChevronDown className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
     </button>
-    {open && <div ref={menu} role="menu" aria-label={t("chooseLanguage")} className={`absolute top-full z-50 mt-2 max-h-[min(70vh,28rem)] overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-xl ${compact ? "left-0 right-0" : "right-0 w-64"}`}>
+    {open && <div ref={menu} role="menu" aria-label={t("chooseLanguage")} className={`absolute ${openUp ? "bottom-full mb-2" : "top-full mt-2"} z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-xl ${compact ? "left-0 right-0" : "right-0 w-64"}`}>
       {locales.map((item) => <button key={item.code} type="button" role="menuitemradio" data-locale={item.code} aria-checked={locale === item.code}
         tabIndex={locale === item.code ? 0 : -1}
         onClick={() => { setLocale(item.code); setOpen(false); trigger.current?.focus(); }}

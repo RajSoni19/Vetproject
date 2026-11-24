@@ -91,7 +91,7 @@ export function AppShell({ children, softwareAdministrator = false }: { children
         { href: "/app/ors/catalogue", label: "Product Catalogue", group: "Stock" },
         { href: "/app/ors/inventory", label: "Inventory", group: "Stock" },
         { href: "/app/ors/goods-receipts", label: "Goods Receipts", group: "Stock" },
-        { href: "/app/bank-matching", label: "Bank Matching", group: "Stock" },
+        { href: "/app/bank-matching", label: "Bank VAT Matching", group: "Stock" },
         { href: "/app/ors/sales", label: "Sales Orders", group: "Sales" },
         { href: "/app/ors/shopping", label: "Marketplace", group: "Sales" },
         { href: "/app/settings", label: "Settings", group: "Organisation" },

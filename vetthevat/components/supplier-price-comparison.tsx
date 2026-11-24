@@ -145,7 +145,8 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
     setNotice(failed ? `${ok} of ${results.length} orders saved and opened in WhatsApp. ${failed} could not be saved — they are still in your order list, try again.` : `${ok} order${ok === 1 ? "" : "s"} saved and opened in WhatsApp — press Send in each.`);
   }
   function downloadPOs() {
-    const rows = ["Supplier,Product,Quantity,Unit price,Line total", ...groups.flatMap(g => g.lines.map(line => `"${g.supplierName.replace(/"/g, '""')}","${line.name.replace(/"/g, '""')}",${line.quantity},${line.unitPrice.toFixed(2)},${(line.unitPrice * line.quantity).toFixed(2)}`)), `,,,Total,${orderTotal.toFixed(2)}`];
+    // Purchase orders go to suppliers, so they list only items and quantities (no prices).
+    const rows = ["Supplier,Product,Quantity", ...groups.flatMap(g => g.lines.map(line => `"${g.supplierName.replace(/"/g, '""')}","${line.name.replace(/"/g, '""')}",${line.quantity}`))];
     const url = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" })), a = document.createElement("a");
     a.href = url; a.download = `purchase-orders-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }

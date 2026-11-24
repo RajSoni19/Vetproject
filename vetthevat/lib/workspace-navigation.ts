@@ -14,7 +14,7 @@ export const workspaceNavigation: {href:string;label:string;key?:MessageKey;grou
   { href: "/app/suppliers", label: "Suppliers", key:"navSuppliers", group: "Workspace" },
   ...orsWorkflowRoutes.filter(r=>"group" in r).map(r=>({href:r.path,label:r.title,group:"group" in r?r.group:"Purchasing"})),
   { href: "/app/analytics", label: "Analytics", key:"navAnalytics", group: "Insights" },
-  { href: "/app/bank-matching", label: "Bank Matching", group: "Insights" },
+  { href: "/app/bank-matching", label: "Bank VAT Matching", group: "Insights" },
   // Hidden from the menu for now (client request); the page still works at /app/vat.
   { href: "/app/vat", label: "VAT Reports", group: "Insights", hidden: true },
   { href: "/app/reports", label: "Reports", key:"navReports", group: "Insights" },

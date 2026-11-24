@@ -63,7 +63,7 @@ export function FeaturesView() {
       Icon: ReceiptText
     },
     {
-      title: isGu ? "ઇમેઇલ શેરિંગ" : isHi ? "ईमेल साझाकरण" : isEs ? "Compartir por correo" : isAr ? "مشاركة البريد الإلكتروني" : "Bank matching",
+      title: isGu ? "ઇમેઇલ શેરિંગ" : isHi ? "ईमेल साझाकरण" : isEs ? "Compartir por correo" : isAr ? "مشاركة البريد الإلكتروني" : "Bank VAT matching",
       desc: isGu
         ? "પ્રક્રિયા કરેલા ઇન્વૉઇસ અથવા રેકોર્ડ્સ નિયુક્ત ઇમેઇલ સરનામાં પર મોકલો."
         : isHi

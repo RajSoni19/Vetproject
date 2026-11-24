@@ -3,6 +3,7 @@ import "server-only";
 // this function's signature; the route and the browser do not change.
 import { GoogleGenAI, MediaResolution, ThinkingLevel, type GenerateContentParameters } from "@google/genai";
 import { AI_INVOICE_JSON_SCHEMA, AI_INVOICE_PROMPT, parseAiInvoice, type AiInvoice, type AiUsage } from "@/lib/ai-invoice";
+import { AI_STATEMENT_JSON_SCHEMA, AI_STATEMENT_PROMPT, parseAiStatement, type AiStatement } from "@/lib/ai-statement";
 
 export type AiPage = { mimeType: string; bytes: Uint8Array };
 export type AiFailureCode = "NOT_CONFIGURED" | "TIMEOUT" | "RATE_LIMITED" | "PROVIDER_ERROR" | "INVALID_RESPONSE";
@@ -35,6 +36,17 @@ function errorStatus(error: unknown) {
 const count = (value: number | undefined) => typeof value === "number" ? value : null;
 
 export async function extractWithGemini(pages: readonly AiPage[], options: ExtractOptions = {}): Promise<{ invoice: AiInvoice; usage: AiUsage; model: string }> {
+  const { data, usage, model } = await runGemini(pages, AI_INVOICE_PROMPT, AI_INVOICE_JSON_SCHEMA, parseAiInvoice, options);
+  return { invoice: data, usage, model };
+}
+
+// Bank statements (photo or PDF): every transaction row, for bank VAT matching.
+export async function extractStatementWithGemini(pages: readonly AiPage[], options: ExtractOptions = {}): Promise<{ statement: AiStatement; usage: AiUsage; model: string }> {
+  const { data, usage, model } = await runGemini(pages, AI_STATEMENT_PROMPT, AI_STATEMENT_JSON_SCHEMA, parseAiStatement, options);
+  return { statement: data, usage, model };
+}
+
+async function runGemini<T>(pages: readonly AiPage[], prompt: string, schema: object, parse: (value: unknown) => T, options: ExtractOptions): Promise<{ data: T; usage: AiUsage; model: string }> {
   const env = options.env ?? process.env, apiKey = env.GEMINI_API_KEY?.trim();
   if (!apiKey && !options.client) throw new AiExtractionError("NOT_CONFIGURED");
   const model = env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
@@ -45,11 +57,11 @@ export async function extractWithGemini(pages: readonly AiPage[], options: Extra
     model,
     contents: [{ role: "user", parts: [
       ...pages.map((page) => ({ inlineData: { mimeType: page.mimeType, data: Buffer.from(page.bytes).toString("base64") } })),
-      { text: AI_INVOICE_PROMPT }
+      { text: prompt }
     ] }],
     config: {
       responseMimeType: "application/json",
-      responseJsonSchema: AI_INVOICE_JSON_SCHEMA,
+      responseJsonSchema: schema,
       // Photos need high resolution for small print; for PDFs Google advises medium.
       // Thinking is at its lowest level because thinking tokens are billed as output.
       mediaResolution: pages.every((page) => page.mimeType === "application/pdf") ? MediaResolution.MEDIA_RESOLUTION_MEDIUM : MediaResolution.MEDIA_RESOLUTION_HIGH,
@@ -69,11 +81,11 @@ export async function extractWithGemini(pages: readonly AiPage[], options: Extra
       await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]);
       result = await call();
     }
-    let invoice: AiInvoice;
-    try { invoice = parseAiInvoice(JSON.parse(result.text ?? "")); }
+    let data: T;
+    try { data = parse(JSON.parse(result.text ?? "")); }
     catch { throw new AiExtractionError("INVALID_RESPONSE"); }
     const usage = result.usageMetadata;
-    return { invoice, model, usage: { promptTokens: count(usage?.promptTokenCount), outputTokens: count(usage?.candidatesTokenCount), thinkingTokens: count(usage?.thoughtsTokenCount), totalTokens: count(usage?.totalTokenCount) } };
+    return { data, model, usage: { promptTokens: count(usage?.promptTokenCount), outputTokens: count(usage?.candidatesTokenCount), thinkingTokens: count(usage?.thoughtsTokenCount), totalTokens: count(usage?.totalTokenCount) } };
   } catch (error) {
     if (error instanceof AiExtractionError) throw error;
     if (abort.signal.aborted) throw new AiExtractionError("TIMEOUT");

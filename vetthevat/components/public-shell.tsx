@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, X, Download } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ButtonLink } from "@/components/ui/button";
-import { playStoreUrl } from "@/lib/site-links";
+import { COMPANY, playStoreUrl } from "@/lib/site-links";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLocale } from "@/components/locale-provider";
 
@@ -96,15 +96,24 @@ function Footer() {
             A UK-focused invoice capture, VAT review and reporting platform for businesses, accountants, bookkeepers and finance teams.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <ButtonLink href="/mobile-app">Mobile app</ButtonLink>
-            <ButtonLink href="/get-started" variant="outline">Get Started</ButtonLink>
+            <ButtonLink href={playStoreUrl} target="_blank" rel="noopener noreferrer"><Download className="h-4 w-4" />Get it on Google Play</ButtonLink>
+            <ButtonLink href="/get-started" variant="outline">Get started</ButtonLink>
           </div>
         </div>
         <div className="grid gap-8 sm:grid-cols-3">
           <FooterList title="Product" items={["Home", "Product", "Benefits", "Features", "How it works", "Mobile app"]} hrefs={["/", "/product", "/benefits", "/features", "/how-it-works", "/mobile-app"]} />
-          <FooterList title="Learn more" items={["Pricing", "Plan information", "FAQs", "Privacy", "Terms", "Sign in"]} hrefs={["/pricing", "/plan-information", "/faq", "/privacy", "/terms", "/login"]} />
-          <FooterList title="Help" items={["About", "Support", "Contact", "Website security", "FAQ"]} hrefs={["/about", "/support", "/contact", "/security", "/faq"]} />
+          <FooterList title="Learn more" items={["Pricing", "FAQs", "Privacy", "Terms", "Disclaimer", "Sign in"]} hrefs={["/pricing", "/faq", "/privacy", "/terms", "/disclaimer", "/login"]} />
+          <FooterList title="Help" items={["About", "Support", "Contact", "Security"]} hrefs={["/about", "/support", "/contact", "/security"]} />
         </div>
+      </div>
+      {/* Legal company details (Companies Act 2006 requires the name, number and registered office). */}
+      <div className="container-page mt-10 border-t border-line pt-6 text-xs leading-6 text-muted">
+        <p>
+          © {new Date().getFullYear()} {COMPANY.name}. Registered in England and Wales, company number{" "}
+          <a href={COMPANY.companiesHouseUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-700 underline underline-offset-2">{COMPANY.number}</a>.
+          {" "}Registered office: {COMPANY.registeredOffice}.
+        </p>
+        <p>VET THE VAT keeps your records organised and does not give tax, legal or financial advice. <Link href="/disclaimer" className="underline underline-offset-2 hover:text-ink">Read the disclaimer</Link>.</p>
       </div>
     </footer>
   );

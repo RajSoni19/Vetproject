@@ -6,14 +6,14 @@ import { playStoreUrl } from "@/lib/site-links";
 
 export const metadata = {
   title: "Features",
-  description: "VET THE VAT features: automatic invoice reading, VAT checks, bank matching, Excel exports and reporting."
+  description: "VET THE VAT features: automatic invoice reading, VAT checks, bank VAT matching, Excel exports and reporting."
 };
 
 const features = [
   ["Automatic invoice reading", "Scan a PDF or photo and the supplier, date, items and VAT are read for you.", FileText],
   ["Company and supplier records", "Every invoice is filed under the right company and supplier, with a full price history.", Building2],
   ["VAT validation", "UK VAT numbers are checked automatically, with a one-click link to HMRC's official checker.", ReceiptText],
-  ["Bank matching", "Upload a bank statement and each payment is matched to its invoice, with the VAT added for you.", Landmark],
+  ["Bank VAT matching", "Upload a bank statement and each payment is matched to its invoice, with the VAT added for you.", Landmark],
   ["Excel and PDF exports", "Download your invoices to Excel or PDF, ready to send to your accountant.", FileSpreadsheet],
   ["Period-based reporting", "See and download figures by month, quarter, year or your own dates.", Download],
   ["Security and data protection", "Each company's data is private, connections are encrypted and every change is recorded.", ShieldCheck]

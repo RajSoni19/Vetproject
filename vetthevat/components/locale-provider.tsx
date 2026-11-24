@@ -46,7 +46,7 @@ function loadGoogleTranslate() {
   const w = window as unknown as { googleTranslateElementInit?: () => void; google?: { translate?: { TranslateElement: new (options: object, id: string) => unknown } } };
   if (document.getElementById("google-translate-script")) return;
   w.googleTranslateElementInit = () => {
-    if (w.google?.translate) new w.google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "gu,hi,es,ar,fr,de,pt,it,pl,ur,pa,en", autoDisplay: false }, "google_translate_element");
+    if (w.google?.translate) new w.google.translate.TranslateElement({ pageLanguage: "en", includedLanguages: "gu,hi,es,ar,fr,de,pt,it,pl,ur,pa,ro,en", autoDisplay: false }, "google_translate_element");
   };
   const script = document.createElement("script");
   script.id = "google-translate-script";
@@ -62,9 +62,19 @@ function triggerGoogleTranslate(loc: Locale, pathname: string): boolean {
   const lang = localeToGoogleLang(loc);
   const translated = document.documentElement.classList.contains("translated-ltr") || document.documentElement.classList.contains("translated-rtl");
   if (lang === "en" || !machineTranslationAllowed(pathname)) {
+    // Google was active if its script loaded, its cookie is set, or the page is marked translated.
+    const googleActive = translated || Boolean(document.getElementById("google-translate-script")) || /(?:^|;\s*)googtrans=\/en\/[a-z]/.test(document.cookie);
     setGoogleCookie("en");
-    // Google cannot cleanly undo a translated page; reload it in English.
-    if (translated) window.location.reload();
+    // Google cannot cleanly undo a translated page; reload it in English. At most once every
+    // 10 seconds, so a cookie that cannot be cleared can never cause a reload loop.
+    if (googleActive) {
+      let last = 0;
+      try { last = Number(window.sessionStorage.getItem("vtv-english-reload") ?? 0); } catch { /* storage blocked */ }
+      if (Date.now() - last > 10000) {
+        try { window.sessionStorage.setItem("vtv-english-reload", String(Date.now())); } catch { /* storage blocked */ }
+        window.location.reload();
+      }
+    }
     return false;
   }
   setGoogleCookie(lang);

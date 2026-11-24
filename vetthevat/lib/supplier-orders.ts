@@ -42,11 +42,11 @@ export function supplierOrderStatusInput(value: unknown): SupplierOrderStatus {
 export class SupplierOrderInputError extends Error {}
 
 // WhatsApp text: a clear order summary that goes to the business's own WhatsApp number.
+// The message the supplier receives lists only the items and quantities. Prices and
+// totals stay in the app, so the supplier never sees the prices you expect to pay.
 export function whatsappOrderMessage(order: { supplierName: string; lines: { quantity: number; name: string; unitPrice?: number }[]; total?: number; currency?: string }, companyName?: string, number?: string) {
-  const money = (value: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: order.currency ?? "GBP" }).format(value);
   const lines = order.lines.map(line => `- ${line.quantity} x ${line.name}`).join("\n");
-  const total = order.total ?? order.lines.reduce((sum, line) => sum + line.quantity * (line.unitPrice ?? 0), 0);
-  return `*New order${number ? ` ${number}` : ""}*\nSupplier: ${order.supplierName}${companyName ? `\nFor: ${companyName}` : ""}\n\n${lines}\n\nTotal: ${money(total)}`;
+  return `*New order${number ? ` ${number}` : ""}*\nSupplier: ${order.supplierName}${companyName ? `\nFor: ${companyName}` : ""}\n\n${lines}`;
 }
 // UK numbers for wa.me: 07xxx becomes 447xxx.
 export function whatsappNumber(phone: string | null) { const digits = (phone ?? "").replace(/\D/g, ""); return digits.startsWith("0") && !digits.startsWith("00") ? "44" + digits.slice(1) : digits.startsWith("00") ? digits.slice(2) : digits; }
