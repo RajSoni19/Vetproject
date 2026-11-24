@@ -3,11 +3,19 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 
-function catalog(){
- const source=fs.readFileSync('lib/i18n/catalog.ts','utf8');
+// English is built in; other languages live in catalog-translations.ts and are loaded on
+// demand in the browser. Here both are loaded and every language registered, as the app does.
+function compile(file){
+ const source=fs.readFileSync(file,'utf8');
  const compiled=require('sucrase').transform(source,{transforms:['typescript','imports']}).code,exports={};
  vm.runInNewContext(compiled,{Intl,exports});
  return exports;
+}
+function catalog(){
+ const exports=compile('lib/i18n/catalog.ts'),extra=compile('lib/i18n/catalog-translations.ts');
+ const messages={'en-GB':exports.messages['en-GB']};
+ for(const locale of exports.locales){if(locale.code==='en-GB')continue;exports.registerTranslations(locale.code,extra.translationMaps(locale.code));messages[locale.code]=extra.localeMessages[locale.code];}
+ return {...exports,messages};
 }
 
 test('listed locale messages are valid subsets and coverage labels remain honest',()=>{

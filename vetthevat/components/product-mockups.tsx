@@ -41,7 +41,7 @@ export function DashboardPreview() {
           </div>
           <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-[#0F7A3A]">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            HMRC Ready
+            VAT ready
           </div>
         </div>
 
@@ -52,7 +52,7 @@ export function DashboardPreview() {
               <span className="text-[11px] font-semibold text-emerald-800">VAT Found</span>
               <Receipt className="h-3.5 w-3.5 text-emerald-600" />
             </div>
-            <p className="mt-1 text-base font-extrabold text-emerald-950 sm:text-lg tabular-nums leading-tight break-words">£14,862.37</p>
+            <p className="mt-1 text-base font-extrabold text-emerald-950 tabular-nums leading-tight whitespace-nowrap sm:text-lg lg:text-base xl:text-lg 2xl:text-base">£14,862.37</p>
             <p className="mt-0.5 flex items-center text-[10px] font-medium text-emerald-700">
               <ArrowUpRight className="mr-0.5 h-3 w-3" /> +12% vs last qtr
             </p>
@@ -63,7 +63,7 @@ export function DashboardPreview() {
               <span className="text-[11px] font-semibold text-amber-800">ORS Savings</span>
               <TrendingUp className="h-3.5 w-3.5 text-amber-600" />
             </div>
-            <p className="mt-1 text-base font-extrabold text-amber-950 sm:text-lg tabular-nums leading-tight break-words">£3,842.00</p>
+            <p className="mt-1 text-base font-extrabold text-amber-950 tabular-nums leading-tight whitespace-nowrap sm:text-lg lg:text-base xl:text-lg 2xl:text-base">£3,842.00</p>
             <p className="mt-0.5 text-[10px] font-medium text-amber-700">Lower supplier costs</p>
           </div>
 
@@ -72,7 +72,7 @@ export function DashboardPreview() {
               <span className="text-[11px] font-semibold text-purple-800">Auto Matched</span>
               <CheckCircle2 className="h-3.5 w-3.5 text-purple-600" />
             </div>
-            <p className="mt-1 text-base font-extrabold text-purple-950 sm:text-lg tabular-nums leading-tight break-words">94%</p>
+            <p className="mt-1 text-base font-extrabold text-purple-950 tabular-nums leading-tight whitespace-nowrap sm:text-lg lg:text-base xl:text-lg 2xl:text-base">94%</p>
             <p className="mt-0.5 text-[10px] font-medium text-purple-700">332 of 351 txns</p>
           </div>
 
@@ -81,7 +81,7 @@ export function DashboardPreview() {
               <span className="text-[11px] font-semibold text-blue-800">Total Orders</span>
               <ShoppingCart className="h-3.5 w-3.5 text-blue-600" />
             </div>
-            <p className="mt-1 text-base font-extrabold text-blue-950 sm:text-lg tabular-nums leading-tight break-words">28</p>
+            <p className="mt-1 text-base font-extrabold text-blue-950 tabular-nums leading-tight whitespace-nowrap sm:text-lg lg:text-base xl:text-lg 2xl:text-base">28</p>
             <p className="mt-0.5 text-[10px] font-medium text-blue-700">Sent this month</p>
           </div>
         </div>

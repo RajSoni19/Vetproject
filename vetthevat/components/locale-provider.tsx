@@ -2,8 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { isLocale, localeDirection, message, type Locale, type MessageKey } from "@/lib/i18n/catalog";
-import { applyDomTranslations } from "@/lib/i18n/dom-translator";
+import { isLocale, localeDirection, message, registerTranslations, translationsLoaded, type Locale, type MessageKey } from "@/lib/i18n/catalog";
 import { machineTranslationAllowed, protectBrandNames } from "@/lib/i18n/translate-scope";
 
 const storageKey = "vtv.preferred-locale.v1";
@@ -90,6 +89,21 @@ function triggerGoogleTranslate(loc: Locale, pathname: string): boolean {
     let attempts = 0;
     const interval = setInterval(() => { attempts++; if (applySelect() || attempts > 60) clearInterval(interval); }, 200);
   }
+  // Safety net: Google's in-page switch sometimes does not take (slow network, busy
+  // translator). If the page is still untranslated after a few seconds, reload it with
+  // the language cookie set, which Google always applies on load. Once per language
+  // every 20 seconds, so it can never loop.
+  window.setTimeout(() => {
+    const done = document.documentElement.classList.contains("translated-ltr") || document.documentElement.classList.contains("translated-rtl");
+    const stillWanted = new RegExp(`(?:^|;\\s*)googtrans=/en/${lang}(?:;|$)`).test(document.cookie);
+    if (done || !stillWanted || !machineTranslationAllowed(window.location.pathname)) return;
+    const key = `vtv-translate-reload:${lang}`;
+    let last = 0;
+    try { last = Number(window.sessionStorage.getItem(key) ?? 0); } catch { /* storage blocked */ }
+    if (Date.now() - last < 20000) return;
+    try { window.sessionStorage.setItem(key, String(Date.now())); } catch { /* storage blocked */ }
+    window.location.reload();
+  }, 5000);
   return true;
 }
 
@@ -100,6 +114,20 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const chosenLocale = useRef<Locale>("en-GB");
   const writeQueue = useRef<Promise<void>>(Promise.resolve());
   const pathname = usePathname();
+  // Other languages and the word translator are downloaded only when a non-English
+  // language is chosen, so English visitors never load them. version re-renders text
+  // once a language file arrives.
+  const [version, setVersion] = useState(0);
+  const domTranslator = useRef<typeof import("@/lib/i18n/dom-translator") | null>(null);
+  useEffect(() => {
+    if (translationsLoaded(locale)) return;
+    let active = true;
+    void import("@/lib/i18n/catalog-translations").then((module) => {
+      registerTranslations(locale, module.translationMaps(locale));
+      if (active) setVersion((value) => value + 1);
+    }).catch(() => { /* English text stays on screen if the language file cannot load */ });
+    return () => { active = false; };
+  }, [locale]);
 
   useEffect(() => {
     updateLocale(readStoredLocale());
@@ -113,13 +141,18 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.lang = locale;
     document.documentElement.dir = localeDirection(locale);
     const google = triggerGoogleTranslate(locale, pathname);
+    // Public pages: Google translates whole sentences; the word translator
+    // would leave half-translated text ("कैप्चर every receipt").
+    const wordLocale: Locale = google ? "en-GB" : locale;
+    let cancelled = false;
     const timer = setTimeout(() => {
-      // Public pages: Google translates whole sentences; the word translator
-      // would leave half-translated text ("कैप्चर every receipt").
-      applyDomTranslations(google ? "en-GB" : locale);
+      if (wordLocale === "en-GB" && !domTranslator.current) return; // nothing was ever translated
+      const apply = (module: typeof import("@/lib/i18n/dom-translator")) => { if (!cancelled) module.applyDomTranslations(wordLocale); };
+      if (domTranslator.current) apply(domTranslator.current);
+      else void import("@/lib/i18n/dom-translator").then((module) => { domTranslator.current = module; apply(module); }).catch(() => undefined);
     }, 50);
-    return () => clearTimeout(timer);
-  }, [locale, pathname]);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [locale, pathname, version]);
 
   const persistLocal = useCallback((next: Locale) => {
     try {
@@ -187,7 +220,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setLocale,
     syncAccountLocale,
     t: (key: MessageKey) => message(locale, key)
-  }), [locale, setLocale, syncAccountLocale]);
+  }), [locale, setLocale, syncAccountLocale, version]); // eslint-disable-line react-hooks/exhaustive-deps -- version: a language file arrived
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }

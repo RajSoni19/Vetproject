@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X, Download } from "lucide-react";
 import { Logo } from "@/components/logo";
@@ -22,6 +22,34 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const { t } = useLocale();
+  // Desktop menu only when it fits in the current language. Translated words can be much
+  // longer (French, Hindi…), so the space needed is measured from an invisible copy of the
+  // menu that is always on the page; showing or hiding the real menu never changes it.
+  // When it does not fit, the menu button is used instead, at any screen width.
+  const bar = useRef<HTMLDivElement>(null), logoRef = useRef<HTMLDivElement>(null), measureRef = useRef<HTMLDivElement>(null);
+  const [fits, setFits] = useState(true);
+  useEffect(() => {
+    const container = bar.current, copy = measureRef.current, logo = logoRef.current;
+    if (!container || !copy || !logo) return;
+    let frame = 0;
+    const measure = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const style = getComputedStyle(container);
+        const available = container.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const needed = logo.offsetWidth + copy.offsetWidth + 48; // two 16px gaps plus breathing room
+        setFits(needed <= available);
+      });
+    };
+    const resize = new ResizeObserver(measure);
+    [container, copy, logo].forEach((element) => resize.observe(element));
+    // Google Translate swaps words without always resizing straight away.
+    const words = new MutationObserver(measure);
+    words.observe(copy, { subtree: true, childList: true, characterData: true });
+    measure();
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); words.disconnect(); };
+  }, []);
+  const desktop = fits ? "xl:flex" : "", mobileOnly = fits ? "xl:hidden" : "";
   const localizedNav = nav.map((item, index) => ({ ...item, label: [t("home"),t("product"),t("benefits"),t("howItWorks"),t("pricing"),t("faqs")][index] }));
 
   return (
@@ -40,16 +68,16 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur" onKeyDown={(event) => {
         if (event.key === "Escape" && open) { setOpen(false); menuButton.current?.focus(); }
       }}>
-        <div className="container-page flex h-[72px] min-w-0 items-center gap-2 sm:gap-4">
-          <div className="shrink-0"><Logo /></div>
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-5 text-[13px] font-medium text-muted xl:flex" aria-label="Main navigation">
+        <div ref={bar} className="container-page flex h-[72px] min-w-0 items-center gap-2 sm:gap-4">
+          <div ref={logoRef} className="shrink-0"><Logo /></div>
+          <nav className={`hidden min-w-0 flex-1 items-center justify-center gap-5 overflow-hidden text-[13px] font-medium text-muted ${desktop}`} aria-label="Main navigation">
             {localizedNav.map((item) => (
               <Link key={item.href} href={item.href} className="whitespace-nowrap hover:text-ink">
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto hidden shrink-0 items-center gap-2 xl:flex">
+          <div className={`ml-auto hidden shrink-0 items-center gap-2 ${desktop}`}>
             <LanguageSwitcher />
             <Link href="/login" className="whitespace-nowrap px-1.5 text-sm font-semibold text-brand-700">{t("signIn")}</Link>
             <ButtonLink href={playStoreUrl} variant="outline" target="_blank" rel="noopener noreferrer" className="min-h-10 whitespace-nowrap px-3">
@@ -58,13 +86,25 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             </ButtonLink>
             <ButtonLink href="/get-started" variant="secondary" className="min-h-10 whitespace-nowrap px-3">{t("getStarted")}</ButtonLink>
           </div>
-          <Link href="/login" className="ml-auto whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold text-brand-700 hover:bg-wash sm:px-3 xl:hidden">{t("signIn")}</Link>
-          <button ref={menuButton} type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line text-ink hover:bg-wash xl:hidden" onClick={() => setOpen((value) => !value)} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="public-mobile-navigation">
+          <Link href="/login" className={`ml-auto whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold text-brand-700 hover:bg-wash sm:px-3 ${mobileOnly}`}>{t("signIn")}</Link>
+          <button ref={menuButton} type="button" className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line text-ink hover:bg-wash ${mobileOnly}`} onClick={() => setOpen((value) => !value)} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="public-mobile-navigation">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
+        {/* Invisible copy of the desktop menu, used only to measure the space it needs. */}
+        <div className="pointer-events-none invisible absolute inset-x-0 top-0 h-0 overflow-hidden" aria-hidden="true" inert>
+          <div ref={measureRef} className="flex w-max items-center gap-4 whitespace-nowrap">
+            <span className="flex items-center gap-5 text-[13px] font-medium">{localizedNav.map((item) => <span key={item.href}>{item.label}</span>)}</span>
+            <span className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <span className="px-1.5 text-sm font-semibold">{t("signIn")}</span>
+              <ButtonLink href={playStoreUrl} variant="outline" className="min-h-10 whitespace-nowrap px-3"><Download className="h-4 w-4" />{t("downloadApp")}</ButtonLink>
+              <ButtonLink href="/get-started" variant="secondary" className="min-h-10 whitespace-nowrap px-3">{t("getStarted")}</ButtonLink>
+            </span>
+          </div>
+        </div>
         {open ? (
-          <div id="public-mobile-navigation" className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-line bg-white xl:hidden">
+          <div id="public-mobile-navigation" className={`max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-line bg-white ${mobileOnly}`}>
             <div className="container-page grid gap-1 py-4">
               <LanguageSwitcher compact />
               {localizedNav.map((item) => (
