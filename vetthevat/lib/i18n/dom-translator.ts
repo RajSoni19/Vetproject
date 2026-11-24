@@ -2,6 +2,7 @@
 
 // High-performance client-side DOM translator for multi-language support (Gujarati, Hindi, Spanish, Arabic)
 import type { Locale } from "@/lib/i18n/catalog";
+import { appPatterns, appPhrases, phraseColumn, translateMonths } from "@/lib/i18n/app-phrases";
 
 const originalTextMap = new WeakMap<Node, string>();
 // The text this translator last wrote into each node. A node whose text differs from it was
@@ -393,12 +394,18 @@ const arabicDictionary: Record<string, string> = {
   "Step 4 - Export": "الخطوة 4 - تصدير"
 };
 
+// Workspace screens: complete phrases (see app-phrases.ts) take priority over the older word lists.
+const mergedCache = new Map<Locale, Record<string, string>>();
 function getDictionary(locale: Locale): Record<string, string> | null {
-  if (locale === "hi-IN") return hindiDictionary;
-  if (locale === "gu-IN") return gujaratiDictionary;
-  if (locale === "es-ES") return spanishDictionary;
-  if (locale === "ar") return arabicDictionary;
-  return null;
+  const cached = mergedCache.get(locale);
+  if (cached) return cached;
+  const base = locale === "hi-IN" ? hindiDictionary : locale === "gu-IN" ? gujaratiDictionary : locale === "es-ES" ? spanishDictionary : locale === "ar" ? arabicDictionary : null;
+  const column = phraseColumn(locale);
+  if (!base && column === null) return null;
+  const merged: Record<string, string> = { ...(base ?? {}) };
+  if (column !== null) for (const [en, values] of Object.entries(appPhrases)) merged[en] = values[column];
+  mergedCache.set(locale, merged);
+  return merged;
 }
 
 let observer: MutationObserver | null = null;
@@ -406,10 +413,12 @@ let currentLocale: Locale = "en-GB";
 
 const sortedKeysCache = new Map<Record<string, string>, string[]>();
 
+// Only multi-word phrases are replaced inside longer text, and only as whole words: a single word
+// such as "Product" must never turn "Products" or a product name into half-translated text.
 function getSortedKeys(dict: Record<string, string>): string[] {
   let cached = sortedKeysCache.get(dict);
   if (!cached) {
-    cached = Object.keys(dict).sort((a, b) => b.length - a.length);
+    cached = Object.keys(dict).filter((key) => key.includes(" ")).sort((a, b) => b.length - a.length);
     sortedKeysCache.set(dict, cached);
   }
   return cached;
@@ -425,6 +434,8 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
     if (tag === "script" || tag === "style" || tag === "code" || tag === "pre" || tag === "noscript") {
       return;
     }
+    // Business data (names, products, amounts) is marked translate="no" and stays exactly as entered.
+    if (parent.closest('[translate="no"],.notranslate')) return;
   }
 
   // New node, or the app changed its text since we last translated it: that text is the original.
@@ -445,17 +456,55 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
     return;
   }
 
-  // 2. Substring replace for known phrases
-  let replaced = orig;
-  let matched = false;
-  const keys = getSortedKeys(dict);
-  for (const en of keys) {
-    if (en.length > 3 && replaced.includes(en)) {
-      replaced = replaced.split(en).join(dict[en]);
-      matched = true;
+  // 2. Phrases containing numbers or names ("14 suppliers", "20 Nov 2026")
+  const column = phraseColumn(currentLocale);
+  if (column !== null) {
+    for (const [pattern, ...values] of appPatterns) {
+      const match = trimmed.match(pattern);
+      if (match) {
+        const translated = values[column].replace(/\$(\d)/g, (_, i: string) => match[Number(i)] ?? "");
+        writeText(node, (orig.match(/^\s*/)?.[0] || "") + translateMonths(translated, column) + (orig.match(/\s*$/)?.[0] || ""));
+        return;
+      }
     }
   }
-  writeText(node, matched ? replaced : orig);
+
+  // 3. Known multi-word phrases inside longer text, whole words only
+  let replaced = orig;
+  for (const en of getSortedKeys(dict)) {
+    if (replaced.includes(en)) replaced = replaceWholePhrase(replaced, en, dict[en]);
+  }
+  writeText(node, replaced);
+}
+
+function replaceWholePhrase(text: string, en: string, translated: string) {
+  let out = "", from = 0, at = text.indexOf(en);
+  while (at !== -1) {
+    const before = text[at - 1], after = text[at + en.length];
+    const whole = (!before || !/[A-Za-z0-9]/.test(before)) && (!after || !/[A-Za-z0-9]/.test(after));
+    out += text.slice(from, at) + (whole ? translated : en);
+    from = at + en.length;
+    at = text.indexOf(en, from);
+  }
+  return out + text.slice(from);
+}
+
+// Search boxes and form hints: the placeholder text is translated the same way.
+const originalPlaceholder = new WeakMap<Element, string>();
+const writtenPlaceholder = new WeakMap<Element, string>();
+function translatePlaceholder(element: Element, dict: Record<string, string> | null) {
+  const current = element.getAttribute("placeholder");
+  if (current === null || element.closest('[translate="no"],.notranslate')) return;
+  if (!originalPlaceholder.has(element) || writtenPlaceholder.get(element) !== current) originalPlaceholder.set(element, current);
+  const orig = originalPlaceholder.get(element) ?? current;
+  const value = dict?.[orig.trim()] ?? orig;
+  writtenPlaceholder.set(element, value);
+  if (current !== value) element.setAttribute("placeholder", value);
+}
+function walkPlaceholders(root: Node, dict: Record<string, string> | null) {
+  if (!(root instanceof Element)) return;
+  if (root.hasAttribute("placeholder")) translatePlaceholder(root, dict);
+  root.querySelectorAll("[placeholder]").forEach((element) => translatePlaceholder(element, dict));
 }
 
 function restoreTextNode(node: Text) {
@@ -476,6 +525,7 @@ function walkAndTranslate(root: Node, dict: Record<string, string>) {
     translateTextNode(current as Text, dict);
     current = walker.nextNode();
   }
+  walkPlaceholders(root, dict);
 }
 
 function walkAndRestore(root: Node) {
@@ -485,6 +535,7 @@ function walkAndRestore(root: Node) {
     restoreTextNode(current as Text);
     current = walker.nextNode();
   }
+  walkPlaceholders(root, null);
 }
 
 export function applyDomTranslations(locale: Locale) {
@@ -524,6 +575,8 @@ export function applyDomTranslations(locale: Locale) {
         }
       } else if (mutation.type === "characterData") {
         translateTextNode(mutation.target as Text, activeDict);
+      } else if (mutation.type === "attributes" && mutation.target instanceof Element) {
+        translatePlaceholder(mutation.target, activeDict);
       }
     }
   });
@@ -531,6 +584,8 @@ export function applyDomTranslations(locale: Locale) {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    characterData: true
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["placeholder"]
   });
 }
