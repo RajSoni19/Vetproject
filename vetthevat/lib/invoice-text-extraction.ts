@@ -359,6 +359,12 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
     if (code && (table.hasVatColumn || afterRate) && rate === null && classification === undefined && (token.length > 1 || index === tokens.length - 1 || numbers.length > 0)) { rate = code.rate; classification = code.classification; continue; }
     // A VAT code this parser does not know ("64.92 12.98 AB 77.90"), between two figures in a table with a VAT column.
     if (table.hasVatColumn && /^[A-Z]{1,3}$/.test(token) && numbers.length && index > 0 && numberToken(tokens[index - 1], false)) continue;
+    // A VAT column written in words ("Standard 20%", "Zero-rated", "Exempt", "Not shown") is part of the
+    // row's figures, not the description: keep reading leftwards for the quantity and unit price.
+    if ((table.hasVatColumn || rate !== null) && numbers.length && /^(?:standard|std|zero(?:-rated)?|rated|exempt|reduced|not|shown|outside|scope|n\/a)$/i.test(token)) {
+      if (rate === null && /^(?:zero(?:-rated)?|exempt)$/i.test(token)) rate = 0;
+      continue;
+    }
     const number = numberToken(token, currencyNext);
     if (number) { numbers.unshift(number); currencyNext = false; continue; }
     if (UNIT.test(token) && numbers.length && index > 0 && numberToken(tokens[index - 1], false)) continue;
@@ -374,8 +380,10 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
     for (let i = 0; i < numbers.length - 2; i++) for (let j = i + 1; j < numbers.length - 1; j++) for (let k = j + 1; k < numbers.length; k++) {
       const options = (n: NumberToken) => allowRepair && n.repairable ? [n.value, n.value / 100] : [n.value];
       for (const a of options(numbers[i])) for (const b of options(numbers[j])) for (const c of options(numbers[k])) {
-        if (a <= 0 || b <= 0 || c <= 0 || !multiply(a, b, c)) continue;
-        let q = a, p = b, n = c;
+        // The amount may include the line's VAT (columns "Qty | Unit price | VAT 20% | Total"): then the net is qty x price.
+        const includesVat = !multiply(a, b, c) && rate !== null && rate > 0 && Math.abs(a * b * (1 + rate / 100) - c) <= 0.02;
+        if (a <= 0 || b <= 0 || c <= 0 || (!multiply(a, b, c) && !includesVat)) continue;
+        let q = a, p = b, n = includesVat ? round2(a * b) : c;
         // "1.00  1200  1200": both money columns lost their decimal point.
         if (table.moneyDecimals && numbers[k].repairable && c === numbers[k].value && numbers[j].repairable && b === numbers[j].value) { p = b / 100; n = c / 100; repaired = true; }
         if (a !== numbers[i].value || b !== numbers[j].value || c !== numbers[k].value) repaired = true;
@@ -780,6 +788,15 @@ export function extractInvoiceFields(input: string, context: ExtractionContext =
   // Till receipts: prices include VAT and items carry VAT codes. The receipt
   // reading is used when its items add up to a total the receipt prints, or
   // when the invoice reading found no items at all.
+  // An invoice that prints its own Net and VAT adding up to its Total, with items, is an invoice:
+  // line totals that include VAT also add up to that Total, which must not turn it into a receipt
+  // (that dropped the Net/VAT split and treated every line's VAT as not shown).
+  // Only when the document itself labels them ("Net", "Subtotal" or "Goods", and "VAT") and the items
+  // add up to that net: "Cash 5.00 / Change 1.50 / Total 3.50" on a till receipt is not a VAT split.
+  const labelled = /^\s*(?:net|sub\s*-?\s*total|goods)\b[^\n]*\d/im.test(input) && /^\s*(?:total\s+)?vat\b[^\n]*\d[.,]\d{2}/im.test(input);
+  const linesNet = round2(fields.lines.reduce((sum, line) => sum + line.netAmount, 0));
+  const printedSplit = labelled && fields.net !== null && fields.vat !== null && fields.gross !== null && fields.vat > 0 && Math.abs(fields.net + fields.vat - fields.gross) <= 0.02 && Math.abs(linesNet - fields.net) <= 0.05;
+  if (printedSplit && fields.lines.length) return fields;
   const receipt = readReceipt(input);
   if (!receipt || !(receipt.consistent || !fields.lines.length)) return fields;
   const lines: ExtractedInvoiceLine[] = receipt.lines.map((line) => ({ description: line.description, quantity: line.quantity, unitPrice: line.unitPrice, netAmount: line.amount, vatRate: line.vatRate, inclusive: true, ...(line.discount ? { discount: line.discount } : {}) }));

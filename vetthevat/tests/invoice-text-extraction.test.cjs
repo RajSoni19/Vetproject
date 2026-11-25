@@ -552,3 +552,24 @@ test('multi-page invoice: page 1 alone is flagged, pages 1 and 2 together give t
   assert.deepEqual([both.net, both.vat, both.gross], [120, 24, 144]);
   assert.ok(!both.notes.some(note => /more pages/.test(note)), both.notes.join(' | '));
 });
+
+test('columns "Qty | Unit price | VAT (in words) | Total incl. VAT" read as an invoice, not a receipt', () => {
+  // Same layout as a VET THE VAT exported purchase invoice; parties and items are synthetic.
+  const text = [
+    'VET THE VAT' + T + 'PURCHASE INVOICE',
+    'SUPPLIER' + T + 'Invoice number' + T + '50001',
+    'SYNTHETIC CLEANING SUPPLIES LTD' + T + 'Invoice date' + T + '21 Jul 2026',
+    'Description' + T + 'Qty' + T + 'Unit price' + T + 'VAT' + T + 'Total',
+    'AB01 Blue paper roll - 1x6' + T + '2' + T + '£10.99' + T + 'Standard 20%' + T + '£26.38',
+    'AB02 Hand soap 5 litre' + T + '1' + T + '£11.50' + T + 'Standard 20%' + T + '£13.80',
+    'AB03 Delivery' + T + '1' + T + '£12.00' + T + 'Not shown' + T + '£12.00',
+    'AB04 Paper straws - 1x200' + T + '20' + T + '£3.99' + T + 'Standard 20%' + T + '£95.76',
+    'Net' + T + '£127.27',
+    'VAT' + T + '£20.67',
+    'Total' + T + '£147.94'
+  ].join('\n');
+  const fields = extractInvoiceFields(text);
+  assert.notEqual(fields.receipt, true);
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [127.27, 20.67, 147.94]);
+  assert.deepEqual(fields.lines.map(l => [l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [[2, 10.99, 21.98, 20], [1, 11.5, 11.5, 20], [1, 12, 12, null], [20, 3.99, 79.8, 20]]);
+});
