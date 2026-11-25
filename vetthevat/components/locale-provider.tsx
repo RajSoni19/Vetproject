@@ -226,12 +226,17 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     queueAccountPreference(next, sequence);
   }, [persistLocal, queueAccountPreference]);
 
+  // Public pages are translated by Google, which needs English text to work from. If the site
+  // wrote its own translation there too, Google would keep showing a stale copy after a language
+  // change (Arabic "Download app" stayed on a Hindi page). Signed-in pages never use Google, so
+  // they show the site's own translations.
+  const textLocale: Locale = pathname && machineTranslationAllowed(pathname) ? "en-GB" : locale;
   const value = useMemo(() => ({
     locale,
     setLocale,
     syncAccountLocale,
-    t: (key: MessageKey) => message(locale, key)
-  }), [locale, setLocale, syncAccountLocale, version]); // eslint-disable-line react-hooks/exhaustive-deps -- version: a language file arrived
+    t: (key: MessageKey) => message(textLocale, key)
+  }), [locale, textLocale, setLocale, syncAccountLocale, version]); // eslint-disable-line react-hooks/exhaustive-deps -- version: a language file arrived
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }

@@ -69,13 +69,23 @@ function productWords(description: string) {
   return (kept.length ? kept : words).sort();
 }
 export function productKey(description: string) { return productWords(description).join(" "); }
+// A size written without its unit on one invoice ("Red onions 10") is the same size written with
+// it on another ("Red onion 10kg"): the bare number pairs with that number plus a weight or volume.
+const SIZE = /^(\d+(?:\.\d+)?)(KG|G|L|LTR|LITRE|ML|CL|GAL)$/;
+function sameSize(a: string, b: string) {
+  const sized = SIZE.exec(a) ?? SIZE.exec(b), bare = SIZE.test(a) ? b : a;
+  return Boolean(sized) && /^\d+(?:\.\d+)?$/.test(bare) && Number(bare) === Number(sized![1]);
+}
 // Same product despite small spelling differences: every word pairs with a similar word.
 export function sameProduct(a: string, b: string) {
   const left = a.split(" ").filter(Boolean), right = b.split(" ").filter(Boolean);
   if (left.length !== right.length) return false;
   const used = new Set<number>();
-  return left.every(word => { const at = right.findIndex((other, i) => !used.has(i) && similarWord(word, other)); if (at < 0) return false; used.add(at); return true; });
+  return left.every(word => { const at = right.findIndex((other, i) => !used.has(i) && (similarWord(word, other) || sameSize(word, other))); if (at < 0) return false; used.add(at); return true; });
 }
+// Name shown for a product: the newest spelling, but one that states its size ("10kg") is preferred
+// over one that does not, so the pack size column is filled in.
+const statesSize = (text: string) => /\b\d+(?:\.\d+)?\s*(?:kg|g|l|ltr|litre|ml|cl|gal)\b|\b\d+\s*x\s*\d+/i.test(text);
 // Search that tolerates the same mistakes: every searched word is like a word of the name.
 export function matchesProductSearch(names: readonly string[], query: string) {
   const wanted = productWords(query);
@@ -86,10 +96,26 @@ export function matchesProductSearch(names: readonly string[], query: string) {
   });
 }
 
+// Supplier name for matching duplicate records: case, punctuation and LTD/LIMITED do not matter.
+export function supplierKey(name: string) {
+  return name.toUpperCase().replace(/&/g, " AND ").replace(/[^A-Z0-9 ]+/g, " ").replace(/\b(LIMITED|LTD|PLC|LLP)\b/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export function comparePrices(rows: readonly PriceObservation[], options: { asOf: string; weeks?: number; thresholdPercent?: number }): PriceComparison {
   const weeks = options.weeks ?? 12, threshold = options.thresholdPercent ?? 10;
   const to = options.asOf, from = new Date(Date.parse(`${to}T00:00:00Z`) - weeks * 7 * 86400000).toISOString().slice(0, 10);
   const recent = rows.filter(row => row.issuedOn >= from && row.issuedOn <= to && row.unitPrice > 0 && row.quantity > 0 && productKey(row.description));
+  // One supplier saved more than once (the same name on several supplier records) is still one
+  // supplier: its invoices are compared as one price history, not against each other.
+  const canonical = new Map<string, string>();
+  for (const row of [...recent].sort((a, b) => a.issuedOn.localeCompare(b.issuedOn) || a.supplierId.localeCompare(b.supplierId))) {
+    const name = supplierKey(row.supplierName);
+    if (name && !canonical.has(name)) canonical.set(name, row.supplierId);
+  }
+  for (const [index, row] of recent.entries()) {
+    const id = canonical.get(supplierKey(row.supplierName));
+    if (id && id !== row.supplierId) recent[index] = { ...row, supplierId: id };
+  }
   const byProduct = new Map<string, PriceObservation[]>();
   for (const row of recent) {
     const words = productKey(row.description);
@@ -104,7 +130,8 @@ export function comparePrices(rows: readonly PriceObservation[], options: { asOf
     for (const row of list) { const s = suppliers.get(row.supplierId) ?? []; s.push(row); suppliers.set(row.supplierId, s); }
     // Display name without the supplier's stock code ("51010 COBRA BEER KEG").
     const clean = (text: string) => text.trim().replace(/^\s*[A-Za-z]{0,6}\d{3,}[A-Za-z0-9]*\s+(?=\S)/, "");
-    const name = clean([...list].sort(newestFirst)[0].description);
+    const newest = [...list].sort(newestFirst);
+    const name = clean((newest.find(row => statesSize(clean(row.description))) ?? newest[0]).description);
     // Other spellings grouped under this product, so people can see what was combined.
     const aliases = [...new Map(list.map(row => [clean(row.description).toUpperCase(), clean(row.description)])).values()].filter(alias => alias.toUpperCase() !== name.toUpperCase());
     const prices: SupplierPrice[] = [...suppliers.values()].map(observations => {

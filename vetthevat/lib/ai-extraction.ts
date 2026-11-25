@@ -24,7 +24,8 @@ export type ExtractOptions = {
 
 export const DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite";
 // Below the browser's 30 seconds, so a slow request still falls back cleanly.
-const DEFAULT_TIMEOUT_MS = 25000;
+// Gemini often takes 15-40 seconds per page (measured), so allow 50s; the route allows 60s.
+const DEFAULT_TIMEOUT_MS = 50000;
 const MAX_OUTPUT_TOKENS = 16000;
 
 export const aiExtractionConfigured = (env: Readonly<Record<string, string | undefined>> = process.env) => Boolean(env.GEMINI_API_KEY?.trim());
@@ -52,33 +53,43 @@ async function runGemini<T>(pages: readonly AiPage[], prompt: string, schema: ob
   const model = env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
   const client: GeminiClient = options.client ?? new GoogleGenAI({ apiKey });
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS, retryDelayMs = options.retryDelayMs ?? 1000;
+  // Gemini usually answers in 5-10s but sometimes never answers at all (measured). Waiting longer
+  // does not help; asking again does. So each attempt gets about half the time, and an attempt
+  // that is busy (503) or silent is retried once within the overall limit.
+  const attemptMs = Math.max(1, Math.floor(timeoutMs * 0.48));
   const abort = new AbortController(), timer = setTimeout(() => abort.abort(), timeoutMs);
-  const request = {
-    model,
-    contents: [{ role: "user", parts: [
-      ...pages.map((page) => ({ inlineData: { mimeType: page.mimeType, data: Buffer.from(page.bytes).toString("base64") } })),
-      { text: prompt }
-    ] }],
-    config: {
-      responseMimeType: "application/json",
-      responseJsonSchema: schema,
-      // Photos need high resolution for small print; for PDFs Google advises medium.
-      // Thinking is at its lowest level because thinking tokens are billed as output.
-      mediaResolution: pages.every((page) => page.mimeType === "application/pdf") ? MediaResolution.MEDIA_RESOLUTION_MEDIUM : MediaResolution.MEDIA_RESOLUTION_HIGH,
-      thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      abortSignal: abort.signal
-    }
+  const config = {
+    responseMimeType: "application/json",
+    responseJsonSchema: schema,
+    // Photos need high resolution for small print; for PDFs Google advises medium.
+    // Thinking is at its lowest level because thinking tokens are billed as output.
+    mediaResolution: pages.every((page) => page.mimeType === "application/pdf") ? MediaResolution.MEDIA_RESOLUTION_MEDIUM : MediaResolution.MEDIA_RESOLUTION_HIGH,
+    thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+    maxOutputTokens: MAX_OUTPUT_TOKENS
   };
+  const contents = [{ role: "user", parts: [
+    ...pages.map((page) => ({ inlineData: { mimeType: page.mimeType, data: Buffer.from(page.bytes).toString("base64") } })),
+    { text: prompt }
+  ] }];
   // Abandons the wait even if a client ignores the abort signal.
   const timedOut = new Promise<never>((_, reject) => abort.signal.addEventListener("abort", () => reject(new AiExtractionError("TIMEOUT")), { once: true }));
-  const call = () => Promise.race([client.models.generateContent(request), timedOut]);
+  void timedOut.catch(() => undefined);
+  const call = () => {
+    const attempt = new AbortController(), stop = () => attempt.abort();
+    abort.signal.addEventListener("abort", stop, { once: true });
+    const attemptTimer = setTimeout(stop, attemptMs);
+    const silent = new Promise<never>((_, reject) => attempt.signal.addEventListener("abort", () => reject(new AiExtractionError("TIMEOUT")), { once: true }));
+    void silent.catch(() => undefined);
+    return Promise.race([client.models.generateContent({ model, contents, config: { ...config, abortSignal: attempt.signal } }), silent, timedOut])
+      .finally(() => { clearTimeout(attemptTimer); abort.signal.removeEventListener("abort", stop); });
+  };
   try {
     let result: GenerateResult;
     try { result = await call(); }
     catch (error) {
-      if (errorStatus(error) !== 503 || abort.signal.aborted) throw error;
-      await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]);
+      const busy = errorStatus(error) === 503, silent = error instanceof AiExtractionError && error.code === "TIMEOUT";
+      if ((!busy && !silent) || abort.signal.aborted) throw error;
+      if (busy) await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]);
       result = await call();
     }
     let data: T;

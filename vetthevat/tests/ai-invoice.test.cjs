@@ -216,3 +216,13 @@ test('saved readings are per company and file, expire after 24 hours and hold no
   assert.equal(readAiCache(store, key, 1000 + AI_CACHE_TTL_MS), null);
   assert.equal(data.size, 0);
 });
+
+test('a Gemini request that never answers is asked once more within the time limit', async () => {
+  let calls = 0;
+  const result = await extractWithGemini([page], { env, timeoutMs: 400, client: client(() => ++calls === 1 ? new Promise(() => {}) : Promise.resolve(reply)) });
+  assert.equal(calls, 2);
+  assert.ok(result.invoice);
+  calls = 0;
+  await assert.rejects(extractWithGemini([page], { env, timeoutMs: 100, client: client(() => { calls++; return new Promise(() => {}); }) }), (error) => error.code === 'TIMEOUT');
+  assert.equal(calls, 2);                     // one retry, never more
+});

@@ -37,7 +37,7 @@ async function loadSuppliers(companyId: string) {
 const HMRC_VAT_CHECK = "https://www.tax.service.gov.uk/check-vat-number/enter-vat-details";
 const ACCEPTED = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 const MAX_PAGES = 10;
-const AI_TIMEOUT_MS = 30000;
+const AI_TIMEOUT_MS = 58000; // the server allows Gemini 50s; slow replies must not fall back to on-device reading
 const AI_FALLBACK_NOTE = "The AI reader was unavailable, so this was read on this device.";
 const money = (value: number | null, currency: string) => value === null ? "" : new Intl.NumberFormat("en-GB", { style: "currency", currency: currency || "GBP" }).format(value);
 const ukDate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }) : "";
@@ -120,7 +120,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     let timer = window.setTimeout(stop, AI_TIMEOUT_MS);
     abort.signal.addEventListener("abort", stop, { once: true });
     try {
-      setStatus("Reading invoice…"); setProgress(30);
+      setStatus("Reading invoice… this can take up to a minute"); setProgress(30);
       const upload = await preparePagesForUpload(files, attempt.signal), form = new FormData();
       upload.pages.forEach((part, index) => form.append("page", part, `page-${index + 1}.${part.type === "application/pdf" ? "pdf" : "jpg"}`));
       setProgress(55);
@@ -130,7 +130,8 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
       // Totals do not reconcile and no page is known to be missing: read it once more.
       if (!clean && (printedPageCount(invoice.page_info) ?? 0) <= upload.pageCount) {
         setStatus("Double-checking the totals"); setProgress(75);
-        window.clearTimeout(timer); timer = window.setTimeout(stop, AI_TIMEOUT_MS);
+        // The re-read is a bonus check: at most 15s, otherwise the first reading is kept.
+        window.clearTimeout(timer); timer = window.setTimeout(stop, 15000);
         try { const second = await send(); if (!unreconciled(second)) { invoice = second; clean = true; } }
         catch { if (abort.signal.aborted) throw new Error("Stopped."); }
       }
@@ -284,7 +285,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
             ? <iframe title={`Uploaded invoice page ${index + 1}`} src={page.preview} className="h-[70vh] w-full rounded" />
             : <img src={page.preview} alt={`Uploaded invoice page ${index + 1}`} className="max-h-[70vh] w-full rounded object-contain" />}
         </div>)}</Card>
-        <ManualInvoiceWorkspace key={companyId + pages.map(page => page.id).join("-")} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} />
+        <ManualInvoiceWorkspace key={companyId + pages.map(page => page.id).join("-")} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} onScanAnother={reset} />
       </div>
     </> : null}
   </div>;

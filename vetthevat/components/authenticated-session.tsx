@@ -3,6 +3,7 @@ import {useEffect,useRef,useState} from "react";
 import {Button} from "@/components/ui/button";
 import {useLocale} from "@/components/locale-provider";
 import {clearWorkspaceCache} from "@/lib/workspace-cache";
+import {LanguageSwitcher} from "@/components/language-switcher";
 export function AuthenticatedSession({children}:{children:React.ReactNode}){
  const [error,setError]=useState(""),[pending,setPending]=useState(false);const checking=useRef(false),localeSyncStarted=useRef(false);const {syncAccountLocale,t}=useLocale();
  useEffect(()=>{
@@ -21,5 +22,5 @@ export function AuthenticatedSession({children}:{children:React.ReactNode}){
    const response=await fetch("/api/auth/logout",{method:"POST",headers:{"x-csrf-token":body.csrfToken},signal:AbortSignal.timeout(10000)});
    if(!response.ok)throw Error();clearWorkspaceCache();window.location.replace("/login?signedOut=1");
   }catch{setError(t('authenticatedSignOutError'));setPending(false);}}
- return <><div className="flex items-center justify-end gap-4 border-b border-line bg-white px-4 py-2"><span className="text-xs text-muted">{t('authenticatedSecureWorkspace')}</span><Button data-testid="authenticated-sign-out" variant="outline" disabled={pending} onClick={logout}>{pending?t('authenticatedSigningOut'):t('authenticatedSignOut')}</Button></div>{error?<div role="alert" className="bg-amber-50 p-3 text-sm text-amber-900">{error}</div>:null}{children}</>;
+ return <><div className="flex items-center justify-end gap-4 border-b border-line bg-white px-4 py-2"><span className="mr-auto hidden text-xs text-muted sm:inline">{t('authenticatedSecureWorkspace')}</span><div data-global-language-switcher><LanguageSwitcher /></div><Button data-testid="authenticated-sign-out" variant="outline" disabled={pending} onClick={logout}>{pending?t('authenticatedSigningOut'):t('authenticatedSignOut')}</Button></div>{error?<div role="alert" className="bg-amber-50 p-3 text-sm text-amber-900">{error}</div>:null}{children}</>;
 }

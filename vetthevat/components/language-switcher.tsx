@@ -42,7 +42,9 @@ export function LanguageSwitcher({ compact = false, openUp = false }: { compact?
     options[next]?.focus();
   }
 
-  return <div ref={root} className={`relative ${compact ? "w-full" : "shrink-0"}`} onKeyDown={onKeyDown}>
+  // translate="no": Google must never translate this menu. Each language keeps its own name
+  // ("English", "हिन्दी"), so anyone can always find their language and get back to English.
+  return <div ref={root} translate="no" className={`notranslate relative ${compact ? "w-full" : "shrink-0"}`} onKeyDown={onKeyDown}>
     <button ref={trigger} type="button" aria-label={t("chooseLanguage")} aria-haspopup="menu" aria-expanded={open}
       onClick={() => setOpen((value) => !value)}
       className={`inline-flex min-h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-white px-2.5 text-sm font-semibold text-ink hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 ${compact ? "" : "sm:w-auto"}`}>

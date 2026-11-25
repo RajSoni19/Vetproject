@@ -79,3 +79,47 @@ test('supplier spelling mistakes and "loose" are compared as one product', () =>
 test('display name drops the supplier stock code', () => {
   assert.equal(comparePrices([obs('temple', '10442 Cobra Beer 24x330ml', 18.99, '2026-11-01')], { asOf: '2026-11-13' }).products[0].name, 'Cobra Beer 24x330ml');
 });
+
+test('a size written without its unit is the same product as the size with its unit', () => {
+  // Real case: "Red onion 10kg" (07 Nov) and "Red onions 10" (09 Nov) are the same 10kg sack.
+  const result = comparePrices([
+    obs('rk', 'Red onion 10kg', 12.00, '2026-11-07'),
+    obs('quk', 'Red onions 10', 11.00, '2026-11-09')
+  ], { asOf: '2026-11-13' });
+  assert.equal(result.products.length, 1);
+  const onion = result.products[0];
+  assert.equal(onion.suppliers.length, 2);
+  assert.equal(onion.bestSupplierId, 'quk');
+  assert.equal(onion.name, 'Red onion 10kg');        // the spelling that states the size is shown
+  assert.deepEqual(onion.aliases, ['Red onions 10']);
+});
+
+test('different sizes, or a bare number next to other words, stay separate products', () => {
+  const result = comparePrices([
+    obs('rk', 'Red onion 10kg', 12.00, '2026-11-07'),
+    obs('quk', 'Red onions 20', 19.00, '2026-11-09'),
+    obs('quk', 'Coriander 30 bunch', 6.00, '2026-11-09'),
+    obs('rk', 'Coriander 30kg', 40.00, '2026-11-09')
+  ], { asOf: '2026-11-13' });
+  assert.equal(result.products.length, 4);
+});
+
+test('one supplier saved as several records is one supplier with one price history', () => {
+  // Real case: RK FRUITS & VEGETABLES LIMITED saved four times; Spinach bought on 26 Oct, 2, 7 and 9 Nov.
+  const rk = (id, price, on) => ({ ...obs(id, 'Spinich (PALAK)', price, on), supplierName: 'RK FRUITS & VEGETABLES LIMITED' });
+  const result = comparePrices([rk('rk1', 14.50, '2026-10-26'), rk('rk2', 12.00, '2026-11-02'), rk('rk3', 12.00, '2026-11-07'), rk('rk4', 14.00, '2026-11-09')], { asOf: '2026-11-13' });
+  assert.equal(result.suppliers.length, 1);
+  const spinach = result.products[0];
+  assert.equal(spinach.suppliers.length, 1);           // nothing to compare, so no "Cheapest"
+  assert.equal(spinach.suppliers[0].latestPrice, 14.00); // the newest invoice is the current price
+  assert.equal(spinach.suppliers[0].latestOn, '2026-11-09');
+  assert.equal(spinach.suppliers[0].previousPrice, 12.00);
+  assert.equal(spinach.suppliers[0].observations, 4);
+  assert.equal(spinach.savingPercent, 0);
+});
+
+test('supplier names match regardless of case, punctuation and Ltd/Limited; different names stay apart', () => {
+  const { supplierKey } = loadSource('lib/price-comparison');
+  assert.equal(supplierKey('RK Fruits & Vegetables Ltd.'), supplierKey('RK FRUITS AND VEGETABLES LIMITED'));
+  assert.notEqual(supplierKey('RK FRUITS & VEGETABLES LIMITED'), supplierKey('RKB Fruit & Veg Ltd T/As Box Fresh'));
+});

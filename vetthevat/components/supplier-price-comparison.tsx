@@ -29,7 +29,12 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   const [data, setData] = useState<PriceComparison | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [weeks, setWeeks] = useState(12);
+  // Ordering needs every product bought recently, not only the last few weeks: an invoice dated a
+  // few months back (scanned today) must still offer its items. Default one year; the choice is
+  // remembered on this device.
+  const [weeks, setWeeksState] = useState(52);
+  useEffect(() => { try { const saved = Number(window.localStorage.getItem("vtv.price-weeks.v1")); if ([10, 12, 26, 52, 104].includes(saved)) setWeeksState(saved); } catch { /* storage blocked */ } }, []);
+  const setWeeks = (value: number) => { setWeeksState(value); try { window.localStorage.setItem("vtv.price-weeks.v1", String(value)); } catch { /* storage blocked */ } };
   const [query, setQuery] = useState("");
   const [order, setOrder] = useState<OrderLine[]>([]);
   const [notice, setNotice] = useState("");
@@ -159,7 +164,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   return <div className="grid min-w-0 grid-cols-1 gap-5">
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">Prices from your own supplier invoices · last {data.window.weeks} weeks</p></div>
-      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option><option value={52}>Last year</option></select>
+      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option><option value={52}>Last year</option><option value={104}>Last 2 years</option></select>
     </div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

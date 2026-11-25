@@ -4,7 +4,7 @@ import { manualInvoicesEnabled } from "@/lib/server/saas/manual-activation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+export const maxDuration = 60; // Gemini reading can take up to ~50s (lib/ai-extraction.ts)
 
 async function handle(request: Request) {
   if (!manualInvoicesEnabled(process.env)) return Response.json({ error: { code: "UNAVAILABLE", message: "Invoice records are not enabled for this installation." } }, { status: 503, headers: { "cache-control": "private, no-store" } });
