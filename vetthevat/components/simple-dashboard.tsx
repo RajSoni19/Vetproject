@@ -1,5 +1,6 @@
 "use client";
 // Minimal one-stop dashboard from the company's own saved purchase invoices.
+import {ukDate} from "@/lib/uk-date";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Camera, FileText, Landmark, PoundSterling, Receipt, Scale, TrendingUp } from "lucide-react";
@@ -8,7 +9,6 @@ import type { PayableInvoice } from "@/lib/bank-matching";
 
 type Period = "month" | "quarter" | "year" | "custom";
 const money = (value: number) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(value);
-const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
 function periodStart(period: Exclude<Period, "custom">) {
   const now = new Date(), y = now.getUTCFullYear(), m = now.getUTCMonth();
   const start = period === "month" ? new Date(Date.UTC(y, m, 1)) : period === "quarter" ? new Date(Date.UTC(y, m - (m % 3), 1)) : new Date(Date.UTC(y, m - 11, 1));

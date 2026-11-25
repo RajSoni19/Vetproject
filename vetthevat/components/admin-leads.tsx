@@ -1,4 +1,5 @@
 "use client";
+import {ukDate} from "@/lib/uk-date";
 import { useEffect, useState } from "react";
 import { leadServices, leadStatuses } from "@/lib/leads/contracts";
 import type { StoredLead } from "@/lib/server/leads/core";
@@ -63,7 +64,7 @@ export function AdminLeads({ csrfToken }: { csrfToken: string }) {
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 capitalize">{lead.status}</span>
             </div>
             <p className="mt-2 break-all text-xs sm:text-sm text-slate-600">{lead.email} · {lead.phone}</p>
-            <p className="mt-1 text-xs text-slate-500">{lead.service} · Submitted {lead.createdAt} · {lead.id}</p>
+            <p className="mt-1 text-xs text-slate-500">{lead.service} · Submitted {ukDate(lead.createdAt)} · {lead.id}</p>
             {lead.requirements ? (
               <p className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs sm:text-sm text-slate-800 border border-slate-100">
                 {lead.requirements}

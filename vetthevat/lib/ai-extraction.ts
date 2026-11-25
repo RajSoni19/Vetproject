@@ -22,7 +22,10 @@ export type ExtractOptions = {
   retryDelayMs?: number;
 };
 
-export const DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite";
+export const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
+// Used when the main model is busy ("high demand" 503 or 429): measured working when the main model
+// was overloaded for every request. Set GEMINI_FALLBACK_MODEL=off to disable.
+export const DEFAULT_FALLBACK_MODEL = "gemini-3.1-flash-lite";
 // Below the browser's 30 seconds, so a slow request still falls back cleanly.
 // Gemini often takes 15-40 seconds per page (measured), so allow 50s; the route allows 60s.
 const DEFAULT_TIMEOUT_MS = 50000;
@@ -52,6 +55,10 @@ async function runGemini<T>(pages: readonly AiPage[], prompt: string, schema: ob
   if (!apiKey && !options.client) throw new AiExtractionError("NOT_CONFIGURED");
   const model = env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
   const client: GeminiClient = options.client ?? new GoogleGenAI({ apiKey });
+  const fallbackSetting = env.GEMINI_FALLBACK_MODEL?.trim() || DEFAULT_FALLBACK_MODEL;
+  const fallbackModel = /^(off|none|false)$/i.test(fallbackSetting) || fallbackSetting === model ? null : fallbackSetting;
+  // Gemini 2.5 models need the v1beta API for JSON output and a thinking budget instead of a level.
+  const fallbackClient: GeminiClient = options.client ?? new GoogleGenAI({ apiKey, apiVersion: "v1beta" });
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS, retryDelayMs = options.retryDelayMs ?? 1000;
   // Gemini usually answers in 5-10s but sometimes never answers at all (measured). Waiting longer
   // does not help; asking again does. So each attempt gets about half the time, and an attempt
@@ -74,29 +81,36 @@ async function runGemini<T>(pages: readonly AiPage[], prompt: string, schema: ob
   // Abandons the wait even if a client ignores the abort signal.
   const timedOut = new Promise<never>((_, reject) => abort.signal.addEventListener("abort", () => reject(new AiExtractionError("TIMEOUT")), { once: true }));
   void timedOut.catch(() => undefined);
-  const call = () => {
+  let usedModel = model;
+  const call = (backup = false) => {
+    const name = backup && fallbackModel ? fallbackModel : model, api = backup && fallbackModel ? fallbackClient : client;
+    const thinking = /gemini-2\./.test(name) ? { thinkingBudget: 0 } : config.thinkingConfig;
+    usedModel = name;
     const attempt = new AbortController(), stop = () => attempt.abort();
     abort.signal.addEventListener("abort", stop, { once: true });
     const attemptTimer = setTimeout(stop, attemptMs);
     const silent = new Promise<never>((_, reject) => attempt.signal.addEventListener("abort", () => reject(new AiExtractionError("TIMEOUT")), { once: true }));
     void silent.catch(() => undefined);
-    return Promise.race([client.models.generateContent({ model, contents, config: { ...config, abortSignal: attempt.signal } }), silent, timedOut])
+    return Promise.race([api.models.generateContent({ model: name, contents, config: { ...config, thinkingConfig: thinking, abortSignal: attempt.signal } as typeof config }), silent, timedOut])
       .finally(() => { clearTimeout(attemptTimer); abort.signal.removeEventListener("abort", stop); });
   };
   try {
-    let result: GenerateResult;
-    try { result = await call(); }
-    catch (error) {
-      const busy = errorStatus(error) === 503, silent = error instanceof AiExtractionError && error.code === "TIMEOUT";
-      if ((!busy && !silent) || abort.signal.aborted) throw error;
-      if (busy) await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]);
-      result = await call();
+    let result: GenerateResult | undefined, backup = false;
+    // Busy (503/429): up to three tries, switching between the main and the backup model (Google's
+    // "high demand" spikes hit one model at a time). Silent: asked once more on the same model.
+    for (let tries = 1; !result; tries++) {
+      try { result = await call(backup); }
+      catch (error) {
+        const busy = errorStatus(error) === 503 || errorStatus(error) === 429, silent = error instanceof AiExtractionError && error.code === "TIMEOUT";
+        if ((!busy && !silent) || abort.signal.aborted || tries >= (busy ? 3 : 2)) throw error;
+        if (busy) { await Promise.race([new Promise((resolve) => setTimeout(resolve, retryDelayMs)), timedOut]); if (fallbackModel !== null) backup = !backup; }
+      }
     }
     let data: T;
     try { data = parse(JSON.parse(result.text ?? "")); }
     catch { throw new AiExtractionError("INVALID_RESPONSE"); }
     const usage = result.usageMetadata;
-    return { data, model, usage: { promptTokens: count(usage?.promptTokenCount), outputTokens: count(usage?.candidatesTokenCount), thinkingTokens: count(usage?.thoughtsTokenCount), totalTokens: count(usage?.totalTokenCount) } };
+    return { data, model: usedModel, usage: { promptTokens: count(usage?.promptTokenCount), outputTokens: count(usage?.candidatesTokenCount), thinkingTokens: count(usage?.thoughtsTokenCount), totalTokens: count(usage?.totalTokenCount) } };
   } catch (error) {
     if (error instanceof AiExtractionError) throw error;
     if (abort.signal.aborted) throw new AiExtractionError("TIMEOUT");

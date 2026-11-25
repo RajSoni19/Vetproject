@@ -128,3 +128,14 @@ test('accountant Excel: VAT only on verified payments, UK dates, links, safe tex
   assert.equal(sheet.A4, undefined);
   assert.deepEqual(XLSX.utils.sheet_to_json(book.Sheets.Summary, { header: 1 }).find(r => r[0] === 'VAT to claim'), ['VAT to claim', 20]);
 });
+
+test('weekly orders of the same amount are paired with the same number of payments by date', () => {
+  // Synthetic: a supplier billed £212.50 twice; the statement pays £212.50 twice.
+  const invoices = [inv('w1', 'Example Fruits Limited', 212.5, 0, '2026-10-10'), inv('w2', 'Example Fruits Limited', 212.5, 0, '2026-10-26')];
+  const pay = (id, date) => ({ id, date, description: 'EXAMPLE FRUITS', amount: 212.5, direction: 'out' });
+  const two = matchTransactions([pay('p2', '2026-10-28'), pay('p1', '2026-10-12')], invoices);
+  assert.deepEqual(two.map(r => [r.id, r.status, r.invoice?.id]), [['p2', 'Matched', 'w2'], ['p1', 'Matched', 'w1']]);
+  // One payment for two identical invoices is still for a person to check.
+  const one = matchTransactions([pay('p1', '2026-10-28')], invoices);
+  assert.equal(one[0].status, 'Possible match');
+});

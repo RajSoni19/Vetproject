@@ -4,6 +4,7 @@
 // presses Save. PDFs with real text are read here, and go to the AI reader only if
 // their totals do not reconcile. Photos and scanned PDFs go to the AI reader, all
 // pages together; if it is unavailable they are read on this device.
+import {ukDate} from "@/lib/uk-date";
 import { useEffect, useRef, useState } from "react";
 import { Camera, ExternalLink, FileUp, Loader2, Plus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { parseAiInvoice, type AiInvoice } from "@/lib/ai-invoice";
 import { businessData, businessForm } from "@/lib/browser-business";
 import { aiCacheKey, readAiCache, writeAiCache } from "@/lib/ai-invoice-cache";
 import { printedPageCount } from "@/lib/invoice-checks";
+import { splitInvoiceText } from "@/lib/invoice-split";
 
 type SupplierOption = { id: string; name: string; vat_number: string | null; status: string };
 // The company's saved active suppliers (a few pages of 100).
@@ -40,7 +42,6 @@ const MAX_PAGES = 10;
 const AI_TIMEOUT_MS = 58000; // the server allows Gemini 50s; slow replies must not fall back to on-device reading
 const AI_FALLBACK_NOTE = "The AI reader was unavailable, so this was read on this device.";
 const money = (value: number | null, currency: string) => value === null ? "" : new Intl.NumberFormat("en-GB", { style: "currency", currency: currency || "GBP" }).format(value);
-const ukDate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }) : "";
 
 // One read page: the main reading and the supplementary (totals) reading, split at the form feed.
 // needsReading: a photo or scanned PDF (not a PDF with a real text layer). hasText: the on-device reading has been done.
@@ -71,6 +72,9 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   const controller = useRef<AbortController | null>(null);
   const pagesRef = useRef<Page[]>([]);
   const nextId = useRef(1);
+  // One PDF holding several separate invoices: which one is being checked and saved.
+  const partRef = useRef(0), partsRef = useRef<{ number: string; date: string | null }[]>([]);
+  const [parts, setParts] = useState<{ number: string; date: string | null }[]>([]), [partIndex, setPartIndex] = useState(0);
   const picker = useRef<HTMLInputElement>(null), camera = useRef<HTMLInputElement>(null);
   const morePicker = useRef<HTMLInputElement>(null), moreCamera = useRef<HTMLInputElement>(null);
 
@@ -93,8 +97,11 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     const source = next.length > 1 ? `${next[0].file.name} (+${next.length - 1} more page${next.length > 2 ? "s" : ""})` : next[0].file.name;
     const context = { companyName, supplier: supplierRef.current };
     const ai = aiReading.current?.ids === pageIds(next) ? aiReading.current : null;
+    const text = ai ? "" : combinedPageText(next), split = ai ? [] : splitInvoiceText(text);
+    partsRef.current = split.map(part => ({ number: part.number, date: part.date }));
+    const index = Math.min(partRef.current, Math.max(0, split.length - 1));
     const parsed = ai ? invoiceDraftFromAi(ai.invoice, source, { ...context, pageCount: ai.pageCount, readBy: "gemini" })
-      : invoiceDraftFromText(combinedPageText(next), source, { ...context, ...(next.some(page => page.file.type === "application/pdf") ? {} : { pageCount: next.length }), readBy: next.some(page => page.needsReading) ? "tesseract" : "pdf-text" });
+      : invoiceDraftFromText(split.length ? split[index].text : text, split.length ? `${source} (invoice ${index + 1} of ${split.length})` : source, { ...context, ...(next.some(page => page.file.type === "application/pdf") ? {} : { pageCount: next.length }), readBy: next.some(page => page.needsReading) ? "tesseract" : "pdf-text" });
     const notes = [...new Set([...(!ai && aiFailed.current ? [AI_FALLBACK_NOTE] : []), ...(ai ? [] : next.flatMap(page => page.notes))])];
     return notes.length ? { ...parsed, warnings: [...notes, ...parsed.warnings] } : parsed;
   }
@@ -102,6 +109,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
   function show(next: Page[]) {
     pagesRef.current = next; setPages(next);
     setDraft(next.length ? buildDraft(next) : null);
+    setParts(next.length ? partsRef.current : []); setPartIndex(partRef.current);
   }
 
   // All pages together, in one request; a repeat of the same files uses the saved reading.
@@ -176,7 +184,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     if (!ACCEPTED.includes(chosen.type)) { setError("Choose a PDF, JPG, PNG or WEBP file."); return; }
     if (!chosen.size || chosen.size > 10 * 1024 * 1024) { setError("Choose a file no larger than 10 MB."); return; }
     if (addPage && pagesRef.current.length >= MAX_PAGES) { setError(`An invoice can have up to ${MAX_PAGES} pages.`); return; }
-    if (!addPage) { pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; show([]); }
+    if (!addPage) { pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; partRef.current = 0; show([]); }
     const abort = new AbortController(); controller.current = abort;
     const timer = window.setTimeout(() => abort.abort(), 150000);
     const preview = URL.createObjectURL(chosen);
@@ -217,7 +225,13 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
     finally { if (controller.current === abort) setStatus(""); }
   }
 
-  function reset() { controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; show([]); setError(""); setStatus(""); setProgress(0); }
+  function choosePart(index: number) {
+    partRef.current = index; setPartIndex(index);
+    setDraft(buildDraft(pagesRef.current));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function reset() { partRef.current = 0; controller.current?.abort(); pagesRef.current.forEach(page => URL.revokeObjectURL(page.preview)); aiReading.current = null; aiFailed.current = false; show([]); setError(""); setStatus(""); setProgress(0); }
 
   const vatDigits = (draft?.supplierVatNumber ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^GB/, "");
   const reading = Boolean(status);
@@ -255,6 +269,17 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
           <div><h2 className="text-xl font-bold">{draft.receipt ? "Receipt read" : "Read"} from {first.file.name}{more}</h2><p className="text-sm text-muted">Check these against the document, then complete and save below.</p></div>
           <Button type="button" variant="outline" disabled={reading} onClick={reset}><RotateCcw className="h-4 w-4" />Scan another</Button>
         </div>
+        {parts.length > 1 ? <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="font-semibold">This file contains {parts.length} separate invoices.</p>
+          <p className="mt-0.5">Each invoice is checked and saved on its own. Save this one, then choose the next.</p>
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <label className="grid gap-1 text-xs font-semibold">Invoice to check
+              <select className="field-control min-w-64 text-sm" value={partIndex} disabled={reading} onChange={e => choosePart(Number(e.target.value))}>
+                {parts.map((part, index) => <option key={index} value={index}>{index + 1} of {parts.length}: {part.number}{part.date ? ` · ${ukDate(part.date)}` : ""}</option>)}
+              </select></label>
+            {partIndex < parts.length - 1 ? <Button type="button" variant="outline" disabled={reading} onClick={() => choosePart(partIndex + 1)}>Next invoice ({parts[partIndex + 1].number})</Button> : null}
+          </div>
+        </div> : null}
         <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border border-brand-200 bg-brand-50 p-4 sm:grid-cols-3">
           {([[draft.supplierId ? "Supplier (chosen)" : "Supplier", draft.supplierName], [draft.receipt ? "Receipt date" : "Invoice date", ukDate(draft.issuedOn)], [draft.receipt ? "Receipt number" : "Invoice number", draft.number],
             ["Net (goods)", money(draft.summary.net, draft.currency)], ["VAT", money(draft.summary.vat, draft.currency)], ["Gross total", money(draft.summary.gross, draft.currency)]] as [string, string][])
@@ -285,7 +310,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
             ? <iframe title={`Uploaded invoice page ${index + 1}`} src={page.preview} className="h-[70vh] w-full rounded" />
             : <img src={page.preview} alt={`Uploaded invoice page ${index + 1}`} className="max-h-[70vh] w-full rounded object-contain" />}
         </div>)}</Card>
-        <ManualInvoiceWorkspace key={companyId + pages.map(page => page.id).join("-")} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} onScanAnother={reset} />
+        <ManualInvoiceWorkspace key={companyId + pages.map(page => page.id).join("-") + ":" + partIndex} companyId={companyId} path="/app/invoices/new" capturedDraft={draft} onScanAnother={reset} />
       </div>
     </> : null}
   </div>;

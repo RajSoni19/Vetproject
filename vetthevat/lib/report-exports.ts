@@ -1,4 +1,5 @@
 "use client";
+import {ukDate,ukWorkbook} from "@/lib/uk-date";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import type { Company, Invoice, StoredDocument } from "@/lib/domain";
@@ -57,7 +58,7 @@ export function createReportPdf(invoices: Invoice[], company: Company, filters: 
     doc.setFontSize(10); doc.setFont("helvetica", "normal");
     doc.text(`Company: ${company.name.slice(0, 100)}`, 14, 24);
     doc.text(`Period: ${report.period} | Approval: ${filters.approval ?? "All"} | Status: ${filters.status ?? "All"}`, 14, 31);
-    doc.text(`Invoices: ${report.rows.length} | Generated: ${new Date().toISOString().slice(0, 10)} | Local workspace records`, 14, 38);
+    doc.text(`Invoices: ${report.rows.length} | Generated: ${ukDate(new Date())} | Local workspace records`, 14, 38);
     y = 48;
   }
   function ensure(height: number) { if (y + height > 185) { doc.addPage(); pageTitle(); } }
@@ -69,7 +70,7 @@ export function createReportPdf(invoices: Invoice[], company: Company, filters: 
     const supplier = doc.splitTextToSize((invoice.transactionType==="Sale"?invoice.customerName:invoice.supplierName) || "Unassigned counterparty", 65) as string[];
     const height = Math.max(number.length, supplier.length) * 5 + 8;
     ensure(height);
-    doc.setFontSize(9); doc.text(number, 14, y); doc.text(supplier, 52, y); doc.text(invoice.invoiceDate || "No date", 122, y);
+    doc.setFontSize(9); doc.text(number, 14, y); doc.text(supplier, 52, y); doc.text(invoice.invoiceDate ? ukDate(invoice.invoiceDate) : "No date", 122, y);
     doc.text(invoice.currency, 151, y); doc.text(invoice.subtotal.toFixed(2), 171, y); doc.text(invoice.vatAmount.toFixed(2), 202, y); doc.text(invoice.totalAmount.toFixed(2), 232, y);
     doc.setFontSize(8); doc.text(`Net / VAT / Gross | ${invoice.status} | ${invoice.reviewStatus}`, 151, y + 5); y += height;
   }
@@ -81,7 +82,7 @@ export function createReportPdf(invoices: Invoice[], company: Company, filters: 
 export const browserReportExportService = {
   exportExcel(invoices: Invoice[], documents: StoredDocument[], company: Company, filters: ReportFilters = { approval: "Reviewed" }) {
     const workbook = createReportWorkbook(invoices, documents, company, filters, window.location.origin);
-    XLSX.writeFile(workbook, "vet-the-vat-invoices.xlsx");
+    XLSX.writeFile(ukWorkbook(workbook), "vet-the-vat-invoices.xlsx");
   },
   exportPdf(invoices: Invoice[], company: Company, filters: ReportFilters = {}, documents: StoredDocument[] = []) {
     createReportPdf(invoices, company, filters, documents).save(`vet-the-vat-report-${new Date().toISOString().slice(0, 10)}.pdf`);

@@ -1,5 +1,6 @@
 "use client";
 
+import {ukDate} from "@/lib/uk-date";
 import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -265,7 +266,7 @@ export function BankStatementMatching() {
       ["Date,Payee,Reference,Type,Amount,Status,Matched Invoice,Confidence",
         ...transactions.map(
           (t) =>
-            `${t.date},"${t.payee}","${t.reference}",${t.type},${t.amount},${t.status},"${t.matchedInvoiceNumber || ""}",${t.matchedConfidence}%`
+            `${ukDate(t.date)},"${t.payee}","${t.reference}",${t.type},${t.amount},${t.status},"${t.matchedInvoiceNumber || ""}",${t.matchedConfidence}%`
         )
       ].join("\n");
     const encodedUri = encodeURI(csvContent);
@@ -468,7 +469,7 @@ export function BankStatementMatching() {
             <tbody className="divide-y divide-slate-100">
               {filtered.map((tx) => (
                 <tr key={tx.id} className="hover:bg-slate-50/60">
-                  <td className="py-3 font-medium text-slate-600 whitespace-nowrap">{tx.date}</td>
+                  <td className="py-3 font-medium text-slate-600 whitespace-nowrap">{ukDate(tx.date)}</td>
                   <td className="py-3">
                     <div className="font-bold text-slate-900">{tx.payee}</div>
                     <div className="text-[11px] text-slate-400">{tx.reference}</div>

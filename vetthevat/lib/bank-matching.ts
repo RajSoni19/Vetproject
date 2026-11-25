@@ -107,8 +107,19 @@ export function matchTransactions(transactions: readonly BankTransaction[], invo
   const ordered = [...transactions].filter(t => t.direction === "out").sort((a, b) => a.date.localeCompare(b.date));
   // Certain matches first, so a weaker guess can never take their invoice.
   for (const t of ordered) {
+    if (results.has(t.id)) continue;
     const fits = sameAmount(t).filter(i => !used.has(i.id) && isNamed(t, i) && inWindow(t, i));
-    if (fits.length === 1) place(t, fits[0], "Matched", `Same amount and supplier (${fits[0].supplierName})`);
+    if (fits.length === 1) { place(t, fits[0], "Matched", `Same amount and supplier (${fits[0].supplierName})`); continue; }
+    if (fits.length < 2) continue;
+    // A supplier billed the same amount several times (a weekly order) and the statement has exactly
+    // as many such payments: pair them in date order, oldest invoice with the oldest payment.
+    const ids = fits.map(i => i.id).sort().join();
+    const twins = ordered.filter(u => !results.has(u.id) && pence(u.amount) === pence(t.amount)
+      && sameAmount(u).filter(i => !used.has(i.id) && isNamed(u, i) && inWindow(u, i)).map(i => i.id).sort().join() === ids);
+    if (twins.length !== fits.length) continue;
+    const byDate = [...fits].sort((a, b) => a.issuedOn.localeCompare(b.issuedOn));
+    if (!twins.every((u, index) => gap(u, byDate[index]) >= -7)) continue;
+    twins.forEach((u, index) => place(u, byDate[index], "Matched", `Same amount and supplier (${byDate[index].supplierName}); ${fits.length} payments paired with ${fits.length} invoices by date`));
   }
   for (const t of ordered) {
     if (results.has(t.id)) continue;

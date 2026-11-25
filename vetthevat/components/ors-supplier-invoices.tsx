@@ -1,4 +1,5 @@
 "use client";
+import {ukDate} from "@/lib/uk-date";
 import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {WorkspaceTable} from "@/components/workspace-table";
@@ -37,7 +38,7 @@ export function OrsSupplierInvoices({companyId,suppliers,materials,orders,onCata
    <fieldset disabled={busy||locked} className="grid gap-3 sm:grid-cols-3"><legend>{locked?'Confirmed supplier invoice':'Review invoice header'}</legend>
     <label>Company supplier<select aria-label="Invoice supplier" className="field-control w-full" value={review.supplier_id??''} onChange={e=>{setReview({...review,supplier_id:e.target.value,purchase_order_id:null,issues:[]});setAcks([]);}}><option value="">Select supplier</option>{suppliers.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
     {(['supplier','invoiceNumber','invoiceDate','dueDate','currency','subtotal','vat','total'] as const).map(key=><label key={key}>{key}<input aria-label={key} className="field-control w-full" value={invoice[key]??''} onChange={e=>changeInvoice({[key]:e.target.value||null})}/></label>)}
-    <label>Link purchase order<select aria-label="Invoice purchase order" className="field-control w-full" value={review.purchase_order_id??''} onChange={e=>{setReview({...review,purchase_order_id:e.target.value||null,issues:[]});setAcks([]);}}><option value="">No purchase order</option>{orders.filter(o=>o.supplier_id===review.supplier_id).map(o=><option key={o.id} value={o.id}>{o.id} · {o.ordered_on}</option>)}</select></label>
+    <label>Link purchase order<select aria-label="Invoice purchase order" className="field-control w-full" value={review.purchase_order_id??''} onChange={e=>{setReview({...review,purchase_order_id:e.target.value||null,issues:[]});setAcks([]);}}><option value="">No purchase order</option>{orders.filter(o=>o.supplier_id===review.supplier_id).map(o=><option key={o.id} value={o.id}>{o.id} · {ukDate(o.ordered_on)}</option>)}</select></label>
    </fieldset>
    <button disabled={busy||locked||!review.supplier_id} onClick={()=>void perform(async()=>{const lines=await api('/api/ors/supplier-invoices/match',{supplierId:review.supplier_id,lines:invoice.lines});changeInvoice({lines});})}>Match supplier mappings, SKU and product names</button>
    <div className="overflow-x-auto"><table className="w-full text-left text-sm" aria-label="Supplier invoice products"><thead><tr>{['Description','SKU','Quantity','Unit','Unit price','Discount amount','VAT %','VAT amount','Line net total','Product match','PO line','Original evidence'].map(label=><th className="p-2" key={label}>{label}</th>)}</tr></thead><tbody>{invoice.lines.map((line,index)=><tr className="border-t" key={index}>

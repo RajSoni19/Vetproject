@@ -30,6 +30,24 @@ const round = (value: number, places = 2) => Math.round((value + Number.EPSILON)
 // supplier stock codes, punctuation, plurals, descriptive words such as
 // "loose" or "fresh", or word order. "Loose tomatoes" and "TOMATOES" share a key.
 const FILLER = ["LOOSE", "FRESH"];
+// Fresh produce: "White Cabbage", "Small cabbage", "VG BOX CABBAGE WHITE SMALL 3094" and "Cabbage"
+// are one product, compared and shown as "Cabbage". Only for fruit and vegetables, so a wine
+// ("White Zinfandel"), a spirit ("Bacardi White") or a brand ("Green Giant") keeps its full name.
+// Red stays a different product (red onion, red cabbage), as do pack sizes such as 10kg.
+const PRODUCE = /\b(?:cabbages?|onions?|potato(?:es)?|peppers?|capsicums?|chill(?:i|y|ies)|tomato(?:es)?|aubergines?|brinjals?|courgettes?|cucumbers?|lettuces?|mushrooms?|cauliflowers?|broccoli|garlic|ginger|carrots?|spinach|palak|okra|bhindi|lemons?|limes?|coriander|mint|methi|leeks?|celery|radish(?:es)?|mooli|beetroots?|parsnips?|kale|pumpkins?|bananas?|mangoes?)\b/i;
+const VARIANT_TEXT = /\b(?:small|sml|medium|med|large|lrg|big|mini|jumbo|xl|white|green)\b/gi;
+// Not after a number: "30 bunch" is a pack size, not a pack word.
+const PACK_TEXT = /(?<!\d\s?)\b(?:vg|veg|box|bag|net|bunch(?:es)?|each|ea|pkt|packet|tray|case)\b/gi;
+// The produce name without its size word, colour (white/green), pack word or stock code; null for anything else.
+// Drinks and groceries that only contain a produce word ("Ginger Ale", "Lemon juice", "Chilli powder").
+const PROCESSED = /\b(?:juice|ale|beer|cider|syrup|cordial|powder|paste|sauce|chopped|puree|pur[eé]e|pickle|chutney|samosa|crisps?|tins?|cans?|canned|oil|drink|soda|wine|vodka|gin|rum|lager|tea|biscuits?|cake|frozen|dried|dry|flakes?|seeds?|nrb|pc)\b|\d+\s*[x*×]\s*\d/i;
+export function produceName(text: string): string | null {
+  if (!PRODUCE.test(text) || PROCESSED.test(text)) return null;
+  const plain = text.replace(VARIANT_TEXT, " ").replace(PACK_TEXT, " ")
+    .replace(/(?<![\w.])\d{4,}(?![\w.])/g, " ")                 // stock codes / barcodes ("3094"), not sizes ("10kg", "12x340")
+    .replace(/\(\s*\)/g, " ").replace(/\s+/g, " ").replace(/^[\s,\-]+|[\s,\-]+$/g, "");
+  return /[A-Za-z]{3}/.test(plain) ? plain : null;
+}
 function singular(word: string) {
   if (word.length < 4 || /\d/.test(word)) return word;
   if (/OES?$/.test(word)) return word.replace(/OES?$/, "O");          // TOMATOES, TOMATOE -> TOMATO
@@ -59,7 +77,7 @@ export function similarWord(a: string, b: string) {
 }
 const isFiller = (word: string) => FILLER.some(filler => word === filler || word.length >= 5 && word[0] === filler[0] && distance(word, filler) <= 2);
 function productWords(description: string) {
-  const words = description.toUpperCase()
+  const words = (produceName(description) ?? description).toUpperCase()
     .replace(/^\s*[A-Z]{0,6}\d{3,}[A-Z0-9]*\s+/, "")      // leading stock code "51010 " / "CARTON1 "
     .replace(/[^A-Z0-9%./ ]+/g, " ")
     .replace(/\b(\d+)\s*(KG|G|L|LTR|LITRE|ML|CL|GAL)\b/g, "$1$2")
@@ -131,7 +149,9 @@ export function comparePrices(rows: readonly PriceObservation[], options: { asOf
     // Display name without the supplier's stock code ("51010 COBRA BEER KEG").
     const clean = (text: string) => text.trim().replace(/^\s*[A-Za-z]{0,6}\d{3,}[A-Za-z0-9]*\s+(?=\S)/, "");
     const newest = [...list].sort(newestFirst);
-    const name = clean((newest.find(row => statesSize(clean(row.description))) ?? newest[0]).description);
+    // The common name: "White Cabbage" is shown as "Cabbage" (the original spellings stay listed as aliases).
+    const common = (text: string) => { const plain = produceName(text); if (!plain) return text; const tidy = plain === plain.toUpperCase() ? plain.toLowerCase() : plain; return tidy.charAt(0).toUpperCase() + tidy.slice(1); };
+    const name = common(clean((newest.find(row => statesSize(clean(row.description))) ?? newest[0]).description));
     // Other spellings grouped under this product, so people can see what was combined.
     const aliases = [...new Map(list.map(row => [clean(row.description).toUpperCase(), clean(row.description)])).values()].filter(alias => alias.toUpperCase() !== name.toUpperCase());
     const prices: SupplierPrice[] = [...suppliers.values()].map(observations => {

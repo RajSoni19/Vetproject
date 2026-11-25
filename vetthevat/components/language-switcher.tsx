@@ -48,7 +48,7 @@ export function LanguageSwitcher({ compact = false, openUp = false }: { compact?
     <button ref={trigger} type="button" aria-label={t("chooseLanguage")} aria-haspopup="menu" aria-expanded={open}
       onClick={() => setOpen((value) => !value)}
       className={`inline-flex min-h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-white px-2.5 text-sm font-semibold text-ink hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 ${compact ? "" : "sm:w-auto"}`}>
-      <span className="inline-flex min-w-0 items-center gap-2"><Globe2 className="h-4 w-4 shrink-0 text-brand-700" aria-hidden="true" /><span className="whitespace-nowrap">{displayNames[locale]}</span></span>
+      <span className="inline-flex min-w-0 items-center gap-2"><Globe2 className="h-4 w-4 shrink-0 text-brand-700" aria-hidden="true" /><span className="whitespace-nowrap text-xs font-medium text-muted">Change language:</span><span className="whitespace-nowrap">{displayNames[locale]}</span></span>
       <ChevronDown className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
     </button>
     {open && <div ref={menu} role="menu" aria-label={t("chooseLanguage")} className={`absolute ${openUp ? "bottom-full mb-2" : "top-full mt-2"} z-50 max-h-[min(70vh,28rem)] overflow-y-auto rounded-xl border border-line bg-white p-1.5 shadow-xl ${compact ? "left-0 right-0" : "right-0 w-64"}`}>

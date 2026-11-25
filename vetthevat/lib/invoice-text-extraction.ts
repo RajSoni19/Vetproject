@@ -59,7 +59,7 @@ const letters = (value: string) => (value.match(/[A-Za-z]/g) ?? []).length;
 
 function toRows(text: string): Row[] {
   return text.replace(/\r/g, "").replace(/ /g, " ").split("\n").map((raw) => {
-    const cells = raw.split(/\t+| {2,}|\|/).map((cell) => cell.replace(/\s+/g, " ").trim()).filter((cell) => cell && !/^[^A-Za-z0-9]+$/.test(cell));
+    const cells = raw.split(/\t+| {2,}|\|/).map((cell) => cell.replace(/\s+/g, " ").trim()).filter((cell) => cell && (cell === "*" || !/^[^A-Za-z0-9]+$/.test(cell)));
     return { cells, text: cells.join(" ") };
   }).filter((row) => row.cells.length);
 }
@@ -101,7 +101,9 @@ const acceptDate = (candidate: string) => {
 
 // Finds "Label value" in one cell, "Label | value" in adjacent cells, or a
 // label with its value directly underneath (same column, next row).
-function findLabelled<T>(rows: Row[], source: string, accept: (candidate: string) => T | null): T | null {
+// deep: also two rows down, for a two-column header where another column's line sits between
+// the label and its value ("Invoice Number" / "Westminster WC2H 0ET" / "F47447041").
+function findLabelled<T>(rows: Row[], source: string, accept: (candidate: string) => T | null, deep = false): T | null {
   const label = new RegExp(`(?<![A-Za-z])(?:${source})(?![A-Za-z])`, "i");
   for (let r = 0; r < rows.length; r++) {
     const cells = rows[r].cells;
@@ -113,6 +115,8 @@ function findLabelled<T>(rows: Row[], source: string, accept: (candidate: string
       if (!rest.replace(/[\s:#.\-]/g, "")) {
         const below = rows[r + 1]?.cells;
         if (below) candidates.push(below[c], below[0]);
+        const further = deep ? rows[r + 2]?.cells : undefined;
+        if (further) candidates.push(further[c], further[0]);
       }
       for (const candidate of candidates) {
         if (!candidate) continue;
@@ -124,9 +128,9 @@ function findLabelled<T>(rows: Row[], source: string, accept: (candidate: string
   return null;
 }
 
-const firstLabelled = <T>(rows: Row[], sources: string[], accept: (candidate: string) => T | null) => {
+const firstLabelled = <T>(rows: Row[], sources: string[], accept: (candidate: string) => T | null, deep = false) => {
   for (const source of sources) {
-    const value = findLabelled(rows, source, accept);
+    const value = findLabelled(rows, source, accept, deep);
     if (value !== null) return value;
   }
   return null;
@@ -138,6 +142,8 @@ function acceptReference(strict: boolean) {
     const candidate = raw.replace(/([A-Za-z0-9][/-])\s+(?=[A-Za-z0-9])/g, "$1");
     const match = candidate.match(/^[\s:#.\-]*([A-Z0-9][A-Z0-9/._-]{0,29})(?![A-Za-z0-9])/i);
     const token = match?.[1].replace(/[/._-]+$/, "");
+    // "badalpatel1406@gmail.com" beside the label is an email address, not the invoice number.
+    if (match && /^[A-Za-z0-9._%+-]*@/.test(candidate.slice(match[0].length))) return null;
     // A money amount ("1201.08") is never an invoice number.
     if (token && /^\d{1,3}(?:,\d{3})*\.\d{2}$|^\d+\.\d{2}$/.test(token)) return null;
     if (!token || !/\d/.test(token) || parseFlexibleDate(token)) return null;
@@ -159,7 +165,7 @@ type TotalHit = { kind: TotalKind; rank: number; value: number; rate: number | n
 
 // Order matters: specific phrases are consumed before the bare words they contain.
 const TOTAL_LABELS: TotalLabel[] = [
-  { kind: "net", rank: 1, source: "sub[\\s-]*total|net\\s+(?:amount|total|value)|total\\s+net|total\\s+(?:excl?\\w*\\.?|ex\\.?|before)\\s+(?:vat|tax)|(?:amount|total)\\s+exc\\w*\\.?\\s+(?:vat|tax)|goods(?:\\s+(?:total|value|net))?|total\\s+goods|taxable\\s+(?:amount|value)|recorded\\s+net" },
+  { kind: "net", rank: 1, source: "sub[\\s-]*total|total\\s*\\(\\s*(?:excl?\\w*\\.?|ex\\.?|before)\\s*(?:vat|tax)\\s*\\)|net\\s+(?:amount|total|value)|total\\s+net|total\\s+(?:excl?\\w*\\.?|ex\\.?|before)\\s+(?:vat|tax)|(?:amount|total)\\s+exc\\w*\\.?\\s+(?:vat|tax)|goods(?:\\s+(?:total|value|net))?|total\\s+goods|taxable\\s+(?:amount|value)|recorded\\s+net" },
   { kind: "vat", rank: 1, source: "(?:total\\s+)?(?:vat|v\\.a\\.t\\.?|sales\\s+tax|gst)\\s+(?:amount|total)|total\\s+(?:vat|v\\.a\\.t\\.?|tax)|tax\\s+(?:amount|total)" },
   { kind: "gross", rank: 2, source: "total\\s+(?:payable|due|to\\s+pay)|amount\\s+(?:due|payable|to\\s+pay)|balance\\s+due|outstanding\\s+balance|please\\s+pay" },
   { kind: "gross", rank: 1, source: "invoice\\s+total|grand\\s+total|gross(?:\\s+(?:total|amount))?|total\\s+(?:inc\\w*\\.?(?:\\s+(?:of\\s+)?(?:vat|tax))?|amount)|totals?" },
@@ -170,7 +176,8 @@ const TOTAL_PATTERNS = TOTAL_LABELS.map((label) => {
   const amount = label.weak ? DEC : `${DEC}|${WHOLE_AT_END}`;
   return {
     label,
-    pattern: new RegExp(`(?<![A-Za-z])(?:${label.source})(?![A-Za-z])\\s*(?:\\(?\\s*(?:@|at)?\\s*(\\d{1,2}(?:\\.\\d{1,2})?)\\s*%\\s*\\)?)?(?:\\s*on\\s+${CUR}${DEC})?[\\s:=.]*${CUR}(${amount})${NOT_MORE}(?:\\s+${CUR}(${amount})${NOT_MORE})*`, "i")
+    // An optional bracketed note after the label: "Subtotal (ex VAT)", "VAT (*)", "Total (incl VAT)".
+    pattern: new RegExp(`(?<![A-Za-z])(?:${label.source})(?![A-Za-z])(?:\\s*\\([^()\\d£€$]{0,24}\\))?\\s*(?:\\(?\\s*(?:@|at)?\\s*(\\d{1,2}(?:\\.\\d{1,2})?)\\s*%\\s*\\)?)?(?:\\s*on\\s+${CUR}${DEC})?[\\s:=.]*${CUR}(${amount})${NOT_MORE}(?:\\s+${CUR}(${amount})${NOT_MORE})*`, "i")
   };
 });
 const LABEL_AT_END = new RegExp(`(?<![A-Za-z])(?:${TOTAL_LABELS.filter((label) => !label.weak).map((label) => label.source).join("|")})\\s*:?\\s*$`, "i");
@@ -275,7 +282,7 @@ const DECIMAL_NOTE = "Some amounts were read without a decimal point and correct
 
 // ---------------------------------------------------------------- line items
 
-type TableContext = { inTable: boolean; order: string[]; hasVatColumn: boolean; moneyDecimals: boolean; expectedIndex: number };
+type TableContext = { inTable: boolean; order: string[]; hasVatColumn: boolean; hasUnitColumn: boolean; moneyDecimals: boolean; expectedIndex: number };
 type NumberToken = { value: number; raw: string; hasDecimal: boolean; repairable: boolean; currency: boolean };
 
 const UNIT = /^(?:kg|kgs|g|gm|gms|ltr|ltrs|lit|l|ml|cl|ea|each|pcs?|box|boxes|case|cases|cs|ctn|ctns|carton|cartons|btl|btls|bottles?|tray|trays|bags?|tins?|jars?|rolls?|doz|dozen|pk|pack|packs|unit|units|nos?|hrs?|hours?|days?|x|@)$/i;
@@ -321,22 +328,73 @@ function numberToken(raw: string, currency: boolean): NumberToken | null {
 
 // Tables printed "Code | Qty | Description | Unit | Pack | Unit Price | Value":
 // the quantity is the number column before the description, not after it.
+// Lines marked "*" where the invoice says "VAT (*)": the only lines that carry VAT.
+const STARRED = new WeakSet<ExtractedInvoiceLine>();
+// Rows of a "Qty | Code | Description | Unit | Price | Amount" table whose unit or description
+// wrapped onto the rows above and below ("Box (20" / "2 2930 Coriander £15.50 £31.00" / "bunches)").
+type Wrapped = { name: string; unit: string; missing: "unit" | "name" | null; before: string[]; after: string[] };
+const WRAPPED = new WeakMap<ExtractedInvoiceLine, Wrapped>();
+const UNIT_ONLY = /^(?:each|ea|box|boxes|bag|bags|bunch|bunches|packet|pkt|pack|bucket|tray|case|tin|jar|bottle|unit)(?:\s*\([^)]*\)?)?$/i;
+
+// "£8.00 *" or a separate "*" cell at the end of the row.
+function stripStar(cells: string[]): { cells: string[]; starred: boolean } {
+  const last = cells[cells.length - 1] ?? "";
+  if (last === "*") return { cells: cells.slice(0, -1), starred: true };
+  if (/\d\s*\*$/.test(last)) return { cells: [...cells.slice(0, -1), last.replace(/\s*\*$/, "")], starred: true };
+  return { cells, starred: false };
+}
+
 function parseQtyFirstRow(row: Row, table: TableContext): ExtractedInvoiceLine | null {
   const qtyAt = table.order.indexOf("qty"), descAt = table.order.indexOf("desc");
   if (!table.inTable || qtyAt < 0 || descAt < qtyAt || row.cells.length < 4) return null;
-  let cells = [...row.cells], vatRate: number | null = null, classification: ExtractedTaxClassification | undefined;
+  const star = stripStar(row.cells);
+  let cells = star.cells, vatRate: number | null = null, classification: ExtractedTaxClassification | undefined;
   const code = VAT_CODES[cells[cells.length - 1].toUpperCase()];
   if (code && table.hasVatColumn) { vatRate = code.rate; classification = code.classification; cells = cells.slice(0, -1); }
-  let descIndex = -1;
-  cells.forEach((cell, index) => { if (letters(cell) >= 3 && (descIndex < 0 || letters(cell) > letters(cells[descIndex]))) descIndex = index; });
+  // The description is the wordiest cell, but never the unit ("8 | 28028 | Mint | Bunch").
+  const wordiest = (skipUnits: boolean) => {
+    let best = -1;
+    cells.forEach((cell, index) => { if (letters(cell) >= 3 && !(skipUnits && UNIT_ONLY.test(cell)) && (best < 0 || letters(cell) > letters(cells[best]))) best = index; });
+    return best;
+  };
+  const named = wordiest(true);
+  const descIndex = named >= 1 ? named : wordiest(false);
   if (descIndex < 1) return null;
-  const quantity = [...cells.slice(0, descIndex)].reverse().map(cell => cell.match(/^\d{1,5}(?:\.\d{1,3})?$/) ? Number(cell) : null).find(value => value !== null);
+  // A long description can run into the price column ("... ** PRICE MARKED ** 13.49"): that price is a figure, not text.
+  const runOn = cells[descIndex].match(/^(.*?\S)(?:\s+|(?<=[A-Za-z*)]))(\d{1,6}[.,]\d{2})$/);
+  if (runOn && letters(runOn[1]) >= 3) cells = [...cells.slice(0, descIndex), runOn[1], runOn[2], ...cells.slice(descIndex + 1)];
   // "154.99 154.99": OCR may merge the price and amount columns into one cell.
   const after = cells.slice(descIndex + 1).flatMap(cell => cell.split(" ")).map(cell => numberToken(cell, false)).filter((token): token is NumberToken => token !== null);
-  if (!quantity || after.length < 2) return null;
-  const amount = after[after.length - 1], price = after[after.length - 2];
-  if (!amount.hasDecimal || !close(quantity * price.value, amount.value, 0.011)) return null;
-  return { description: cells[descIndex].replace(/^[^A-Za-z0-9(]+/, "").slice(0, 200), quantity, unitPrice: price.value, netAmount: round2(amount.value), vatRate, ...(classification ? { taxClassification: classification } : {}) };
+  if (after.length < 2) return null;
+  // The quantity is the figure before the description that makes quantity x price = amount;
+  // a product code in between ("6 | 5017 | Cooked Onion") is not the quantity.
+  const quantities = [...cells.slice(0, descIndex)].reverse().map(cell => cell.match(/^\d{1,5}(?:\.\d{1,3})?$/) ? Number(cell) : null).filter((value): value is number => value !== null && value > 0);
+  const fits = (price: NumberToken, amount: NumberToken) => amount.hasDecimal && price.value > 0 && amount.value > 0 ? quantities.find(value => close(value * price.value, amount.value, 0.011)) : undefined;
+  // Price and amount are usually the last two figures. Columns after them ("VAT % | VAT £ | Weight")
+  // move them left: then the first pair of money figures (both with pence) that fits is used.
+  let at = after.length - 2, quantity = fits(after[at], after[at + 1]);
+  for (let index = 0; quantity === undefined && index < after.length - 2; index++) {
+    if (!after[index].hasDecimal || !after[index + 1].hasDecimal) continue;
+    const found = fits(after[index], after[index + 1]);
+    if (found !== undefined) { at = index; quantity = found; }
+  }
+  if (quantity === undefined) return null;
+  const price = after[at], amount = after[at + 1];
+  // "20.00 6.40" after the amount: the VAT rate and the VAT for the line.
+  if (vatRate === null && at + 2 < after.length) {
+    const rate = after[at + 2].value, tax = after[at + 3];
+    if ([0, 5, 20].includes(rate) && (!tax || close(amount.value * rate / 100, tax.value, 0.02))) { vatRate = rate; if (rate === 0) classification = "Zero-rated"; }
+  }
+  const name = cells[descIndex].replace(/^[^A-Za-z0-9(]+/, "").slice(0, 200);
+  const line: ExtractedInvoiceLine = { description: name, quantity, unitPrice: price.value, netAmount: round2(amount.value), vatRate, ...(classification ? { taxClassification: classification } : {}) };
+  if (star.starred) STARRED.add(line);
+  if (table.hasUnitColumn) {
+    const pack = cells.slice(descIndex + 1).filter(cell => !cell.split(" ").every(part => numberToken(part, false) !== null)).join(" ");
+    // "12 | 23009 | Each | £1.90 | £22.80": the description itself wrapped above and below the row.
+    if (UNIT_ONLY.test(name) && !pack) WRAPPED.set(line, { name: "", unit: name, missing: "name", before: [], after: [] });
+    else WRAPPED.set(line, { name, unit: pack, missing: pack ? null : "unit", before: [], after: [] });
+  }
+  return line;
 }
 
 function parseItemRow(row: Row, table: TableContext, notes: string[]): ExtractedInvoiceLine | null {
@@ -345,10 +403,12 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
   if (columns) return columns;
   const tokens = row.text.split(" ");
   const numbers: NumberToken[] = [];
-  let rate: number | null = null, classification: ExtractedTaxClassification | undefined, percentNext = false, currencyNext = false;
+  let rate: number | null = null, classification: ExtractedTaxClassification | undefined, percentNext = false, currencyNext = false, starred = false;
   let index = tokens.length - 1;
   for (; index >= 0; index--) {
     const token = tokens[index];
+    // "£8.00 *": the line is marked as carrying VAT (see "VAT (*)" in the totals).
+    if (token === "*" && index === tokens.length - 1) { starred = true; continue; }
     if (/^(?:[£€$]|GBP|EUR|USD)$/i.test(token)) { if (numbers[0]) numbers[0].currency = true; else currencyNext = true; continue; }
     if (token === "%") { percentNext = true; continue; }
     const percent = token.match(/^(\d{1,2}(?:[.,]\d{1,2})?)%$/);
@@ -402,6 +462,21 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
       }
     }
   }
+  // Cash-and-carry columns "Case size | VAT% | Unit price | Qty (cases) | Qty (singles) | Price"
+  // (Sira: "24  20.00  0.550  2  0  26.40"): case size x single price x cases = amount. The line is
+  // then counted in cases, at the case price, so it compares with the supplier's other invoices.
+  if (net === null && table.inTable) {
+    quad: for (let i = 0; i < numbers.length - 3; i++) for (let j = i + 1; j < numbers.length - 2; j++) for (let k = j + 1; k < numbers.length - 1; k++) {
+      const last = numbers[numbers.length - 1], size = numbers[i], single = numbers[j], cases = numbers[k];
+      if (!last.hasDecimal || size.hasDecimal || size.value < 2 || size.value > 500 || !Number.isInteger(cases.value) || cases.value <= 0 || single.value <= 0) continue;
+      if (!close(size.value * single.value * cases.value, last.value, 0.011)) continue;
+      quantity = cases.value; unitPrice = round2(size.value * single.value); net = last.value;
+      // A printed rate between them ("20.00") is the line's VAT rate in a table with a VAT column.
+      if (rate === null && table.hasVatColumn) { const printed = numbers.slice(i + 1, j).find(n => n.hasDecimal && [0, 5, 20].includes(n.value)); if (printed) rate = printed.value; }
+      // Barcode and stock code before the case size are not part of the product name.
+      break quad;
+    }
+  }
   if (net === null) {
     const leading = front[0]?.match(/^(\d+(?:\.\d+)?)[x×]?$/);
     const marker = Boolean(leading) && (/[x×]$/.test(front[0]) || /^[x×]$/.test(front[1] ?? ""));
@@ -427,18 +502,33 @@ function parseItemRow(row: Row, table: TableContext, notes: string[]): Extracted
   const description = front.join(" ").replace(/^[^A-Za-z0-9(]+|[^A-Za-z0-9)%.]+$/g, "").replace(/\s+@$/, "").trim().slice(0, 200);
   if (letters(description) < 2) return null;
   if (repaired && !notes.includes(DECIMAL_NOTE)) notes.push(DECIMAL_NOTE);
-  return { description, quantity, unitPrice: Math.round(unitPrice * 10000) / 10000, netAmount: round2(net), vatRate: rate, ...(classification ? { taxClassification: classification } : {}) };
+  const line: ExtractedInvoiceLine = { description, quantity, unitPrice: Math.round(unitPrice * 10000) / 10000, netAmount: round2(net), vatRate: rate, ...(classification ? { taxClassification: classification } : {}) };
+  if (starred) STARRED.add(line);
+  return line;
 }
 
 function readLines(rows: Row[], totalRows: Set<number>, notes: string[]): ExtractedInvoiceLine[] {
   const lines: ExtractedInvoiceLine[] = [];
-  const table: TableContext = { inTable: false, order: [], hasVatColumn: false, moneyDecimals: false, expectedIndex: 1 };
+  const table: TableContext = { inTable: false, order: [], hasVatColumn: false, hasUnitColumn: false, moneyDecimals: false, expectedIndex: 1 };
   let lastItemRow = -2;
+  // Text-only rows after an item. They usually continue that item, but in a table with a Unit
+  // column they may be the start of the next item's wrapped unit or description: decided when
+  // the next row is read.
+  let pending: string[] = [];
+  const appendTo = (line: ExtractedInvoiceLine | undefined, texts: string[]) => {
+    if (!line || !texts.length) return;
+    const wrapped = WRAPPED.get(line);
+    if (wrapped) wrapped.after.push(...texts);
+    else line.description = `${line.description} ${texts.join(" ")}`.slice(0, 200);
+  };
+  const flush = () => { appendTo(lines.at(-1), pending); pending = []; };
   for (let r = 0; r < rows.length; r++) {
     const row = rows[r];
     const order = headerOrder(row);
+    if (order) flush();
     if (order) {
       table.inTable = true; table.order = order; table.hasVatColumn = order.includes("vat"); table.expectedIndex = 1;
+      table.hasUnitColumn = /\bunit\b(?!\s*(?:price|cost|rate))/i.test(row.text);
       // Does this table print money with decimals? Used to spot dropped decimal points.
       let decimals = 0, whole = 0;
       for (let next = r + 1; next < rows.length && !totalRows.has(next) && !headerOrder(rows[next]); next++) {
@@ -449,15 +539,33 @@ function readLines(rows: Row[], totalRows: Set<number>, notes: string[]): Extrac
       continue;
     }
     // A VAT analysis row ("AB 20.00 % 127.02 25.40") is not an item.
-    if (totalRows.has(r) || TABLE_END.test(row.text) || readVatAnalysis([row]).length) { table.inTable = false; continue; }
+    if (totalRows.has(r) || TABLE_END.test(row.text) || readVatAnalysis([row]).length) { flush(); table.inTable = false; continue; }
     const line = parseItemRow(row, table, notes);
-    if (line) { lines.push(line); lastItemRow = r; table.expectedIndex++; continue; }
-    // Wrapped description: a text-only row directly under an item.
-    if (table.inTable && lastItemRow === r - 1 && lines.length && !/\d[.,]\d{2}|:/.test(row.text) && row.text.length <= 80 && letters(row.text) >= 3 && !NOT_AN_ITEM.test(row.text)) {
-      const previous = lines.at(-1)!;
-      previous.description = `${previous.description} ${row.text}`.slice(0, 200);
-      lastItemRow = r;
+    if (line) {
+      const previous = lines.at(-1), mine = WRAPPED.get(line), theirs = previous ? WRAPPED.get(previous) : undefined;
+      // The rows between two items belong to this item when its own unit or description is
+      // missing from its row and the item above is complete; otherwise they continue the item above.
+      if (pending.length && mine?.missing && (!theirs || !theirs.missing)) mine.before.push(...pending);
+      else appendTo(previous, pending);
+      pending = [];
+      lines.push(line); lastItemRow = r; table.expectedIndex++; continue;
     }
+    // Wrapped text: a text-only row directly under an item ("bunches)", "(10kg)", "400g)").
+    const fragment = letters(row.text) >= 3 || (table.hasUnitColumn && /^[^()]*\)$|^\([^()]*\)$/.test(row.text));
+    if (table.inTable && lastItemRow === r - 1 && lines.length && !/\d[.,]\d{2}|:/.test(row.text) && row.text.length <= 80 && fragment && !NOT_AN_ITEM.test(row.text)) {
+      pending.push(row.text);
+      lastItemRow = r;
+      continue;
+    }
+    flush();
+  }
+  flush();
+  for (const line of lines) {
+    const wrapped = WRAPPED.get(line);
+    if (!wrapped) continue;
+    const extra = [...wrapped.before, ...wrapped.after];
+    // A wrapped unit ("Box (20 bunches)") is not part of the product name; a wrapped description is.
+    line.description = (wrapped.missing === "name" ? (extra.join(" ") || wrapped.unit) : wrapped.missing === "unit" ? wrapped.name : [wrapped.name, ...extra].join(" ")).slice(0, 200);
   }
   return lines;
 }
@@ -876,8 +984,15 @@ function extractDocumentFields(input: string, context: ExtractionContext): Extra
       const explicitVat = lines.filter((line) => line.vatRate !== null).reduce((sum, line) => sum + line.netAmount * line.vatRate! / 100, 0);
       const openNet = open.reduce((sum, line) => sum + line.netAmount, 0);
       const mentioned = [...text.matchAll(/(?:vat|tax)[^\n%\d]{0,12}(\d{1,2}(?:\.\d{1,2})?)\s*%/gi)].map((match) => Number(match[1]));
-      const rate = [...new Set([20, 5, ...mentioned])].find((candidate) => candidate > 0 && close(openNet * candidate / 100, totalVat - explicitVat, Math.max(0.05, 0.01 * open.length)));
-      if (rate !== undefined) for (const line of open) line.vatRate = rate;
+      const rates = [...new Set([20, 5, ...mentioned])].filter((candidate) => candidate > 0);
+      // "VAT (*)": only the lines marked * carry VAT. Used when their VAT is exactly the printed
+      // VAT; the unmarked lines are then zero-rated (fresh produce, most food).
+      const starred = open.filter((line) => STARRED.has(line));
+      const starNet = starred.reduce((sum, line) => sum + line.netAmount, 0);
+      const starRate = starred.length && starred.length < open.length ? rates.find((candidate) => close(starNet * candidate / 100, totalVat - explicitVat, 0.02)) : undefined;
+      const rate = rates.find((candidate) => close(openNet * candidate / 100, totalVat - explicitVat, Math.max(0.05, 0.01 * open.length)));
+      if (starRate !== undefined) for (const line of open) { if (STARRED.has(line)) line.vatRate = starRate; else { line.vatRate = 0; line.taxClassification = "Zero-rated"; } }
+      else if (rate !== undefined) for (const line of open) line.vatRate = rate;
       else assignFromVatAnalysis(open, readVatAnalysis(rows));
     }
   }
@@ -892,11 +1007,12 @@ function extractDocumentFields(input: string, context: ExtractionContext): Extra
 
   const supplierName = readSupplier(rows, customer.name, context, tableStart) || extra?.supplierName || "";
 
-  const invoiceNumber = firstLabelled(rows, [
+  const numberLabels = [
     "(?:tax\\s+)?invoice\\s*(?:number|num\\.?|no\\.?|n[°º]\\.?|#|id|ref(?:erence)?\\.?)",
     "inv\\.?\\s*(?:number|no\\.?|#)",
     "(?:document|doc|bill|receipt|credit\\s+note|(?:cash\\s+)?sale|transaction|trans|trns|txn)\\s*(?:number|no\\.?|#)"
-  ], acceptReference(false)) ?? firstLabelled(rows, [
+  ];
+  const invoiceNumber = firstLabelled(rows, numberLabels, acceptReference(false)) ?? firstLabelled(rows, numberLabels.slice(0, 2), acceptReference(true), true) ?? firstLabelled(rows, [
     // Not "Invoice Total 1201.08", "Invoice Date", "Invoice To".
     "(?:tax\\s+)?invoices?(?!\\s*(?:total|date|to\\b|value|amount|address))",
     "(?<!(?:payment|supplier|customer|order|your|our|po|bank)\\s)(?:reference|ref\\.?)(?:\\s*(?:number|no\\.?))?"

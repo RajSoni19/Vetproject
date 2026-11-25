@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import {ukDate as formatUkDate,ukWorkbook} from "@/lib/uk-date";
 import jsPDF from "jspdf";
 import {ApiError} from "@/lib/server/api-v1";
 import type {invoiceService} from "@/lib/server/saas/invoices";
@@ -22,36 +23,41 @@ function linkColumn(sheet:XLSX.WorkSheet,column:number,firstRow:number,targets:(
 }
 // Plain names for VAT types in Excel downloads.
 const TREATMENT_NAMES:Record<string,string>={standard:'Standard 20%',reduced:'Reduced 5%',zero:'Zero-rated 0%',exempt:'Exempt',outside:'Outside VAT',['not-evidenced']:'No VAT shown'};
+// The same words as the VAT status filter on the Invoices page.
+const VAT_STATUS_NAMES:Record<string,string>={'review-required':'Needs checking','not-evidenced':'No VAT shown',evidenced:'VAT shown on invoice',eligible:'VAT can be claimed',ineligible:"VAT can't be claimed"};
+const PAYMENT_NAMES:Record<string,string>={'unpaid-due':'Unpaid','partially-paid':'Part paid','fully-paid':'Paid','not-applicable':'Not applicable'};
+// Money as numbers (not text), so Excel can add the columns up.
+const money=(value:unknown)=>{const number=Number(value);return value===null||value===undefined||value===""||!Number.isFinite(number)?"":number;};
 export function exportReport(report:InvoiceReport,companyId:string,format:'pdf'|'xlsx',origin=""){
  if(format==='xlsx'){
   if(report.filters.status!=='confirmed')throw new ApiError(400,"INVALID_REQUEST","Excel exports include only confirmed, human-reviewed invoices.");
-  const invoiceHeaders=['Invoice number','Supplier','Invoice date','Due date','Currency','Direction','Invoice status','Subtotal','VAT evidenced','VAT claim eligibility','Grand total','Payment status','Payment method','Amount paid','Balance due','Original invoice reference','Invoice PDF Link'];
+  const invoiceHeaders=['Invoice number','Supplier','Invoice date','Due date','Currency','Direction','Invoice status','Subtotal','VAT','Grand total','VAT evidenced','VAT claim eligibility','Payment status','Payment method','Amount paid','Balance due','Original invoice reference','Invoice PDF Link'];
   const invoiceRows=[invoiceHeaders,...report.items.map(row=>[
    spreadsheetText(row.number),spreadsheetText(row.contact),row.issued_on,row.due_on??"",row.currency,
-   spreadsheetText(row.direction),spreadsheetText(row.state),row.net,row.vat_evidenced??"",
-   spreadsheetText(row.vat_claim_status),row.gross,
-   row.payment_status==='unavailable'?'Not recorded':spreadsheetText(row.payment_status),
-   spreadsheetText(row.payment_method),row.amount_paid??"",row.balance_due??"",
+   spreadsheetText(row.direction),spreadsheetText(row.state),money(row.net),money(row.vat),money(row.gross),row.vat_evidenced?money(row.vat_evidenced):"",
+   spreadsheetText(VAT_STATUS_NAMES[row.vat_claim_status]??row.vat_claim_status),
+   row.payment_status==='unavailable'?'Not recorded':spreadsheetText(PAYMENT_NAMES[row.payment_status]??row.payment_status),
+   spreadsheetText(row.payment_method),money(row.amount_paid),money(row.balance_due),
    spreadsheetText(row.original_document_reference),
    origin ? "Open invoice PDF" : ""
   ])];
   const lineHeaders=['Invoice number','Supplier','Invoice date','Line item','Description','Quantity','Unit rate','Discount','VAT treatment','VAT rate','Pricing','Line subtotal','Line VAT','Line total'];
   const lineRows=[lineHeaders,...report.lineItems.map(row=>[
    spreadsheetText(row.invoice_number),spreadsheetText(row.supplier),row.invoice_date,row.position,
-   spreadsheetText(row.description),row.quantity,row.unit_price,row.discount,
-   spreadsheetText(TREATMENT_NAMES[row.treatment]??row.treatment),row.treatment==="not-evidenced"?"":row.rate,spreadsheetText(row.pricing==="inclusive"?"Includes VAT":row.pricing==="exclusive"?"Excludes VAT":row.pricing),row.net,row.treatment==="not-evidenced"?"":row.vat,row.gross
+   spreadsheetText(row.description),money(row.quantity),money(row.unit_price),money(row.discount),
+   spreadsheetText(TREATMENT_NAMES[row.treatment]??row.treatment),row.treatment==="not-evidenced"?"":money(row.rate),spreadsheetText(row.pricing==="inclusive"?"Includes VAT":row.pricing==="exclusive"?"Excludes VAT":row.pricing),money(row.net),row.treatment==="not-evidenced"?"":money(row.vat),money(row.gross)
   ])];
   const summarySheet=XLSX.utils.aoa_to_sheet(invoiceRows);
   if(origin)linkColumn(summarySheet,invoiceHeaders.length-1,1,report.items.map(row=>invoicePdfLink(origin,row.id)));
   const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,summarySheet,'Invoice Summary');
   XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet(lineRows),'Invoice Line Items');
-  return {bytes:new Uint8Array(XLSX.write(workbook,{type:'buffer',bookType:'xlsx'})),mime:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',name:'vetthevat-invoice-report.xlsx'};
+  return {bytes:new Uint8Array(XLSX.write(ukWorkbook(workbook),{type:'buffer',bookType:'xlsx'})),mime:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',name:'vetthevat-invoice-report.xlsx'};
  }
  const pdf=new jsPDF();let y=18;
  const line=(value:string)=>{for(const row of pdf.splitTextToSize(value,180) as string[]){if(y>275){pdf.addPage();y=18;}pdf.text(row,14,y);y+=7;}};
- line('VET THE VAT - Invoice report');line(`Company ${companyId} | ${report.filters.startsOn} to ${report.filters.endsOn} | ${report.filters.currency} | ${report.filters.status}`);
+ line('VET THE VAT - Invoice report');line(`Company ${companyId} | ${formatUkDate(report.filters.startsOn)} to ${formatUkDate(report.filters.endsOn)} | ${report.filters.currency} | ${report.filters.status}`);
  line(`Records ${report.count} | Net ${report.net} | VAT ${report.vat} | Gross ${report.gross}`);
- for(const item of report.items)line(`${item.issued_on} | ${item.number} | ${item.contact} | ${item.direction} | ${item.kind} | Net ${item.net} VAT ${item.vat} Gross ${item.gross}`);
+ for(const item of report.items)line(`${formatUkDate(item.issued_on)} | ${item.number} | ${item.contact} | ${item.direction} | ${item.kind} | Net ${item.net} VAT ${item.vat} Gross ${item.gross}`);
  return {bytes:new Uint8Array(pdf.output('arraybuffer')),mime:'application/pdf',name:'vetthevat-invoice-report.pdf'};
 }
 
@@ -63,7 +69,7 @@ export async function exportVat(service:ReturnType<typeof invoiceService>,scope:
   const metadata={companyId:scope.companyId,...report.period,notice:"Management VAT draft; not submitted to HMRC."};
   if(format==="xlsx"){
     const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,XLSX.utils.json_to_sheet(report.groups),"Confirmed VAT");XLSX.utils.book_append_sheet(workbook,XLSX.utils.json_to_sheet([metadata]),"Scope");
-    return {bytes:new Uint8Array(XLSX.write(workbook,{type:"buffer",bookType:"xlsx"})),mime:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",name:"vetthevat-vat-draft.xlsx"};
+    return {bytes:new Uint8Array(XLSX.write(ukWorkbook(workbook),{type:"buffer",bookType:"xlsx"})),mime:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",name:"vetthevat-vat-draft.xlsx"};
   }
   if(format!=="pdf")throw new ApiError(400,"INVALID_REQUEST","Invalid export format.");
   const pdf=new jsPDF();let y=18;
@@ -110,14 +116,14 @@ export async function exportInvoice(service:ReturnType<typeof invoiceService>,sc
     if(origin)linkColumn(sheet,12,1,[invoicePdfLink(origin,id)]);
     sheet["!autofilter"]={ref:`A5:H${5+data.lines.length}`};
     const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,sheet,"Invoice");
-    return {bytes:new Uint8Array(XLSX.write(workbook,{type:"buffer",bookType:"xlsx"})),mime:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",name:`invoice-${fileSafe(invoice.number)}.xlsx`};
+    return {bytes:new Uint8Array(XLSX.write(ukWorkbook(workbook),{type:"buffer",bookType:"xlsx"})),mime:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",name:`invoice-${fileSafe(invoice.number)}.xlsx`};
   }
   if(format!=="pdf")throw new ApiError(400,"INVALID_REQUEST","Invalid export format.");
   return {bytes:invoicePdf(data),mime:"application/pdf",name:`invoice-${fileSafe((data.invoice as Record<string,unknown>).number)}.pdf`};
 }
 
 const fileSafe=(value:unknown)=>String(value??"invoice").replace(/[^A-Za-z0-9._-]+/g,"-").slice(0,60)||"invoice";
-function ukDate(value:unknown){const text=String(value??"").slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(text)?new Date(text+"T00:00:00Z").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric",timeZone:"UTC"}):"";}
+function ukDate(value:unknown){const text=String(value??"").slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(text)?formatUkDate(text):"";}
 function vatLabel(treatment:unknown,rate:unknown){
   const r=Number(rate);
   return treatment==="standard"?`Standard ${r}%`:treatment==="reduced"?`Reduced ${r}%`:treatment==="zero"?"Zero-rated":treatment==="exempt"?"Exempt":treatment==="outside"?"Outside scope":treatment==="not-evidenced"?"Not shown":String(treatment??"");

@@ -1,5 +1,6 @@
 "use client";
 
+import {ukDate,ukWorkbook} from "@/lib/uk-date";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
@@ -125,7 +126,7 @@ export function VatOverviewPage() {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(groupRows), "Tax Groups");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(invoiceRows), "Invoices");
 
-    XLSX.writeFile(wb, `VAT_Return_${compName.replace(/\s+/g, "_")}.xlsx`);
+    XLSX.writeFile(ukWorkbook(wb), `VAT_Return_${compName.replace(/\s+/g, "_")}.xlsx`);
   };
 
   const compCurrency = selectedCompany?.currency || "GBP";
@@ -251,7 +252,7 @@ export function VatOverviewPage() {
                         {inv.invoiceNumber}
                       </Link>
                     </td>
-                    <td className="p-3 text-muted">{inv.invoiceDate}</td>
+                    <td className="p-3 text-muted">{ukDate(inv.invoiceDate)}</td>
                     <td className="p-3 font-semibold">{inv.transactionType === "Sale" ? inv.customerName : inv.supplierName}</td>
                     <td className="p-3">
                       <Badge tone={inv.transactionType === "Sale" ? "blue" : "grey"}>

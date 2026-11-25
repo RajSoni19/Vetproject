@@ -226,3 +226,14 @@ test('a Gemini request that never answers is asked once more within the time lim
   await assert.rejects(extractWithGemini([page], { env, timeoutMs: 100, client: client(() => { calls++; return new Promise(() => {}); }) }), (error) => error.code === 'TIMEOUT');
   assert.equal(calls, 2);                     // one retry, never more
 });
+
+test('a busy main model (503 "high demand") is retried on the backup model, which is reported', async () => {
+  const models = [];
+  const result = await extractWithGemini([page], { env, retryDelayMs: 1, client: client(async (request) => { models.push(request.model); if (models.length === 1) throw status(503); return reply; }) });
+  assert.deepEqual(models, ['test-model', 'gemini-3.1-flash-lite']);
+  assert.equal(result.model, 'gemini-3.1-flash-lite');
+  // A silent (timed-out) attempt is asked again on the same model.
+  models.length = 0;
+  await extractWithGemini([page], { env: { ...env, GEMINI_FALLBACK_MODEL: 'off' }, retryDelayMs: 1, client: client(async (request) => { models.push(request.model); if (models.length === 1) throw status(503); return reply; }) });
+  assert.deepEqual(models, ['test-model', 'test-model']);
+});

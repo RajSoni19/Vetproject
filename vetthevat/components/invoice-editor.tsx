@@ -1,5 +1,6 @@
 "use client";
 
+import {ukDate} from "@/lib/uk-date";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, ExternalLink, Plus, Save, Trash2 } from "lucide-react";
@@ -23,7 +24,7 @@ function InvoiceHeadline({ invoice }: { invoice: Invoice }) {
   const { showToast } = useToast();
   const vatDigits = invoice.supplierVatNumber.replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^GB/, "");
   const checkable = /^\d{9}(?:\d{3})?$/.test(vatDigits);
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(invoice.invoiceDate) ? new Date(`${invoice.invoiceDate}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" }) : "";
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(invoice.invoiceDate) ? ukDate(invoice.invoiceDate) : "";
   const read = invoice.sourceTotals;
   const money = (value: number, found: boolean) => found || value > 0 ? formatCurrency(value, invoice.currency) : "";
   const tiles: [string, string, boolean][] = [

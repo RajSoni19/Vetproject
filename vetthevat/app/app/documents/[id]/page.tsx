@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import {ukDate} from "@/lib/uk-date";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, FileText, ReceiptText, Upload } from "lucide-react";
@@ -54,7 +55,7 @@ export default function DocumentDetailPage() {
                 <div className="mt-4 grid gap-3 text-sm">
                   <Row label="Type" value={document.fileType} />
                   <Row label="Size" value={document.sizeLabel} />
-                  <Row label="Uploaded" value={new Date(document.uploadedAt).toLocaleString("en-GB")} />
+                  <Row label="Uploaded" value={ukDate(document.uploadedAt)} />
                   <Row label="Status" value={document.status} />
                 </div>
               </div>

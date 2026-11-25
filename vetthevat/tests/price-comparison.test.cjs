@@ -123,3 +123,18 @@ test('supplier names match regardless of case, punctuation and Ltd/Limited; diff
   assert.equal(supplierKey('RK Fruits & Vegetables Ltd.'), supplierKey('RK FRUITS AND VEGETABLES LIMITED'));
   assert.notEqual(supplierKey('RK FRUITS & VEGETABLES LIMITED'), supplierKey('RKB Fruit & Veg Ltd T/As Box Fresh'));
 });
+
+test('fresh produce sizes and colours share one product; drinks keep their full names', () => {
+  const result = comparePrices([
+    obs('rk', 'White Cabbage', 8.50, '2026-11-07'),
+    obs('bk', 'VG BOX CABBAGE WHITE SMALL 3094', 9.20, '2026-11-08'),
+    obs('quk', 'Cabbage', 8.80, '2026-11-09'),
+    obs('rk', 'Red Cabbage', 11.00, '2026-11-09'),
+    obs('ch', 'Gallo White Zinfandel 75cl Single', 5.35, '2026-11-09'),
+    obs('ch', 'Gallo Zinfandel 75cl Single', 5.10, '2026-11-09'),
+    obs('ch', 'Schweppes Canada Dry Ginger Ale - 24 x 200ml NRB', 12.99, '2026-11-09')
+  ], { asOf: '2026-11-13' });
+  const names = result.products.map(p => p.name).sort();
+  assert.deepEqual(names, ['Cabbage', 'Gallo White Zinfandel 75cl Single', 'Gallo Zinfandel 75cl Single', 'Red Cabbage', 'Schweppes Canada Dry Ginger Ale - 24 x 200ml NRB']);
+  assert.equal(result.products.find(p => p.name === 'Cabbage').suppliers.length, 3);
+});

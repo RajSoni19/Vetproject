@@ -217,11 +217,11 @@ test('invoice report export contains verified summary and every item on exactly 
  const summary=book.Sheets['Invoice Summary'],lines=book.Sheets['Invoice Line Items'];
  assert.equal(XLSX.utils.sheet_to_json(summary).length,1);assert.equal(XLSX.utils.sheet_to_json(lines).length,12);
  assert.equal(summary.A2.f,undefined);assert.equal(summary.A2.v,"'=HYPERLINK(\"https://invalid.test\")");assert.equal(summary.B2.v,"'@SUM(1,1)");
- assert.equal(summary.P2.v,"'=cmd|'/C calc!A0");assert.equal(lines.E2.f,undefined);assert.equal(lines.E2.v,"'=1+1");assert.equal(lines.J2.v,'');assert.equal(lines.M2.v,'');
- assert.deepEqual(['A1','B1','C1','D1','E1','F1','G1','H1','I1','J1','K1','L1','M1','N1','O1','P1'].map(cell=>summary[cell].v),['Invoice number','Supplier','Invoice date','Due date','Currency','Direction','Invoice status','Subtotal','VAT evidenced','VAT claim eligibility','Grand total','Payment status','Payment method','Amount paid','Balance due','Original invoice reference']);
+ assert.equal(summary.Q2.v,"'=cmd|'/C calc!A0");assert.equal(typeof summary.I2.v,'number');assert.equal(lines.E2.f,undefined);assert.equal(lines.E2.v,"'=1+1");assert.equal(lines.J2.v,'');assert.equal(lines.M2.v,'');
+ assert.deepEqual(['A1','B1','C1','D1','E1','F1','G1','H1','I1','J1','K1','L1','M1','N1','O1','P1','Q1'].map(cell=>summary[cell].v),['Invoice number','Supplier','Invoice date','Due date','Currency','Direction','Invoice status','Subtotal','VAT','Grand total','VAT evidenced','VAT claim eligibility','Payment status','Payment method','Amount paid','Balance due','Original invoice reference']);
  // With the site address, every invoice row links to its PDF.
  const linked=XLSX.read(exportReport(report,company,'xlsx','https://app.example.test').bytes).Sheets['Invoice Summary'];
- assert.equal(linked.Q1.v,'Invoice PDF Link');assert.equal(linked.Q2.v,'Open invoice PDF');assert.equal(linked.Q2.l.Target,`https://app.example.test/app/invoices/${invoiceId}?pdf=1`);
+ assert.equal(linked.R1.v,'Invoice PDF Link');assert.equal(linked.R2.v,'Open invoice PDF');assert.equal(linked.R2.l.Target,`https://app.example.test/app/invoices/${invoiceId}?pdf=1`);
 });
 test('Excel report loads persisted company-scoped lines without payment schema and labels unavailable financial fields honestly',async()=>{
  const {reportService}=loadSource('lib/server/saas/reports'),invoiceId=id(),calls=[],lines=Array.from({length:12},(_,index)=>({invoice_id:invoiceId,invoice_number:'INV-000110',supplier:'RK Fruits & Vegetables Limited',invoice_date:'2026-10-26',position:index+1,description:'Line '+(index+1),quantity:'1.00',unit_price:'17.7083333333',discount:'0.00',treatment:'not-evidenced',rate:'0.00',pricing:'exclusive',net:'17.7083333333',vat:'0.00',gross:'17.7083333333'}));
@@ -234,8 +234,8 @@ test('Excel report loads persisted company-scoped lines without payment schema a
  assert.match(lineQuery.sql,/i\.company_id=\$1/);assert.match(lineQuery.sql,/i\.state='confirmed'/);assert.deepEqual(lineQuery.values,[company,[invoiceId]]);
  await parseSql(base.sql);await parseSql(lineQuery.sql);
  const {exportReport}=loadSource('lib/server/saas/exports'),XLSX=require('xlsx'),book=XLSX.read(exportReport(result,company,'xlsx').bytes);
- assert.equal(book.Sheets['Invoice Summary'].L2.v,'Not recorded');
- assert.equal(book.Sheets['Invoice Summary'].N2.v,'');assert.equal(book.Sheets['Invoice Summary'].N2.f,undefined);assert.equal(XLSX.utils.sheet_to_json(book.Sheets['Invoice Line Items']).length,12);
+ assert.equal(book.Sheets['Invoice Summary'].M2.v,'Not recorded');
+ assert.equal(book.Sheets['Invoice Summary'].O2.v,'');assert.equal(book.Sheets['Invoice Summary'].O2.f,undefined);assert.equal(XLSX.utils.sheet_to_json(book.Sheets['Invoice Line Items']).length,12);
 });
 test('INV-000110 extraction regression preserves explicitly present invoice facts and does not infer VAT',()=>{
  const source=`Name: RK Fruits & Vegetables Limited

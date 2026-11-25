@@ -2,6 +2,7 @@
 // ORS price comparison from the company's own purchase invoices (last N weeks):
 // cheapest supplier per product, price-change alerts, and an order list that is
 // grouped by supplier and sent on WhatsApp.
+import {ukDate} from "@/lib/uk-date";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, BarChart3, CheckCircle2, ChevronRight, Download, FileText, Minus, MessageCircle, Package, Plus, PoundSterling, RefreshCw, Search, Send, ShoppingCart, Trash2, Users, X } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +15,6 @@ import { SupplierOrderHistory } from "@/components/supplier-order-history";
 type OrderLine = { key: string; name: string; supplierId: string; supplierName: string; unitPrice: number; quantity: number; currency: string };
 type Group = { supplierId: string; supplierName: string; lines: OrderLine[]; total: number };
 const money = (value: number, currency = "GBP") => new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(value);
-const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" });
 const storageKey = (companyId: string) => `vtv-order-list:${companyId}`;
 // Pack size printed in the product name: "5kg", "24x330ml", "10L", "18 PACK".
 function packSize(name: string) {
@@ -24,6 +24,9 @@ function unitOf(name: string) {
   const p = packSize(name).toLowerCase();
   return /kg|g\b/.test(p) ? "kg" : /\bl\b|ltr|litre|ml|cl/.test(p) ? "litre" : /pack|pk|x/.test(p) ? "pack" : /box/.test(p) ? "box" : /bunch/.test(p) ? "bunch" : "each";
 }
+
+// "Cheapest" only when one supplier really is cheaper: not for a single price, nor for equal prices.
+const cheaperExists = (product: ProductComparison) => product.suppliers.length > 1 && product.bestPrice < product.highestPrice;
 
 export function SupplierPriceComparison({ companyId, companyName }: { companyId: string; companyName?: string }) {
   const [data, setData] = useState<PriceComparison | null>(null);
@@ -89,11 +92,17 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
     return saved;
   }
 
-  const supplierColumns = useMemo(() => (data?.suppliers ?? []).slice(0, 4), [data]);
   const products = useMemo(() => {
     const q = query.trim().toLowerCase();
     return (data?.products ?? []).filter(p => !q || matchesProductSearch([p.name, ...(p.aliases ?? [])], q) || p.suppliers.some(s => s.supplierName.toLowerCase().includes(q)));
   }, [data, query]);
+  // Columns: the suppliers of the products on screen (most products first), so a product bought
+  // only from a smaller supplier still shows its price; at most 6 columns fit the table.
+  const supplierColumns = useMemo(() => {
+    const count = new Map<string, number>();
+    for (const product of products) for (const price of product.suppliers) count.set(price.supplierId, (count.get(price.supplierId) ?? 0) + 1);
+    return (data?.suppliers ?? []).filter(s => count.has(s.id)).sort((a, b) => count.get(b.id)! - count.get(a.id)! || a.name.localeCompare(b.name)).slice(0, 6);
+  }, [data, products]);
   const groups = useMemo<Group[]>(() => {
     const map = new Map<string, Group>();
     for (const line of order) {
@@ -105,7 +114,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   const orderTotal = order.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
   const orderAtHighest = order.reduce((sum, line) => { const product = data?.products.find(p => p.key === line.key); return sum + (product?.highestPrice ?? line.unitPrice) * line.quantity; }, 0);
   // Recommendation only from products bought from 2+ suppliers.
-  const compared = (data?.products ?? []).filter(p => p.suppliers.length > 1);
+  const compared = (data?.products ?? []).filter(cheaperExists);
   const recommendation = (() => {
     const counts = new Map<string, { name: string; wins: number; saving: number }>();
     for (const p of compared) { const best = p.suppliers.find(s => s.cheapest)!; const entry = counts.get(best.supplierId) ?? { name: best.supplierName, wins: 0, saving: 0 }; entry.wins++; entry.saving += p.potentialSaving; counts.set(best.supplierId, entry); }
@@ -195,12 +204,12 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
                 <td className="py-3 pr-3 font-semibold">{product.name}{product.aliases?.length ? <span className="block text-xs font-normal text-muted" title="Different spellings on supplier invoices, compared as one product">Also: {product.aliases.join(", ")}</span> : null}</td>
                 <td className="px-2 text-muted">{packSize(product.name)}</td>
                 {supplierColumns.map(s => { const price = product.suppliers.find(p => p.supplierId === s.id);
-                  return <td key={s.id} className="px-2 py-2">{price ? <button type="button" onClick={() => add(product, s.id)} title={`Order from ${s.name}`} className={`w-full rounded-lg px-2 py-1.5 text-center tabular-nums ${price.cheapest && product.suppliers.length > 1 ? "border-2 border-emerald-400 bg-emerald-50" : "hover:bg-wash"}`}>
+                  return <td key={s.id} className="px-2 py-2">{price ? <button type="button" onClick={() => add(product, s.id)} title={`Order from ${s.name}`} className={`w-full rounded-lg px-2 py-1.5 text-center tabular-nums ${price.cheapest && cheaperExists(product) ? "border-2 border-emerald-400 bg-emerald-50" : "hover:bg-wash"}`}>
                     <span className="inline-flex items-center gap-0.5 font-semibold">{money(price.latestPrice, product.currency)}
                       {price.changePercent !== null && Math.abs(price.changePercent) >= 0.1 ? price.changePercent > 0 ? <ArrowUp className="h-3.5 w-3.5 text-red-600" aria-label="price up" /> : <ArrowDown className="h-3.5 w-3.5 text-emerald-600" aria-label="price down" /> : null}</span>
                     <span className="block text-[11px] text-muted">{ukDate(price.latestOn)}</span>
-                    {price.cheapest && product.suppliers.length > 1 ? <span className="mt-0.5 inline-block rounded bg-emerald-600 px-1.5 text-[10px] font-bold text-white">Cheapest</span> : null}</button> : <span className="block text-center text-muted">—</span>}</td>; })}
-                <td className="px-2 tabular-nums"><span className="font-bold">{money(product.bestPrice, product.currency)}</span>{product.savingPercent > 0 ? <span className="block text-xs font-semibold text-emerald-700">Save {product.savingPercent}%</span> : null}</td>
+                    {price.cheapest && cheaperExists(product) ? <span className="mt-0.5 inline-block rounded bg-emerald-600 px-1.5 text-[10px] font-bold text-white">Cheapest</span> : null}</button> : <span className="block text-center text-muted">—</span>}</td>; })}
+                <td className="px-2 tabular-nums"><span className="font-bold">{money(product.bestPrice, product.currency)}</span><span className="block max-w-40 truncate text-[11px] text-muted" title={product.suppliers.find(p => p.supplierId === product.bestSupplierId)?.supplierName}>{product.suppliers.find(p => p.supplierId === product.bestSupplierId)?.supplierName}</span>{product.savingPercent > 0 ? <span className="block text-xs font-semibold text-emerald-700">Save {product.savingPercent}%</span> : null}</td>
                 <td className="py-2">{inOrder ? <Stepper value={inOrder.quantity} name={product.name} onMinus={() => bump(inOrder.key, -1)} onPlus={() => bump(inOrder.key, 1)} /> : <Button type="button" variant="outline" className="min-h-9 whitespace-nowrap px-3 text-xs font-bold text-emerald-700" onClick={() => add(product)} aria-label={`Add ${product.name} to order`}>ADD</Button>}</td>
               </tr>; })}</tbody>
           </table>

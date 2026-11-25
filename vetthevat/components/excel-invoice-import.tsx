@@ -1,5 +1,6 @@
 "use client";
 
+import {ukDate,ukWorkbook} from "@/lib/uk-date";
 import { useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import { FileSpreadsheet, Upload, Download, CheckCircle2, AlertCircle, Trash2, ArrowRight, FileText, ExternalLink, Link as LinkIcon } from "lucide-react";
@@ -306,7 +307,7 @@ export function ExcelInvoiceImport({ onComplete, onClose }: { onComplete?: () =>
     const ws = XLSX.utils.json_to_sheet(sampleRows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Invoices Template");
-    XLSX.writeFile(wb, "vetthevat_invoice_import_template.xlsx");
+    XLSX.writeFile(ukWorkbook(wb), "vetthevat_invoice_import_template.xlsx");
   };
 
   const handleConfirmImport = async () => {
@@ -615,7 +616,7 @@ export function ExcelInvoiceImport({ onComplete, onClose }: { onComplete?: () =>
                       )}
                     </td>
                     <td className="p-3 font-bold">{inv.invoiceNumber}</td>
-                    <td className="p-3 text-muted">{inv.invoiceDate}</td>
+                    <td className="p-3 text-muted">{ukDate(inv.invoiceDate)}</td>
                     <td className="p-3 font-semibold">{inv.supplierName}</td>
                     <td className="p-3">
                       <span className="rounded bg-wash px-2 py-0.5 font-medium">{inv.lines.length} item(s)</span>

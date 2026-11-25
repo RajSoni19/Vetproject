@@ -2,6 +2,7 @@
 // ORS view of the company's supplier invoices. These are the same purchase
 // invoices saved from VAT (one record, used by both VAT and ORS), so an invoice
 // scanned once appears here, in price comparison and in bank matching.
+import {ukDate} from "@/lib/uk-date";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Camera, Search } from "lucide-react";
@@ -9,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import type { PayableInvoice } from "@/lib/bank-matching";
 
 const money = (value: number, currency = "GBP") => new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(value);
-const ukDate = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
 
 export function OrsPurchaseInvoices({ companyId }: { companyId: string }) {
   const [rows, setRows] = useState<PayableInvoice[] | null>(null);

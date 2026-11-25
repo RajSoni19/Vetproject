@@ -573,3 +573,74 @@ test('columns "Qty | Unit price | VAT (in words) | Total incl. VAT" read as an i
   assert.deepEqual([fields.net, fields.vat, fields.gross], [127.27, 20.67, 147.94]);
   assert.deepEqual(fields.lines.map(l => [l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [[2, 10.99, 21.98, 20], [1, 11.5, 11.5, 20], [1, 12, 12, null], [20, 3.99, 79.8, 20]]);
 });
+
+test('Qty | Code | Description | Unit table: "*" VAT lines, bracketed total labels, wrapped units and an invoice number two rows down', () => {
+  // Synthetic data in the layout of a produce wholesaler's PDF invoice.
+  const T = '\t';
+  const text = [
+    'Invoice',
+    'Delivery Address' + T + 'Invoice Date' + T + 'Example Produce Ltd',
+    '04 Dec 2025' + T + '1 Market Street',
+    'Invoice Number' + T + 'orders1234@example.test',
+    'Testtown TT1 1TT',
+    'F10020030' + T + 'sales@example.test',
+    'QTY CODE' + T + 'DESCRIPTION' + T + 'UNIT UNIT PRICE' + T + 'AMOUNT',
+    '6' + T + '5017' + T + 'Cooked Onion' + T + 'Each (10kg)' + T + '£20.00' + T + '£120.00',
+    '8' + T + '28028' + T + 'Mint' + T + 'Bunch' + T + '£0.60' + T + '£4.80',
+    'Box (20',
+    '2' + T + '2930' + T + 'Coriander' + T + '£15.50' + T + '£31.00',
+    'bunches)',
+    '2' + T + '26000' + T + 'Washing Up Liquid' + T + 'Each (5L)' + T + '£4.00' + T + '£8.00 *',
+    'Misc Grocery',
+    '12' + T + '23009' + T + 'Each' + T + '£1.90' + T + '£22.80',
+    'RED PEANUTS 400 GM',
+    'Subtotal (ex VAT)' + T + '£186.60',
+    'Sign:' + T + 'Boxes:' + T + 'VAT (*)' + T + '£1.60',
+    'Total (incl VAT)' + T + '£188.20'
+  ].join('\n');
+  const fields = extractInvoiceFields(text);
+  assert.equal(fields.invoiceNumber, 'F10020030');
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [186.6, 1.6, 188.2]);
+  assert.deepEqual(fields.lines.map(l => [l.description, l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [
+    ['Cooked Onion', 6, 20, 120, 0], ['Mint', 8, 0.6, 4.8, 0], ['Coriander', 2, 15.5, 31, 0],
+    ['Washing Up Liquid', 2, 4, 8, 20], ['Misc Grocery RED PEANUTS 400 GM', 12, 1.9, 22.8, 0]
+  ]);
+  assert.equal(fields.vatNeedsReview, false);
+});
+
+test('columns after the amount (VAT % | VAT £ | Weight), a description running into the price, and zero-priced deposit columns', () => {
+  const T = '\t';
+  const text = [
+    'Example Drinks Ltd', 'SALES INVOICE NUMBER : 500001' + T + '13/05/2026',
+    'No.' + T + 'Qty' + T + 'Description' + T + 'Unit Price' + T + 'Net Amount' + T + 'VAT' + T + 'VAT', 'Weight',
+    '1' + T + '1' + T + 'Example Lager - 24 x 330ml NRB' + T + '31.99' + T + '31.99' + T + '20.00' + T + '6.40' + T + '13.90',
+    '2' + T + '2' + T + 'Example Rum (White) 70cl Single ** PRICE MARKED ** 13.49' + T + '26.98' + T + '20.00' + T + '5.40' + T + '2.80',
+    '3' + T + '1' + T + 'Example Whisky 46% - 70cl Single37.56' + T + '37.56' + T + '20.00' + T + '7.51' + T + '1.40',
+    '4' + T + '2' + T + 'Gas Cylinder Deposit' + T + '40.00' + T + '80.00' + T + '0.00' + T + '0.00' + T + '0.00',
+    'Total Net Amount' + T + '176.53', 'Total VAT Amount' + T + '19.31', 'Invoice Total' + T + '195.84'
+  ].join('\n');
+  const fields = extractInvoiceFields(text);
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [176.53, 19.31, 195.84]);
+  assert.deepEqual(fields.lines.map(l => [l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [[1, 31.99, 31.99, 20], [2, 13.49, 26.98, 20], [1, 37.56, 37.56, 20], [2, 40, 80, 0]]);
+});
+
+test('cash-and-carry case columns: case size x single price x cases = amount, counted in cases', () => {
+  const T = '\t';
+  const text = [
+    'EXAMPLE CASH & CARRY', 'Invoice Date:' + T + '03-Nov-2026', 'Invoice No:' + T + '40001',
+    'Product Description' + T + 'Size' + T + 'Barcode' + T + 'Stkcode' + T + 'CaseSize' + T + 'VAT% Unit Price' + T + 'Qty(c)' + T + 'Qty(s)' + T + 'Price Ex-VAT',
+    'EXAMPLE SODA DRINK250ml' + T + '5000000000001' + T + '07084' + T + '24' + T + '20.00' + T + '0.550' + T + '2' + T + '0' + T + '26.40',
+    'Sub Total:' + T + '26.40', 'Std Rate:' + T + '5.28', 'Total:' + T + '31.68'
+  ].join('\n');
+  const fields = extractInvoiceFields(text);
+  assert.deepEqual(fields.lines.map(l => [l.description, l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [['EXAMPLE SODA DRINK250ml', 2, 13.2, 26.4, 20]]);
+});
+
+test('one PDF holding several invoices is split per invoice; one invoice over two pages is not', () => {
+  const { splitInvoiceText } = loadSource('lib/invoice-split');
+  const page = (number, net, vat, n, of) => ['Example Drinks Ltd', `SALES INVOICE NUMBER : ${number}\t13/05/2026`, 'Qty\tDescription\tUnit Price\tNet Amount', `1\tExample Cola 24 x 330ml\t${net.toFixed(2)}\t${net.toFixed(2)}`, `Total Net Amount\t${net.toFixed(2)}`, `Total VAT Amount\t${vat.toFixed(2)}`, `Invoice Total\t${(net + vat).toFixed(2)}`, `Page ${n} of ${of}`].join('\n');
+  const parts = splitInvoiceText([page('500001', 10, 2, 1, 3), page('500002', 20, 4, 2, 3), page('500003', 30, 6, 3, 3)].join('\n'));
+  assert.deepEqual(parts.map(p => p.number), ['500001', '500002', '500003']);
+  assert.equal(extractInvoiceFields(parts[1].text).gross, 24);
+  assert.deepEqual(splitInvoiceText([page('500001', 10, 2, 1, 2), page('500001', 10, 2, 2, 2)].join('\n')), []);
+});

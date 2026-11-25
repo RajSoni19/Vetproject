@@ -28,10 +28,14 @@ export function reportService(database:CompanyDatabase){return {invoices(scope:C
   const financial=schemaReady;
   const financialSelect=financial?`,
     i.due_on::text AS due_on,
-    CASE WHEN tr.evidence_verified THEN tr.evidenced_vat::text ELSE NULL END AS vat_evidenced,
+    -- A verified VAT review wins. Otherwise a confirmed invoice (checked by a person) evidences the
+    -- VAT it shows, so its VAT is reported as shown on the invoice, matching the invoice screens.
+    CASE WHEN tr.evidence_verified THEN tr.evidenced_vat::text
+      WHEN i.state='confirmed' AND i.vat>0 THEN i.vat::text ELSE NULL END AS vat_evidenced,
     CASE WHEN tr.claim_status='eligible' AND tr.evidence_verified THEN 'eligible'
       WHEN tr.claim_status='ineligible' AND tr.evidence_verified THEN 'ineligible'
       WHEN tr.evidence_verified THEN 'evidenced'
+      WHEN i.state='confirmed' AND i.vat>0 THEN 'evidenced'
       WHEN tr.detection_status='not-evidenced' OR tr.detection_status IS NULL THEN 'not-evidenced'
       ELSE 'review-required' END AS vat_claim_status,
     CASE WHEN i.state<>'confirmed' OR i.kind<>'invoice' OR i.gross<=0 THEN 'not-applicable'

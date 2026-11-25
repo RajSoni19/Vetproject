@@ -1,5 +1,6 @@
 "use client";
 
+import {ukDate} from "@/lib/uk-date";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Download, FileText, Pencil, ShieldCheck, Trash2 } from "lucide-react";
@@ -60,8 +61,8 @@ export default function InvoiceDetailPage() {
               <Info label={invoice.transactionType==="Sale"?"Invoice issuer":"Supplier"} value={invoice.supplierName} />
               <Info label={invoice.transactionType==="Sale"?"Issuer VAT number":"Supplier VAT number"} value={invoice.supplierVatNumber} />
               <Info label="Recorded direction" value={invoice.transactionType||"Unclassified"}/>
-              <Info label="Invoice date" value={invoice.invoiceDate} />
-              <Info label="Due date" value={invoice.dueDate} />
+              <Info label="Invoice date" value={ukDate(invoice.invoiceDate)} />
+              <Info label="Due date" value={ukDate(invoice.dueDate)} />
               <Info label="Customer" value={invoice.customerName} />
               <Info label="Customer VAT number" value={invoice.customerVatNumber} />
             </div>
@@ -76,8 +77,8 @@ export default function InvoiceDetailPage() {
               <Row label="Net amount" value={money(invoice.subtotal)} />
               <Row label="VAT amount" value={money(invoice.vatAmount)} />
               <Row label="Gross total" value={money(invoice.totalAmount)} strong />
-              <Row label="Created" value={new Date(invoice.createdAt).toLocaleString("en-GB")} />
-              <Row label="Last modified" value={new Date(invoice.updatedAt).toLocaleString("en-GB")} />
+              <Row label="Created" value={ukDate(invoice.createdAt)} />
+              <Row label="Last modified" value={ukDate(invoice.updatedAt)} />
             </div>
           </Card>
         </div>

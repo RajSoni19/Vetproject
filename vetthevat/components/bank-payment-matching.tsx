@@ -135,8 +135,24 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
     XLSX.writeFile(book, `${[safe(companyName ?? ""), "Bank-VAT", safe(periodLabel)].filter(Boolean).join("_")}.xlsx`);
   }
   function downloadTemplate() {
+    // One payment per row. The Date column is formatted DD/MM/YYYY so typed dates stay UK dates.
+    const sheet = XLSX.utils.aoa_to_sheet([["Supplier", "Amount", "Date"]]);
+    sheet["!cols"] = [{ wch: 36 }, { wch: 12 }, { wch: 14 }];
+    for (let row = 2; row <= 500; row++) { sheet[`B${row}`] = { t: "z", z: '"£"#,##0.00' }; sheet[`C${row}`] = { t: "z", z: "dd/mm/yyyy" }; }
+    sheet["!ref"] = "A1:C500";
+    const help = XLSX.utils.aoa_to_sheet([
+      ["How to fill in the Statement sheet"],
+      ["Supplier", "The supplier name as it appears on your bank statement, e.g. RK Fruits or BOOKER LTD."],
+      ["Amount", "The amount paid, including VAT, e.g. 212.50. It must be the invoice total to match."],
+      ["Date", "The payment date as DD/MM/YYYY, e.g. 26/10/2026."],
+      [],
+      ["One payment per row. Leave this sheet as it is; only the Statement sheet is read."],
+      ["Then upload the file on Bank VAT Matching. Each payment is matched to a saved invoice with the same total."]
+    ]);
+    help["!cols"] = [{ wch: 12 }, { wch: 90 }];
     const book = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([["Supplier", "Amount", "Date"]]), "Statement");
+    XLSX.utils.book_append_sheet(book, sheet, "Statement");
+    XLSX.utils.book_append_sheet(book, help, "How to fill in");
     XLSX.writeFile(book, "bank-statement-template.xlsx");
   }
 
