@@ -20,13 +20,13 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
     setInvoices(null); setPrices(null); setError("");
     const read = async (url: string) => { const r = await fetch(url, { headers, cache: "no-store" }); const b = await r.json().catch(() => null); if (!r.ok) throw new Error(b?.error?.message ?? "The dashboard could not be loaded."); return b.data; };
     read("/api/business/payable-invoices").then(d => { if (active) setInvoices(d.items); }).catch(e => { if (active) setError(e.message); });
-    read("/api/business/price-comparison?weeks=12").then(d => { if (active) setPrices(d); }).catch(e => { if (active) setError(e.message); });
+    read("/api/business/price-comparison?weeks=all").then(d => { if (active) setPrices(d); }).catch(e => { if (active) setError(e.message); });
     return () => { active = false; };
   }, [companyId]);
 
   const topSuppliers = useMemo(() => {
-    const since = new Date(Date.now() - 84 * 86400000).toISOString().slice(0, 10), totals = new Map<string, number>();
-    for (const i of invoices ?? []) if (i.issuedOn >= since) totals.set(i.supplierName, (totals.get(i.supplierName) ?? 0) + i.gross);
+    const totals = new Map<string, number>();
+    for (const i of invoices ?? []) totals.set(i.supplierName, (totals.get(i.supplierName) ?? 0) + i.gross);
     return [...totals].sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [invoices]);
   const bestSavings = useMemo(() => (prices?.products ?? []).filter(p => p.potentialSaving > 0).sort((a, b) => b.potentialSaving - a.potentialSaving).slice(0, 5), [prices]);
@@ -36,7 +36,7 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
   const maxSpend = topSuppliers[0]?.[1] ?? 1;
 
   return <div className="grid min-w-0 grid-cols-1 gap-5">
-    <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">{companyName ? `${companyName} · ` : ""}Your purchasing at a glance, last 12 weeks</p></div>
+    <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">{companyName ? `${companyName} · ` : ""}Your purchasing at a glance, all history</p></div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {([[Package, loading ? "…" : String(prices!.totals.products), "Products you buy", "From your supplier invoices", "bg-brand-100 text-brand-700"],
@@ -63,7 +63,7 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
         {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : topSuppliers.length ? <ul className="mt-3 grid gap-3">{topSuppliers.map(([name, total]) => <li key={name}>
           <div className="flex justify-between text-sm"><span className="font-semibold">{name}</span><span className="tabular-nums">{money(total)}</span></div>
           <div className="mt-1 h-2 rounded-full bg-wash"><div className="h-2 rounded-full bg-brand-600" style={{ width: `${Math.max(4, total / maxSpend * 100)}%` }} /></div></li>)}</ul>
-          : <p className="mt-3 text-sm text-muted">No purchases in the last 12 weeks. <Link href="/app/ors/supplier-invoices/upload" className="font-semibold text-brand-700 underline">Scan a supplier invoice</Link>.</p>}
+          : <p className="mt-3 text-sm text-muted">No purchases yet. <Link href="/app/ors/supplier-invoices/upload" className="font-semibold text-brand-700 underline">Scan a supplier invoice</Link>.</p>}
       </Card>
       <Card className="p-5"><h3 className="font-bold">Where you can save</h3><p className="text-xs text-muted">Buying at the cheapest supplier instead of your last one</p>
         {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : bestSavings.length ? <ul className="mt-3 grid gap-2">{bestSavings.map(p => <li key={p.key} className="flex items-center justify-between gap-3 border-t border-line pt-2 text-sm">
@@ -77,7 +77,7 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
       {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : prices!.alerts.length ? <ul className="mt-2">{prices!.alerts.slice(0, 5).map(a => <li key={a.key + a.supplierId} className="flex items-center justify-between gap-3 border-t border-line py-2 text-sm">
         <span className="min-w-0"><span className="block truncate font-semibold">{a.name}</span><span className="text-xs text-muted">{a.supplierName} · {money(a.previousPrice, a.currency)} → {money(a.currentPrice, a.currency)}</span></span>
         <span className={`shrink-0 font-bold ${a.changePercent > 0 ? "text-red-600" : "text-emerald-600"}`}>{a.changePercent > 0 ? "▲ Up" : "▼ Down"} {Math.abs(a.changePercent)}%</span></li>)}</ul>
-        : <p className="mt-3 text-sm text-muted">No price has changed by 10% or more in the last 12 weeks.</p>}
+        : <p className="mt-3 text-sm text-muted">No price has changed by 10% or more.</p>}
     </Card>
   </div>;
 }

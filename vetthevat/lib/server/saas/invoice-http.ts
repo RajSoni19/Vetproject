@@ -39,8 +39,9 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
     }
     if(request.method==="GET"&&url.pathname==="/api/business/price-comparison"){
       const access=await requireBusinessScope(request,request.headers.get("x-company-id"),"reports:read",services);
-      const weeks=Number(url.searchParams.get("weeks")??"12"),threshold=Number(url.searchParams.get("threshold")??"10");
-      if(!Number.isInteger(weeks)||weeks<1||weeks>104||!Number.isFinite(threshold)||threshold<1||threshold>100)throw new ApiError(400,"INVALID_REQUEST","Choose 1-104 weeks and a 1-100% alert threshold.");
+      // "all": every saved invoice (100 years), for the ORS dashboard and "All history".
+      const rawWeeks=url.searchParams.get("weeks")??"12",weeks=rawWeeks==="all"?5200:Number(rawWeeks),threshold=Number(url.searchParams.get("threshold")??"10");
+      if(!Number.isInteger(weeks)||weeks<1||weeks>5200||!Number.isFinite(threshold)||threshold<1||threshold>100)throw new ApiError(400,"INVALID_REQUEST","Choose 1-104 weeks (or all history) and a 1-100% alert threshold.");
       const asOf=new Date().toISOString().slice(0,10),from=new Date(Date.now()-weeks*7*86400000).toISOString().slice(0,10);
       // Purchase lines of this company only; earlier observations are fetched too so the
       // first purchase in the window still has a "previous price" to compare with.

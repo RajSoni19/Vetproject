@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { applyDecisions, matchSummary, matchTransactions, nameKey, namesSupplier, parseStatementRows, type BankTransaction, type MatchDecisions, type MatchedTransaction, type NameMemory, type PayableInvoice } from "@/lib/bank-matching";
 import { accountantWorkbook, customPeriodKey, customPeriodLabel, periodOptions, rowsInPeriod, verifiedVat } from "@/lib/bank-vat-export";
 import { parseAiStatement, statementTable } from "@/lib/ai-statement";
+import { ukWorkbook } from "@/lib/uk-date";
 import { businessForm } from "@/lib/browser-business";
 import { preparePagesForUpload } from "@/lib/document-extraction";
 
@@ -132,7 +133,7 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
   function exportForAccountant() {
     const book = accountantWorkbook(selected, { company: companyName ?? "", statement: fileName, period: periodLabel, origin: window.location.origin });
     const safe = (value: string) => value.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    XLSX.writeFile(book, `${[safe(companyName ?? ""), "Bank-VAT", safe(periodLabel)].filter(Boolean).join("_")}.xlsx`);
+    XLSX.writeFile(ukWorkbook(book), `${[safe(companyName ?? ""), "Bank-VAT", safe(periodLabel)].filter(Boolean).join("_")}.xlsx`);
   }
   function downloadTemplate() {
     // One payment per row. The Date column is formatted DD/MM/YYYY so typed dates stay UK dates.

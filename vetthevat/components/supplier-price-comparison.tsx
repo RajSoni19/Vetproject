@@ -36,7 +36,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
   // few months back (scanned today) must still offer its items. Default one year; the choice is
   // remembered on this device.
   const [weeks, setWeeksState] = useState(52);
-  useEffect(() => { try { const saved = Number(window.localStorage.getItem("vtv.price-weeks.v1")); if ([10, 12, 26, 52, 104].includes(saved)) setWeeksState(saved); } catch { /* storage blocked */ } }, []);
+  useEffect(() => { try { const saved = Number(window.localStorage.getItem("vtv.price-weeks.v1")); if ([10, 12, 26, 52, 104, 5200].includes(saved)) setWeeksState(saved); } catch { /* storage blocked */ } }, []);
   const setWeeks = (value: number) => { setWeeksState(value); try { window.localStorage.setItem("vtv.price-weeks.v1", String(value)); } catch { /* storage blocked */ } };
   const [query, setQuery] = useState("");
   const [order, setOrder] = useState<OrderLine[]>([]);
@@ -172,15 +172,15 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
 
   return <div className="grid min-w-0 grid-cols-1 gap-5">
     <div className="flex flex-wrap items-end justify-between gap-3">
-      <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">Prices from your own supplier invoices · last {data.window.weeks} weeks</p></div>
-      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option><option value={52}>Last year</option><option value={104}>Last 2 years</option></select>
+      <div><p className="font-serif text-3xl italic text-slate-800">Buy Smarter. Save More.</p><p className="text-sm text-muted">Prices from your own supplier invoices · {data.window.weeks >= 5200 ? "all history" : `last ${data.window.weeks} weeks`}</p></div>
+      <select aria-label="Period" value={weeks} onChange={e => setWeeks(Number(e.target.value))} className="field-control h-10 w-auto"><option value={10}>Last 10 weeks</option><option value={12}>Last 12 weeks</option><option value={26}>Last 26 weeks</option><option value={52}>Last year</option><option value={104}>Last 2 years</option><option value={5200}>All history</option></select>
     </div>
 
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {([[Package, String(data.totals.products), "Total products", "Across all suppliers", "bg-blue-50 text-blue-700"],
         [Users, String(data.totals.suppliers), "Active suppliers", "From your invoices", "bg-indigo-50 text-indigo-700"],
         [PoundSterling, money(data.totals.potentialSaving, currency), "Estimated savings", "Buying at the cheapest price", "bg-emerald-50 text-emerald-700"],
-        [BarChart3, String(data.totals.alerts), "Price changes", `${data.window.thresholdPercent}%+ in ${data.window.weeks} weeks`, "bg-amber-50 text-amber-700"]] as const).map(([Icon, value, label, hint, tone]) =>
+        [BarChart3, String(data.totals.alerts), "Price changes", `${data.window.thresholdPercent}%+ ${data.window.weeks >= 5200 ? "in all history" : `in ${data.window.weeks} weeks`}`, "bg-amber-50 text-amber-700"]] as const).map(([Icon, value, label, hint, tone]) =>
         <Card key={label} className="flex items-center gap-3 p-4"><span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${tone}`}><Icon className="h-6 w-6" /></span>
           <div className="min-w-0"><p className="text-2xl font-bold tabular-nums">{value}</p><p className="text-sm font-semibold">{label}</p><p className="text-xs text-muted">{hint}</p></div></Card>)}
     </div>
@@ -221,7 +221,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
           {data.alerts.length ? <table className="mt-3 w-full text-xs"><thead className="text-muted"><tr><th className="text-left">Product</th><th className="text-right">Last</th><th className="text-right">Now</th><th className="text-right">Change</th></tr></thead>
             <tbody>{data.alerts.slice(0, 6).map(alert => <tr key={alert.key + alert.supplierId} className="border-t border-line"><td className="py-2 pr-1 font-semibold">{alert.name}<span className="block font-normal text-muted">{alert.supplierName}</span></td><td className="text-right tabular-nums">{money(alert.previousPrice, alert.currency)}</td><td className="text-right tabular-nums">{money(alert.currentPrice, alert.currency)}</td>
               <td className={`text-right font-bold ${alert.changePercent > 0 ? "text-red-600" : "text-emerald-600"}`}>{alert.changePercent > 0 ? "▲" : "▼"} {Math.abs(alert.changePercent)}%</td></tr>)}</tbody></table>
-            : <p className="mt-2 text-sm text-muted">No price changes of {data.window.thresholdPercent}% or more in the last {data.window.weeks} weeks.</p>}
+            : <p className="mt-2 text-sm text-muted">No price changes of {data.window.thresholdPercent}% or more{data.window.weeks >= 5200 ? "" : ` in the last ${data.window.weeks} weeks`}.</p>}
         </Card>
         <Card className="border-emerald-200 bg-emerald-50 p-5"><h2 className="font-bold">ORS recommendation</h2>
           {recommendation ? <div className="mt-3 flex items-start gap-3"><CheckCircle2 className="h-8 w-8 shrink-0 text-emerald-600" /><div><p className="font-bold">Buy from {recommendation.name}</p><p className="text-sm text-slate-700">Cheapest for {recommendation.wins} of {compared.length} products you buy from more than one supplier{recommendation.saving > 0 ? ` — about ${money(recommendation.saving, currency)} saving on your usual quantities` : ""}.</p></div></div>
