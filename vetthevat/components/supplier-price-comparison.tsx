@@ -121,11 +121,12 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
     return [...counts.values()].sort((a, b) => b.wins - a.wins || b.saving - a.saving)[0];
   })();
 
+  // A first click adds exactly 1 (not the quantity bought last time); the + button adds more.
   function add(product: ProductComparison, supplierId = product.bestSupplierId) {
     const price = product.suppliers.find(s => s.supplierId === supplierId)!;
     const existing = order.find(line => line.key === product.key);
     if (existing && existing.supplierId === supplierId) saveOrder(order.map(line => line === existing ? { ...line, quantity: line.quantity + 1 } : line));
-    else saveOrder([...order.filter(line => line.key !== product.key), { key: product.key, name: product.name, supplierId, supplierName: price.supplierName, unitPrice: price.latestPrice, quantity: existing?.quantity ?? Math.max(1, price.lastQuantity), currency: product.currency }]);
+    else saveOrder([...order.filter(line => line.key !== product.key), { key: product.key, name: product.name, supplierId, supplierName: price.supplierName, unitPrice: price.latestPrice, quantity: existing?.quantity ?? 1, currency: product.currency }]);
   }
   // + / - on a product or cart line; going below 1 removes it.
   const bump = (key: string, delta: number) => saveOrder(current => current.flatMap(line => line.key !== key ? [line] : line.quantity + delta <= 0 ? [] : [{ ...line, quantity: Math.min(9999, line.quantity + delta) }]));
