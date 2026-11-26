@@ -3,7 +3,7 @@
 // (lib/server/saas/vat.ts vatLine). VAT treatment is never guessed: a line whose
 // rate the document does not evidence becomes "not-evidenced" (rate 0, no VAT
 // claimed until a person reviews it).
-import { extractInvoiceFields, validUkVat, type ExtractedInvoiceFields, type ExtractedInvoiceLine } from "@/lib/invoice-text-extraction";
+import { assignFromVatAnalysis, extractInvoiceFields, validUkVat, type ExtractedInvoiceFields, type ExtractedInvoiceLine } from "@/lib/invoice-text-extraction";
 import { closeTo, dateWarning, lineTotal, missingPageWarning, pageInfoFromText, round2, totalsWarning } from "@/lib/invoice-checks";
 import type { AiInvoice, AiInvoiceLine } from "@/lib/ai-invoice";
 
@@ -83,6 +83,30 @@ function draftFromFields(fields: ExtractedInvoiceFields, fileName: string, conte
   } satisfies InvoiceDraft;
 }
 
+// VAT of draft lines under each rounding rule the API supports: per line, or per VAT rate (the
+// way most suppliers work it out: 20% of all 20% goods).
+type RoundableLine = Pick<DraftLine, "quantity" | "unitPrice" | "discount" | "rate" | "treatment" | "pricing">;
+const NO_VAT = ["zero", "exempt", "outside", "not-evidenced"];
+export function draftVat(lines: readonly RoundableLine[], rounding: "line-half-up" | "tax-group-half-up") {
+  const exact = lines.map((line) => {
+    const base = Math.round(Number(line.quantity) * Number(line.unitPrice) * 100) / 100 - Number(line.discount || 0);
+    const rate = NO_VAT.includes(line.treatment) ? 0 : Number(line.rate || 0) / 100;
+    return { key: `${line.treatment}/${rate}/${line.pricing}`, tax: line.pricing === "inclusive" ? base * rate / (1 + rate) : base * rate };
+  });
+  if (rounding === "line-half-up") return round2(exact.reduce((sum, row) => sum + round2(row.tax), 0));
+  const groups = new Map<string, number>();
+  for (const row of exact) groups.set(row.key, (groups.get(row.key) ?? 0) + row.tax);
+  return round2([...groups.values()].reduce((sum, tax) => sum + round2(tax), 0));
+}
+// Rounding for a scanned invoice: per VAT rate when only that gives the VAT printed on the
+// document (Temple: 20% of 944.89 = 188.98, per line it would be 189.00), otherwise per line.
+export function draftRounding(draft: Pick<InvoiceDraft, "lines" | "summary">): "line-half-up" | "tax-group-half-up" {
+  const printed = draft.summary.vat;
+  if (printed === null || !draft.lines.length) return "line-half-up";
+  const near = (value: number) => Math.abs(value - printed) < 0.005;
+  return !near(draftVat(draft.lines, "line-half-up")) && near(draftVat(draft.lines, "tax-group-half-up")) ? "tax-group-half-up" : "line-half-up";
+}
+
 export function invoiceDraftFromText(text: string, fileName: string, context: DraftContext = {}): InvoiceDraft {
   return draftFromFields(extractInvoiceFields(text, context), fileName, context, pageInfoFromText(text));
 }
@@ -131,6 +155,43 @@ function repairOfferPrices(lines: AiDraftLine[], total: number | null) {
   }
 }
 
+// An invoice date more than a month in the future is a misread year ("28/08/26" read as 2028): the
+// latest year, this year or last, that puts the same day in the past is used, with a note to check it.
+function pastInvoiceDate(iso: string | null, today: Date, notes: string[]): string | null {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const day = 86400000, now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+  if (Date.parse(`${iso}T00:00:00Z`) <= now + 31 * day) return iso;
+  const uk = (value: string) => `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)}`;
+  for (const year of [today.getUTCFullYear(), today.getUTCFullYear() - 1]) {
+    const candidate = `${year}${iso.slice(4)}`, time = Date.parse(`${candidate}T00:00:00Z`);
+    if (Number.isFinite(time) && time <= now + day) { notes.push(`The invoice date was read as ${uk(iso)}, which is in the future, so the year was corrected to ${uk(candidate)}. Check it against the original.`); return candidate; }
+  }
+  return iso;
+}
+
+// The invoice's own VAT figures win over per-line rates that disagree with them (the reader may put
+// 20% on every line of an invoice whose VAT box shows 20% on some goods and 0% on the rest). Lines
+// are re-rated only when the result matches the printed VAT exactly; otherwise a note asks for a check.
+function reconcileLineRates(lines: AiDraftLine[], summary: AiInvoice["vat_summary"], statedVat: number | null, notes: string[]) {
+  if (!lines.length || statedVat === null) return;
+  const net = lines.reduce((sum, line) => sum + line.netAmount, 0);
+  const vatOf = (list: { netAmount: number; vatRate: number | null }[]) => round2(list.reduce((sum, line) => sum + line.netAmount * (line.vatRate ?? 0) / 100, 0));
+  const tolerance = Math.max(0.02, 0.005 * lines.length);
+  if (lines.every((line) => line.vatRate !== null) && closeTo(vatOf(lines), statedVat, tolerance)) return;
+  const apply = (rates: (number | null)[]) => { lines.forEach((line, index) => { line.vatRate = rates[index]; if (rates[index] === 0) line.taxClassification = "Zero-rated"; else delete line.taxClassification; }); };
+  // VAT box with several rates ("20% on 944.89, 0% on 67.21"): find which lines make up each group.
+  const groups = summary.filter((row) => row.rate !== null && row.goods !== null && [0, 5, 20].includes(row.rate)).map((row) => ({ rate: row.rate as number, goods: row.goods as number }));
+  if (groups.length >= 2) {
+    const trial = lines.map((line) => ({ ...line, vatRate: null as number | null }));
+    assignFromVatAnalysis(trial, groups);
+    if (trial.every((line) => line.vatRate !== null) && closeTo(vatOf(trial), statedVat, tolerance)) { apply(trial.map((line) => line.vatRate)); return; }
+  }
+  // One rate for everything (or no VAT at all) that gives exactly the printed VAT.
+  const single = statedVat === 0 ? 0 : [20, 5].find((rate) => closeTo(net * rate / 100, statedVat, tolerance));
+  if (single !== undefined) { apply(lines.map(() => single)); return; }
+  notes.push(`The VAT on the lines (£${vatOf(lines).toFixed(2)}) does not match the VAT printed on the invoice (£${statedVat.toFixed(2)}). Check each line's VAT rate before confirming.`);
+}
+
 export function invoiceDraftFromAi(ai: AiInvoice, fileName: string, context: DraftContext = {}): InvoiceDraft {
   const notes: string[] = [];
   const rows = ai.vat_summary.filter((row) => row.rate !== null);
@@ -145,6 +206,7 @@ export function invoiceDraftFromAi(ai: AiInvoice, fileName: string, context: Dra
   for (const line of lines) line.inclusive = inclusive;
 
   if (inclusive) repairOfferPrices(lines, ai.gross_total);
+  if (!inclusive) reconcileLineRates(lines, ai.vat_summary, statedVat, notes);
   const paid = round2(lines.reduce((sum, line) => sum + line.netAmount, 0));
   const beforeDiscount = round2(lines.reduce((sum, line) => sum + line.netAmount + (line.discount ?? 0), 0));
   const rated = lines.length > 0 && lines.every((line) => line.vatRate !== null);
@@ -175,7 +237,7 @@ export function invoiceDraftFromAi(ai: AiInvoice, fileName: string, context: Dra
   const notSupplier = (context.companyName && sameName(supplier, context.companyName)) || (customerName && sameName(supplier, customerName));
   const fields: ExtractedInvoiceFields = {
     supplierName: notSupplier ? "" : supplier, supplierVatNumber: vatNumber, customerName, customerVatNumber: "",
-    invoiceNumber: ai.invoice_number ?? "", invoiceDate: ai.invoice_date, dueDate: ai.due_date, currency: "GBP",
+    invoiceNumber: ai.invoice_number ?? "", invoiceDate: pastInvoiceDate(ai.invoice_date, context.today ?? new Date(), notes), dueDate: ai.due_date, currency: "GBP",
     read: { net: ai.net_total, vat: ai.vat_total, gross: ai.gross_total }, net, vat, gross, lines,
     vatNeedsReview: !rated, notes, ...(ai.document_type === "receipt" ? { receipt: true } : {})
   };

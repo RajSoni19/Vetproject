@@ -36,13 +36,13 @@ export type AiUsage = { promptTokens: number | null; outputTokens: number | null
 
 export const AI_INVOICE_PROMPT = `These pages are ONE UK supplier invoice or till receipt. Extract it.
 The supplier is the business that issued the document and is being paid. It is never the "Bill to", "Invoice to", "Ship to" or customer party; put that party in customer_name.
-Dates are UK format DD/MM/YYYY; return them as YYYY-MM-DD.
+Dates are UK format DD/MM/YYYY or DD/MM/YY; return them as YYYY-MM-DD. A two-digit year is 20YY (28/08/26 is 2026-08-28).
 Copy every number exactly as printed. If a value is not printed or is unreadable, use null.
 Never calculate, infer or guess a value that is not on the page.
 Return one entry in lines for each item, in printed order, joining a description that wraps onto several rows. A quantity printed before the name belongs in quantity, not in description.
 amount is the line amount as printed, before any discount shown beneath the item.
 Lines under an item belong to that item and are never separate lines. unit_price is the normal price each (e.g. '£15.00 each'). offer_price is a member or offer price each (e.g. 'Cc £12.00' means 12.00); it is NOT a discount. discount is only the money taken off, printed as a minus amount (e.g. '-£6.00' means 6.00).
-vat_rate is the percentage printed on the line. vat_code is a VAT letter printed on the line (e.g. A, B, S, Z). Copy any VAT rate table into vat_summary.
+vat_rate is the percentage printed on the line itself; if the line shows no rate, vat_rate is null (never assume 20%). vat_code is a VAT letter or mark printed on the line (e.g. A, B, S, Z, or * beside the item). Copy any VAT rate table into vat_summary.
 subtotal, net_total and vat_total must each be a figure actually printed with its own label; never work them out from other figures, and use null if not printed. subtotal is the figure printed as Subtotal. net_total is the goods total excluding VAT. gross_total is the final amount to pay (Total, Please pay, Balance due).
 prices_include_vat is true for till receipts, and for an invoice only if it states that its prices include VAT. Otherwise it is false.
 VAT: if no VAT number or VAT amount is shown, set vat_number and vat_total to null.

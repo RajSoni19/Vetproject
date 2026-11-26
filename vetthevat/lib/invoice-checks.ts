@@ -26,6 +26,18 @@ export function missingPageWarning(pageInfo: string | null | undefined, pagesSen
   return `Page ${next} may be missing: the document says “${pageInfo}”. Use “Add next page” below.`;
 }
 
+// Asked before confirming: a VAT-registered supplier's invoice with no VAT at all is usually a
+// misread (the VAT box was missed), and confirming it would claim no VAT. Null when nothing to ask.
+export function noVatConfirmQuestion(vat: unknown, gross: unknown, supplierVatNumber: unknown): string | null {
+  const number = String(supplierVatNumber ?? "").replace(/[^A-Za-z0-9]/g, "");
+  if (Number(vat) !== 0 || !(Number(gross) > 0) || !number) return null;
+  return `This invoice has VAT £0.00, but the supplier is VAT registered (${number}).
+
+If the invoice shows VAT, press Cancel, open the invoice and set the VAT rate on each line (most suppliers print a VAT box at the bottom).
+
+Press OK only if the invoice really has no VAT.`;
+}
+
 export function dateWarning(iso: string | null | undefined, today: Date = new Date()) {
   if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
   const date = Date.parse(`${iso}T00:00:00Z`), day = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());

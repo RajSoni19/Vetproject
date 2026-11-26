@@ -845,7 +845,7 @@ export function readVatAnalysis(rows: Row[]) {
 
 // With one group per rate and lines whose net totals match, find which lines
 // make up each smaller group (exact pennies), the rest take the largest group.
-function assignFromVatAnalysis(open: ExtractedInvoiceLine[], groups: { rate: number; goods: number }[]) {
+export function assignFromVatAnalysis(open: ExtractedInvoiceLine[], groups: { rate: number; goods: number }[]) {
   if (groups.length < 2 || open.length > 60) return;
   const pence = (value: number) => Math.round(value * 100);
   if (pence(open.reduce((sum, line) => sum + line.netAmount, 0)) !== pence(groups.reduce((sum, group) => sum + group.goods, 0))) return;

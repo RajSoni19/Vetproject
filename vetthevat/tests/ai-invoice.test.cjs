@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { loadSource } = require('./load-source.cjs');
 const { parseAiInvoice } = loadSource('lib/ai-invoice');
 const { dateWarning, lineTotal, missingPageWarning, totalsWarning } = loadSource('lib/invoice-checks');
-const { hasTotalsProblem, invoiceDraftFromAi, invoiceDraftFromText } = loadSource('lib/captured-invoice-draft');
+const { draftRounding, draftVat, hasTotalsProblem, invoiceDraftFromAi, invoiceDraftFromText } = loadSource('lib/captured-invoice-draft');
 const { AI_CACHE_TTL_MS, aiCacheKey, readAiCache, writeAiCache } = loadSource('lib/ai-invoice-cache');
 const { AiExtractionError, extractWithGemini } = loadSource('lib/ai-extraction');
 const { invoiceExtractHandler, INVOICE_EXTRACT_LIMITS } = loadSource('lib/server/saas/invoice-extract-http');
@@ -236,4 +236,29 @@ test('a busy main model (503 "high demand") is retried on the backup model, whic
   models.length = 0;
   await extractWithGemini([page], { env: { ...env, GEMINI_FALLBACK_MODEL: 'off' }, retryDelayMs: 1, client: client(async (request) => { models.push(request.model); if (models.length === 1) throw status(503); return reply; }) });
   assert.deepEqual(models, ['test-model', 'test-model']);
+});
+
+test('Temple Wines photo: lines all read at 20% but the VAT box says 20% on 944.89 and 0% on 67.21 — the box wins', () => {
+  const items = [[1, 154.99], [1, 172.99], [1, 151.99], [1, 112.99], [1, 22.99], [2, 10.49], [1, 85.99], [1, 75.99], [1, 74.99], [1, 70.99]];
+  const zero = [[2, 6.89], [2, 7.29], [1, 7.29], [2, 7.49], [2, 8.29]];
+  const all = (rate) => [...items, ...zero].map(([q, p], i) => line({ description: `Item ${i + 1}`, quantity: q, unit_price: p, amount: Math.round(q * p * 100) / 100, vat_rate: rate }));
+  const box = [{ code: '1', rate: 20, goods: 944.89, vat: 188.98 }, { code: '3', rate: 0, goods: 67.21, vat: 0 }];
+  for (const rate of [20, null]) {
+    const result = draft({ invoice_date: '2028-08-28', lines: all(rate), vat_summary: box, net_total: 1012.10, vat_total: 188.98, gross_total: 1201.08 });
+    // Temple works VAT out per rate (20% of 944.89 = 188.98); per line it would be 189.00.
+    assert.equal(draftRounding(result), 'tax-group-half-up');
+    assert.equal(draftVat(result.lines, draftRounding(result)), 188.98, `lines VAT with AI rate ${rate}`);
+    assert.deepEqual(result.lines.slice(10).map(l => l.treatment), ['zero', 'zero', 'zero', 'zero', 'zero']);
+    assert.deepEqual([result.summary.net, result.summary.vat, result.summary.gross], [1012.10, 188.98, 1201.08]);
+  }
+  // The year misread as 2028 (printed 28/08/26) is corrected, with a note.
+  const dated = draft({ invoice_date: '2028-08-28', lines: all(20), vat_summary: box, net_total: 1012.10, vat_total: 188.98, gross_total: 1201.08 });
+  assert.match(dated.issuedOn, /^20\d\d-08-28$/);
+  assert.ok(dated.issuedOn < '2028-01-01');
+  assert.ok(dated.warnings.some(w => /year was corrected/.test(w)));
+});
+
+test('line VAT that cannot be matched to the printed VAT is flagged, never silently kept', () => {
+  const result = draft({ lines: [line({ quantity: 1, unit_price: 50, amount: 50, vat_rate: 20 }), line({ quantity: 1, unit_price: 30, amount: 30, vat_rate: 20 })], vat_summary: [], net_total: 80, vat_total: 7.5, gross_total: 87.5 });
+  assert.ok(result.warnings.some(w => /does not match the VAT printed/.test(w)));
 });
