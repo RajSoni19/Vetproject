@@ -282,7 +282,7 @@ const DECIMAL_NOTE = "Some amounts were read without a decimal point and correct
 
 // ---------------------------------------------------------------- line items
 
-type TableContext = { inTable: boolean; order: string[]; hasVatColumn: boolean; hasUnitColumn: boolean; moneyDecimals: boolean; expectedIndex: number };
+type TableContext = { inTable: boolean; order: string[]; hasVatColumn: boolean; hasUnitColumn: boolean; caseColumns?: boolean; moneyDecimals: boolean; expectedIndex: number };
 type NumberToken = { value: number; raw: string; hasDecimal: boolean; repairable: boolean; currency: boolean };
 
 const UNIT = /^(?:kg|kgs|g|gm|gms|ltr|ltrs|lit|l|ml|cl|ea|each|pcs?|box|boxes|case|cases|cs|ctn|ctns|carton|cartons|btl|btls|bottles?|tray|trays|bags?|tins?|jars?|rolls?|doz|dozen|pk|pack|packs|unit|units|nos?|hrs?|hours?|days?|x|@)$/i;
@@ -397,8 +397,36 @@ function parseQtyFirstRow(row: Row, table: TableContext): ExtractedInvoiceLine |
   return line;
 }
 
+// Cash-and-carry table "Description | Size | Barcode | Stkcode | CaseSize | VAT% | Unit Price |
+// Qty(c) | Qty(s) | Price Ex-VAT" (Sira): amount = unit price x (case size x cases + singles). The VAT
+// rate is the VAT% column. Whole cases are counted in cases at the case price, singles at the unit price.
+const SIZE_TOKEN = /^\d+(?:\.\d+)?(?:kg|g|gm|ml|cl|l|ltr|lt|pc|pcs)$|^\d+x\d/i;
+function parseCaseColumnsRow(row: Row, table: TableContext): ExtractedInvoiceLine | null {
+  if (!table.inTable || !table.caseColumns) return null;
+  const tokens = row.text.split(" ");
+  if (tokens.length < 7) return null;
+  const tail = tokens.slice(-6).map((token) => numberToken(token, false));
+  if (tail.some((token) => token === null)) return null;
+  const [size, vat, unit, cases, singles, amount] = tail as NumberToken[];
+  const whole = (n: NumberToken) => Number.isInteger(n.value) && n.value >= 0;
+  if (!amount.hasDecimal || !whole(size) || size.value < 1 || !whole(cases) || !whole(singles) || cases.value + singles.value <= 0 || unit.value <= 0) return null;
+  if (!close(unit.value * (size.value * cases.value + singles.value), amount.value, 0.011)) return null;
+  let quantity = size.value * cases.value + singles.value, unitPrice = unit.value;
+  if (singles.value === 0) { quantity = cases.value; unitPrice = Math.round(size.value * unit.value * 10000) / 10000; }
+  if (!close(quantity * unitPrice, amount.value, 0.011)) { quantity = size.value * cases.value + singles.value; unitPrice = unit.value; }
+  // Product name: without the barcode (also when printed straight after the name) and the stock code.
+  const front = tokens.slice(0, -6).map((token) => token.replace(/(\D)\d{12,14}$/, "$1")).filter((token) => !/^\d{8,14}$/.test(token));
+  if (front.length > 1 && /\d/.test(front[front.length - 1]) && !SIZE_TOKEN.test(front[front.length - 1])) front.pop();
+  const description = front.join(" ").trim();
+  if (letters(description) < 2) return null;
+  const rate = [0, 5, 20].includes(vat.value) ? vat.value : null;
+  return { description: description.slice(0, 200), quantity, unitPrice, netAmount: round2(amount.value), vatRate: rate, ...(rate === 0 ? { taxClassification: "Zero-rated" as const } : {}) };
+}
+
 function parseItemRow(row: Row, table: TableContext, notes: string[]): ExtractedInvoiceLine | null {
   if (NOT_AN_ITEM.test(row.text)) return null;
+  const cased = parseCaseColumnsRow(row, table);
+  if (cased) return cased;
   const columns = parseQtyFirstRow(row, table);
   if (columns) return columns;
   const tokens = row.text.split(" ");
@@ -529,6 +557,7 @@ function readLines(rows: Row[], totalRows: Set<number>, notes: string[]): Extrac
     if (order) {
       table.inTable = true; table.order = order; table.hasVatColumn = order.includes("vat"); table.expectedIndex = 1;
       table.hasUnitColumn = /\bunit\b(?!\s*(?:price|cost|rate))/i.test(row.text);
+      table.caseColumns = /case\s*size/i.test(row.text) && /qty\s*\(\s*c\s*\)/i.test(row.text) && /qty\s*\(\s*s\s*\)/i.test(row.text);
       // Does this table print money with decimals? Used to spot dropped decimal points.
       let decimals = 0, whole = 0;
       for (let next = r + 1; next < rows.length && !totalRows.has(next) && !headerOrder(rows[next]); next++) {
@@ -1005,7 +1034,15 @@ function extractDocumentFields(input: string, context: ExtractionContext): Extra
     if (!close(linesVat, read.vat ?? linesVat, Math.max(0.05, 0.01 * lines.length)) || (read.vat === null && read.gross !== null && net !== null && !close(net + linesVat, read.gross, Math.max(0.05, 0.01 * lines.length)))) notes.push("The invoice total does not match the items read. The invoice may have more pages (use “Add next page” below), or an item may be missing or misread. Check the totals against the original.");
   }
 
-  const supplierName = readSupplier(rows, customer.name, context, tableStart) || extra?.supplierName || "";
+  // A party label read as a name ("Delivery To", "Invoice To") is never the supplier.
+  const label = (name: string) => /^(?:delivery|deliver|invoice|bill|ship|sold)\s+to\b/i.test(name.trim());
+  const heading = readSupplier(rows, customer.name, context, tableStart);
+  // Logo-only letterheads: the supplier is still named in the small print or bank details.
+  const named = text.match(/\bproperty\s+of\s+([A-Z][A-Za-z0-9&().,' -]{2,60}?\b(?:Ltd|Limited|plc|LLP)\b\.?)/i)?.[1]
+    ?? text.match(/\bAccount\s+Name\s+([A-Z][A-Za-z0-9&().,' -]{2,60}?\b(?:Ltd|Limited|plc|LLP)\b\.?)/i)?.[1];
+  const supplierName = (heading && !label(heading) ? heading : "") || extra?.supplierName || (named ? cleanName(named) : "") || "";
+  // A supplier statement lists many invoices and payments: there is no single invoice to read.
+  if (!lines.length && /\bstatement\b/i.test(text) && /\bstatement\s+date\b|\bbalance\b/i.test(text)) notes.push("This looks like a supplier statement (a list of invoices and payments), not an invoice. Upload each invoice on its own; a statement can be checked against payments in Bank VAT Matching.");
 
   const numberLabels = [
     "(?:tax\\s+)?invoice\\s*(?:number|num\\.?|no\\.?|n[°º]\\.?|#|id|ref(?:erence)?\\.?)",

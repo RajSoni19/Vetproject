@@ -644,3 +644,25 @@ test('one PDF holding several invoices is split per invoice; one invoice over tw
   assert.equal(extractInvoiceFields(parts[1].text).gross, 24);
   assert.deepEqual(splitInvoiceText([page('500001', 10, 2, 1, 2), page('500001', 10, 2, 2, 2)].join('\n')), []);
 });
+
+test('cash-and-carry case table with singles: unit price x (case size x cases + singles), VAT from the VAT% column', () => {
+  // Synthetic rows in the layout of a cash-and-carry account invoice (Sira style).
+  const T = '\t';
+  const head = ['Product Description', 'Size', 'Barcode', 'Stkcode', 'CaseSize', 'VAT%', 'Unit Price', 'Qty(c)', 'Qty(s)', 'Price Ex-VAT'].join(T);
+  const row = (...cells) => cells.join(T);
+  const text = [
+    'EXAMPLE CASH & CARRY', 'Invoice Date:' + T + '12-Nov-2026', 'Invoice No:' + T + '40002', head,
+    row('EXAMPLE PANEER DICED', '450G', '5000000000011', '000110', '1', '0.00', '3.690', '0', '10', '36.90'),
+    row('EXAMPLE SAMOSA POTATO', '20PC', '5000000000028', 'EXSAM20', '6', '0.00', '4.990', '1', '0', '29.94'),
+    row('VG MINT', 'EACH', '80168', '20', '0.00', '0.790', '0', '4', '3.16'),
+    row('EXAMPLE COCONUT FINE', '1KG', '5000000000035', 'N3350', '6', '0.00', '6.000', '0', '3', '18.00'),
+    row('EXAMPLE CONTAINERS + LIDS250x500ML5000000000042', 'EXCON03', '1', '20.00', '34.990', '1', '0', '34.99'),
+    'Sub Total:' + T + '122.99', 'Std Rate:' + T + '7.00', 'Total:' + T + '129.99'
+  ].join('\n');
+  const fields = extractInvoiceFields(text);
+  assert.deepEqual([fields.net, fields.vat, fields.gross], [122.99, 7, 129.99]);
+  assert.deepEqual(fields.lines.map(l => [l.description, l.quantity, l.unitPrice, l.netAmount, l.vatRate]), [
+    ['EXAMPLE PANEER DICED 450G', 10, 3.69, 36.9, 0], ['EXAMPLE SAMOSA POTATO 20PC', 1, 29.94, 29.94, 0], ['VG MINT EACH', 4, 0.79, 3.16, 0],
+    ['EXAMPLE COCONUT FINE 1KG', 3, 6, 18, 0], ['EXAMPLE CONTAINERS + LIDS250x500ML', 1, 34.99, 34.99, 20]
+  ]);
+});
