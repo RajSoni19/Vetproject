@@ -58,12 +58,12 @@ export default function InvoiceDetailPage() {
           <Card className="p-6">
             <h2 className="text-xl font-bold">Invoice details</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <Info label={invoice.transactionType==="Sale"?"Invoice issuer":"Supplier"} value={invoice.supplierName} />
+              <Info label={invoice.transactionType==="Sale"?"Invoice issuer":"Supplier"} value={invoice.supplierName} name />
               <Info label={invoice.transactionType==="Sale"?"Issuer VAT number":"Supplier VAT number"} value={invoice.supplierVatNumber} />
               <Info label="Recorded direction" value={invoice.transactionType||"Unclassified"}/>
               <Info label="Invoice date" value={ukDate(invoice.invoiceDate)} />
               <Info label="Due date" value={ukDate(invoice.dueDate)} />
-              <Info label="Customer" value={invoice.customerName} />
+              <Info label="Customer" value={invoice.customerName} name />
               <Info label="Customer VAT number" value={invoice.customerVatNumber} />
             </div>
           </Card>
@@ -87,8 +87,8 @@ export default function InvoiceDetailPage() {
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
-  return <div><p className="text-xs font-bold uppercase tracking-wide text-muted">{label}</p><p className="mt-1 font-semibold">{value || "Not supplied"}</p></div>;
+function Info({ label, value, name = false }: { label: string; value: string; name?: boolean }) {
+  return <div><p className="text-xs font-bold uppercase tracking-wide text-muted">{label}</p><p className="mt-1 font-semibold" {...(name && value ? { translate: "no" as const, "data-vtv-name": "" } : {})}>{value || "Not supplied"}</p></div>;
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {

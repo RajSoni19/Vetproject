@@ -198,11 +198,11 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
         </div>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="text-xs text-muted"><tr><th className="py-2 pr-3">Product</th><th className="px-2">Pack size</th>{supplierColumns.map(s => <th key={s.id} className="px-2">{s.name}</th>)}<th className="px-2">Best price</th><th /></tr></thead>
+            <thead className="text-xs text-muted"><tr><th className="py-2 pr-3">Product</th><th className="px-2">Pack size</th>{supplierColumns.map(s => <th key={s.id} className="px-2"><span translate="no" data-vtv-name="">{s.name}</span></th>)}<th className="px-2">Best price</th><th /></tr></thead>
             <tbody>{products.map(product => {
               const inOrder = order.find(line => line.key === product.key);
               return <tr key={product.key} className="border-t border-line align-middle">
-                <td className="py-3 pr-3 font-semibold">{product.name}{product.aliases?.length ? <span className="block text-xs font-normal text-muted" title="Different spellings on supplier invoices, compared as one product">Also: {product.aliases.join(", ")}</span> : null}</td>
+                <td className="py-3 pr-3 font-semibold"><span translate="no" data-vtv-name="">{product.name}</span>{product.aliases?.length ? <span className="block text-xs font-normal text-muted" title="Different spellings on supplier invoices, compared as one product">Also: {product.aliases.join(", ")}</span> : null}</td>
                 <td className="px-2 text-muted">{packSize(product.name)}</td>
                 {supplierColumns.map(s => { const price = product.suppliers.find(p => p.supplierId === s.id);
                   return <td key={s.id} className="px-2 py-2">{price ? <button type="button" onClick={() => add(product, s.id)} title={`Order from ${s.name}`} className={`w-full rounded-lg px-2 py-1.5 text-center tabular-nums ${price.cheapest && cheaperExists(product) ? "border-2 border-emerald-400 bg-emerald-50" : "hover:bg-wash"}`}>
@@ -220,7 +220,7 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
       <div className="grid content-start gap-5">
         <Card className="p-5"><h2 className="font-bold text-red-700">Price alerts</h2>
           {data.alerts.length ? <table className="mt-3 w-full text-xs"><thead className="text-muted"><tr><th className="text-left">Product</th><th className="text-right">Last</th><th className="text-right">Now</th><th className="text-right">Change</th></tr></thead>
-            <tbody>{data.alerts.slice(0, 6).map(alert => <tr key={alert.key + alert.supplierId} className="border-t border-line"><td className="py-2 pr-1 font-semibold">{alert.name}<span className="block font-normal text-muted">{alert.supplierName}</span></td><td className="text-right tabular-nums">{money(alert.previousPrice, alert.currency)}</td><td className="text-right tabular-nums">{money(alert.currentPrice, alert.currency)}</td>
+            <tbody>{data.alerts.slice(0, 6).map(alert => <tr key={alert.key + alert.supplierId} className="border-t border-line"><td className="py-2 pr-1 font-semibold"><span translate="no" data-vtv-name="">{alert.name}</span><span className="block font-normal text-muted"><span translate="no" data-vtv-name="">{alert.supplierName}</span></span></td><td className="text-right tabular-nums">{money(alert.previousPrice, alert.currency)}</td><td className="text-right tabular-nums">{money(alert.currentPrice, alert.currency)}</td>
               <td className={`text-right font-bold ${alert.changePercent > 0 ? "text-red-600" : "text-emerald-600"}`}>{alert.changePercent > 0 ? "▲" : "▼"} {Math.abs(alert.changePercent)}%</td></tr>)}</tbody></table>
             : <p className="mt-2 text-sm text-muted">No price changes of {data.window.thresholdPercent}% or more{data.window.weeks >= 5200 ? "" : ` in the last ${data.window.weeks} weeks`}.</p>}
         </Card>
@@ -253,9 +253,9 @@ export function SupplierPriceComparison({ companyId, companyName }: { companyId:
           {!companyPhone || editingPhone ? <PhoneAsk label="WhatsApp number for orders" help="Every WhatsApp order opens to this number." onSave={saveCompanyPhone} /> : <p className="flex flex-wrap items-center gap-2 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900"><MessageCircle className="h-4 w-4 shrink-0" />Orders go to WhatsApp <strong>{companyPhone}</strong><button type="button" className="ml-auto text-xs font-semibold underline" onClick={() => setEditingPhone(true)}>Change</button></p>}
           {groups.map(group => {
             return <section key={group.supplierId} className="rounded-xl border border-line p-3">
-              <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words font-bold leading-tight">{group.supplierName}</p></div><p className="shrink-0 font-bold tabular-nums">{money(group.total, currency)}</p></div>
+              <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words font-bold leading-tight"><span translate="no" data-vtv-name="">{group.supplierName}</span></p></div><p className="shrink-0 font-bold tabular-nums">{money(group.total, currency)}</p></div>
               <ul className="mt-2 divide-y divide-line">{group.lines.map(line => <li key={line.key} className="flex items-center gap-3 py-2">
-                <div className="min-w-0 flex-1"><p className="break-words text-sm font-semibold leading-tight">{line.name}</p><p className="text-xs text-muted">{money(line.unitPrice, line.currency)} each · {unitOf(line.name)}</p></div>
+                <div className="min-w-0 flex-1"><p className="break-words text-sm font-semibold leading-tight"><span translate="no" data-vtv-name="">{line.name}</span></p><p className="text-xs text-muted">{money(line.unitPrice, line.currency)} each · {unitOf(line.name)}</p></div>
                 <Stepper value={line.quantity} name={line.name} onMinus={() => bump(line.key, -1)} onPlus={() => bump(line.key, 1)} />
                 <p className="w-16 shrink-0 text-right text-sm font-bold tabular-nums">{money(line.unitPrice * line.quantity, line.currency)}</p></li>)}</ul>
               <div className="mt-2 flex gap-2">

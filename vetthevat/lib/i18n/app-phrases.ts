@@ -8,6 +8,20 @@ export function phraseColumn(locale: Locale): 0 | 1 | null {
   return locale === "gu-IN" ? 0 : locale === "hi-IN" ? 1 : null;
 }
 
+// Every other language: a pack (lib/i18n/locales/<locale>.json) downloaded only when that language
+// is chosen. phrases: English phrase -> translation; patterns: the appPatterns templates in order;
+// months: short month names; catalog: catalog messages that language had no translation for.
+export type LocalePack = { catalog: Record<string, string>; phrases: Record<string, string>; patterns: string[]; months: Record<string, string> };
+export const PACK_LOCALES: readonly Locale[] = ["es-ES", "fr-FR", "ar", "pt-PT", "de-DE", "it-IT", "pl-PL", "ur-PK", "pa-IN", "ro-RO"];
+const packs = new Map<Locale, LocalePack>();
+let packVersion = 0;
+export function registerLocalePack(locale: Locale, pack: LocalePack) { packs.set(locale, pack); packVersion++; }
+export const localePack = (locale: Locale) => packs.get(locale);
+export const localePackVersion = () => packVersion;
+export function translatePackMonths(text: string, pack: LocalePack) {
+  return text.replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\b/g, (m) => pack.months[m] ?? m);
+}
+
 const months: Record<string, [string, string]> = {
   Jan: ["જાન્યુ", "जन"], Feb: ["ફેબ્રુ", "फ़र"], Mar: ["માર્ચ", "मार्च"], Apr: ["એપ્રિ", "अप्रै"], May: ["મે", "मई"], Jun: ["જૂન", "जून"],
   Jul: ["જુલા", "जुला"], Aug: ["ઑગ", "अग"], Sep: ["સપ્ટે", "सित"], Sept: ["સપ્ટે", "सित"], Oct: ["ઑક્ટો", "अक्टू"], Nov: ["નવે", "नव"], Dec: ["ડિસે", "दिस"]

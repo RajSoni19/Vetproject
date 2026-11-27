@@ -39,7 +39,7 @@ function securityHeaders(allowTranslate: boolean) {
   ];
 }
 // Kept in sync with lib/i18n/translate-scope.ts.
-const privateRoutes = ["/app/:path*", "/super-admin/:path*", "/super-admin", "/api/:path*", "/onboarding/:path*", "/onboarding", "/team-invitation/:path*", "/team-invitation", "/reset-password/:path*", "/reset-password", "/verify-email/:path*", "/verify-email"];
+const privateRoutes = ["/super-admin/:path*", "/super-admin", "/api/:path*", "/reset-password/:path*", "/reset-password", "/verify-email/:path*", "/verify-email"];
 
 const nextConfig: NextConfig = {
   // Explicit local build limit for constrained Windows worker processes.

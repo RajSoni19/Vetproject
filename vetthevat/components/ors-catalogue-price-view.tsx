@@ -612,7 +612,7 @@ export function OrsCataloguePriceView({
                               {product.icon}
                             </span>
                             <div>
-                              <div className="font-bold text-slate-900">{product.name}</div>
+                              <div className="font-bold text-slate-900"><span translate="no" data-vtv-name="">{product.name}</span></div>
                               <div className="text-[11px] text-slate-400">{product.subtitle}</div>
                             </div>
                           </div>
@@ -843,7 +843,7 @@ export function OrsCataloguePriceView({
                           {group.code}
                         </span>
                         <div>
-                          <div className="text-xs font-bold text-slate-900">{group.supplierName}</div>
+                          <div className="text-xs font-bold text-slate-900"><span translate="no" data-vtv-name="">{group.supplierName}</span></div>
                           <div className="text-[11px] text-slate-500">{group.items.length} items</div>
                         </div>
                       </div>

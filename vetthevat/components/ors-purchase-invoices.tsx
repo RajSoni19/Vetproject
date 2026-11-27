@@ -39,7 +39,7 @@ export function OrsPurchaseInvoices({ companyId }: { companyId: string }) {
     {visible.length ? <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm">
       <thead className="text-xs text-muted"><tr><th className="py-2">Supplier</th><th>Invoice</th><th>Date</th><th className="text-right">Net</th><th className="text-right">VAT</th><th className="text-right">Total</th></tr></thead>
       <tbody>{visible.map(i => <tr key={i.id} className="border-t border-line">
-        <td className="py-3 pr-3 font-semibold">{i.supplierName}</td>
+        <td className="py-3 pr-3 font-semibold"><span translate="no" data-vtv-name="">{i.supplierName}</span></td>
         <td><Link href={`/app/invoices/${i.id}`} className="font-semibold text-brand-700 underline">{i.number}</Link></td>
         <td className="whitespace-nowrap">{ukDate(i.issuedOn)}</td>
         <td className="text-right tabular-nums">{money(i.net, i.currency)}</td><td className="text-right tabular-nums">{money(i.vat, i.currency)}</td><td className="text-right font-semibold tabular-nums">{money(i.gross, i.currency)}</td>

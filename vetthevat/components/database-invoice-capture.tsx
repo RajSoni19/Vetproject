@@ -249,7 +249,7 @@ export function DatabaseInvoiceCapture({ companyId, companyName }: { companyId: 
       <label className="mt-4 grid gap-1 text-sm font-semibold">Supplier (optional)
         <select className="field-control" value={supplierId} disabled={reading} onChange={e => chooseSupplier(e.target.value)}>
           <option value="">Not sure / new supplier – read it from the document</option>
-          {suppliers.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+          {suppliers.map(item => <option key={item.id} value={item.id}><span translate="no" data-vtv-name="">{item.name}</span></option>)}
         </select>
         <span className="text-xs font-normal text-muted">Choose the supplier first for the most accurate result: its saved name and VAT number are used, and only the invoice details are read from the photo.</span>
       </label>

@@ -1,6 +1,7 @@
 // Prepared controller only. No route imports this module and proxy denies the
 // /api/business namespace until real authorization/persistence tests pass.
 import {comparePrices} from "@/lib/price-comparison";
+import {MAX_NAMES,MAX_NAME_LENGTH,TRANSLITERATION_SCRIPTS,transliterateNames} from "@/lib/ai-transliterate";
 import {supplierOrderInput,supplierOrderStatusInput,SupplierOrderInputError,normalizePhone,normalizeCompanyNumber} from "@/lib/supplier-orders";
 import {ApiError,apiV1,jsonBody,mutationHeaders} from "@/lib/server/api-v1";
 import {requireBusinessScope} from "@/lib/server/saas/request-context";
@@ -23,6 +24,15 @@ export function preparedInvoiceHandler(services:ReturnType<typeof businessServic
   const response=await apiV1(async()=>{
     if(!services)throw new ApiError(503,"UNAVAILABLE","Invoice services are unavailable.");
     const url=new URL(request.url);
+    if(url.pathname==='/api/business/transliterate'&&request.method==='POST'){
+      // Names shown on screen, spelled out in the reader's script (see lib/ai-transliterate.ts).
+      await requireBusinessScope(request,request.headers.get('x-company-id'),'reports:read',services);
+      const body=(await jsonBody(request,40000)??{}) as {locale?:unknown;names?:unknown};
+      const locale=typeof body.locale==='string'?body.locale:'';
+      const names=Array.isArray(body.names)?body.names.filter((n):n is string=>typeof n==='string'&&n.trim().length>0&&n.length<=MAX_NAME_LENGTH).slice(0,MAX_NAMES):[];
+      if(!TRANSLITERATION_SCRIPTS[locale])throw new ApiError(400,"INVALID_REQUEST","Unsupported language.");
+      return {names:await transliterateNames(locale,names),original:names};
+    }
     if(url.pathname==='/api/business/invoice-report'&&request.method==='GET'){
       const format=url.searchParams.get('format'),access=await requireBusinessScope(request,request.headers.get('x-company-id'),format?'reports:export':'reports:read',services);
       const report=await services.reports.invoices(access,url.searchParams);

@@ -203,7 +203,7 @@ export function BankPaymentMatching({ companyId, companyName }: { companyId: str
               <td className="whitespace-nowrap py-3 pl-2">{ukDate(row.date)}</td>
               <td className="py-3 pr-3">{row.description || "—"}</td>
               <td className="py-3 text-right font-semibold tabular-nums">{money(row.amount)}</td>
-              <td className="py-3 pl-4">{row.invoice ? <><Link href={`/app/invoices/${row.invoice.id}`} className="font-semibold text-brand-700 underline">{row.invoice.number}</Link><span className="block text-xs text-muted">{row.invoice.supplierName} · {ukDate(row.invoice.issuedOn)}{row.invoice.state === "draft" ? " · Draft" : ""}</span></> : <span className="text-muted">—</span>}</td>
+              <td className="py-3 pl-4">{row.invoice ? <><Link href={`/app/invoices/${row.invoice.id}`} className="font-semibold text-brand-700 underline"><span translate="no" data-vtv-name="">{row.invoice.number}</span></Link><span className="block text-xs text-muted"><span translate="no" data-vtv-name="">{row.invoice.supplierName}</span> · {ukDate(row.invoice.issuedOn)}{row.invoice.state === "draft" ? " · Draft" : ""}</span></> : <span className="text-muted">—</span>}</td>
               <td className="py-3 text-right tabular-nums">{row.status === "Matched" ? <span className="font-semibold">{money(verifiedVat(row))}</span> : row.invoice ? <span className="text-muted">{money(row.invoice.vat)}?</span> : money(0)}</td>
               <td className="py-3 pl-4">
                 {row.status === "Matched" ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-700"><CheckCircle2 className="h-4 w-4" />Verified</span>

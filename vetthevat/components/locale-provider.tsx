@@ -6,6 +6,9 @@ import { isLocale, localeDirection, message, registerTranslations, translationsL
 import { machineTranslationAllowed, protectBrandNames } from "@/lib/i18n/translate-scope";
 
 const storageKey = "vtv.preferred-locale.v1";
+// Kept in step with PACK_LOCALES in lib/i18n/app-phrases.ts (not imported here, to keep that file out of the main bundle).
+const PACK_LOCALES: readonly Locale[] = ["es-ES", "fr-FR", "ar", "pt-PT", "de-DE", "it-IT", "pl-PL", "ur-PK", "pa-IN", "ro-RO"];
+type LocalePack = import("@/lib/i18n/app-phrases").LocalePack;
 type LocaleContextValue = { locale: Locale; setLocale: (locale: Locale) => void; syncAccountLocale: () => Promise<boolean>; t: (key: MessageKey) => string };
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
@@ -45,8 +48,28 @@ function setGoogleCookie(lang: string) {
   if (host) { document.cookie = `${value}; domain=${host}; path=/;`; document.cookie = `${value}; domain=.${host}; path=/;`; }
 }
 
-// Loads Google's page translator once, on public pages only.
+// Google Translate swaps text nodes for its own <font> wrappers. When React later updates or removes a
+// node Google has moved, the browser throws ("Failed to execute 'removeChild'… not a child") and the
+// page breaks. The standard fix: if the node is no longer where React expects, skip instead of throwing.
+let domPatched = false;
+function protectReactFromTranslators() {
+  if (domPatched || typeof Node === "undefined") return;
+  domPatched = true;
+  const removeChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(this: Node, child: T): T {
+    if (child.parentNode !== this) return child;
+    return removeChild.call(this, child) as T;
+  };
+  const insertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(this: Node, node: T, reference: Node | null): T {
+    if (reference && reference.parentNode !== this) return node;
+    return insertBefore.call(this, node, reference) as T;
+  };
+}
+
+// Loads Google's page translator once (public site and signed-in workspace).
 function loadGoogleTranslate() {
+  protectReactFromTranslators();
   const w = window as unknown as { googleTranslateElementInit?: () => void; google?: { translate?: { TranslateElement: new (options: object, id: string) => unknown } } };
   if (document.getElementById("google-translate-script")) return;
   w.googleTranslateElementInit = () => {
@@ -127,8 +150,16 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (translationsLoaded(locale)) return;
     let active = true;
-    void import("@/lib/i18n/catalog-translations").then((module) => {
-      registerTranslations(locale, module.translationMaps(locale));
+    // Languages without built-in workspace phrases also download their pack (lib/i18n/locales/<locale>.json):
+    // its catalog messages fill the gaps first, and its phrases feed the in-app translator.
+    const packed = PACK_LOCALES.includes(locale);
+    void Promise.all([
+      import("@/lib/i18n/catalog-translations"),
+      packed ? import(`@/lib/i18n/locales/${locale}.json`).then((module) => module.default as LocalePack) : Promise.resolve(null),
+      packed ? import("@/lib/i18n/app-phrases") : Promise.resolve(null)
+    ]).then(([module, pack, phrases]) => {
+      if (pack && phrases) phrases.registerLocalePack(locale, pack);
+      registerTranslations(locale, [...(pack ? [pack.catalog] : []), ...module.translationMaps(locale)]);
       if (active) setVersion((value) => value + 1);
     }).catch(() => { /* English text stays on screen if the language file cannot load */ });
     return () => { active = false; };
@@ -158,6 +189,15 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     }, 50);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [locale, pathname, version]);
+
+  // Workspace business names in non-Latin languages: spelled out by sound (lib/i18n/name-script.ts).
+  const workspace = Boolean(pathname?.startsWith("/app"));
+  useEffect(() => {
+    if (!workspace || !["hi-IN", "gu-IN", "pa-IN", "ur-PK", "ar"].includes(locale)) return;
+    let stop: (() => void) | null = null, cancelled = false;
+    void import("@/lib/i18n/name-script").then((module) => { if (!cancelled) stop = module.startNameScript(locale); }).catch(() => undefined);
+    return () => { cancelled = true; stop?.(); };
+  }, [locale, workspace]);
 
   const persistLocal = useCallback((next: Locale) => {
     try {
@@ -228,8 +268,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   // Public pages are translated by Google, which needs English text to work from. If the site
   // wrote its own translation there too, Google would keep showing a stale copy after a language
-  // change (Arabic "Download app" stayed on a Hindi page). Signed-in pages never use Google, so
-  // they show the site's own translations.
+  // change (Arabic "Download app" stayed on a Hindi page). The signed-in workspace uses Google too
+  // (approved), so it also shows English text for Google to translate.
   const textLocale: Locale = pathname && machineTranslationAllowed(pathname) ? "en-GB" : locale;
   const value = useMemo(() => ({
     locale,

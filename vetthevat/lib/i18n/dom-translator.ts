@@ -2,7 +2,7 @@
 
 // High-performance client-side DOM translator for multi-language support (Gujarati, Hindi, Spanish, Arabic)
 import type { Locale } from "@/lib/i18n/catalog";
-import { appPatterns, appPhrases, phraseColumn, translateMonths } from "@/lib/i18n/app-phrases";
+import { appPatterns, appPhrases, localePack, localePackVersion, phraseColumn, translateMonths, translatePackMonths } from "@/lib/i18n/app-phrases";
 
 const originalTextMap = new WeakMap<Node, string>();
 // The text this translator last wrote into each node. A node whose text differs from it was
@@ -395,16 +395,19 @@ const arabicDictionary: Record<string, string> = {
 };
 
 // Workspace screens: complete phrases (see app-phrases.ts) take priority over the older word lists.
-const mergedCache = new Map<Locale, Record<string, string>>();
+const mergedCache = new Map<string, Record<string, string>>();
 function getDictionary(locale: Locale): Record<string, string> | null {
-  const cached = mergedCache.get(locale);
+  // A language pack can arrive after the first lookup, so the cache is keyed by its version too.
+  const cacheKey = `${locale}:${localePackVersion()}`;
+  const cached = mergedCache.get(cacheKey);
   if (cached) return cached;
   const base = locale === "hi-IN" ? hindiDictionary : locale === "gu-IN" ? gujaratiDictionary : locale === "es-ES" ? spanishDictionary : locale === "ar" ? arabicDictionary : null;
-  const column = phraseColumn(locale);
-  if (!base && column === null) return null;
+  const column = phraseColumn(locale), pack = localePack(locale);
+  if (!base && column === null && !pack) return null;
   const merged: Record<string, string> = { ...(base ?? {}) };
   if (column !== null) for (const [en, values] of Object.entries(appPhrases)) merged[en] = values[column];
-  mergedCache.set(locale, merged);
+  else if (pack) Object.assign(merged, pack.phrases);
+  mergedCache.set(cacheKey, merged);
   return merged;
 }
 
@@ -457,13 +460,14 @@ function translateTextNode(node: Text, dict: Record<string, string>) {
   }
 
   // 2. Phrases containing numbers or names ("14 suppliers", "20 Nov 2026")
-  const column = phraseColumn(currentLocale);
-  if (column !== null) {
-    for (const [pattern, ...values] of appPatterns) {
+  const column = phraseColumn(currentLocale), pack = column === null ? localePack(currentLocale) : undefined;
+  if (column !== null || pack) {
+    for (const [index, [pattern, ...values]] of appPatterns.entries()) {
       const match = trimmed.match(pattern);
-      if (match) {
-        const translated = values[column].replace(/\$(\d)/g, (_, i: string) => match[Number(i)] ?? "");
-        writeText(node, (orig.match(/^\s*/)?.[0] || "") + translateMonths(translated, column) + (orig.match(/\s*$/)?.[0] || ""));
+      const template = column !== null ? values[column] : pack?.patterns[index];
+      if (match && template) {
+        const translated = template.replace(/\$(\d)/g, (_, i: string) => match[Number(i)] ?? "");
+        writeText(node, (orig.match(/^\s*/)?.[0] || "") + (column !== null ? translateMonths(translated, column) : translatePackMonths(translated, pack!)) + (orig.match(/\s*$/)?.[0] || ""));
         return;
       }
     }

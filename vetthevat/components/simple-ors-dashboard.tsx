@@ -61,13 +61,13 @@ export function SimpleOrsDashboard({ companyId, companyName }: { companyId: stri
     <div className="grid gap-5 lg:grid-cols-2">
       <Card className="p-5"><h3 className="font-bold">Top suppliers</h3><p className="text-xs text-muted">By amount spent</p>
         {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : topSuppliers.length ? <ul className="mt-3 grid gap-3">{topSuppliers.map(([name, total]) => <li key={name}>
-          <div className="flex justify-between text-sm"><span className="font-semibold">{name}</span><span className="tabular-nums">{money(total)}</span></div>
+          <div className="flex justify-between text-sm"><span className="font-semibold"><span translate="no" data-vtv-name="">{name}</span></span><span className="tabular-nums">{money(total)}</span></div>
           <div className="mt-1 h-2 rounded-full bg-wash"><div className="h-2 rounded-full bg-brand-600" style={{ width: `${Math.max(4, total / maxSpend * 100)}%` }} /></div></li>)}</ul>
           : <p className="mt-3 text-sm text-muted">No purchases yet. <Link href="/app/ors/supplier-invoices/upload" className="font-semibold text-brand-700 underline">Scan a supplier invoice</Link>.</p>}
       </Card>
       <Card className="p-5"><h3 className="font-bold">Where you can save</h3><p className="text-xs text-muted">Buying at the cheapest supplier instead of your last one</p>
         {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : bestSavings.length ? <ul className="mt-3 grid gap-2">{bestSavings.map(p => <li key={p.key} className="flex items-center justify-between gap-3 border-t border-line pt-2 text-sm">
-          <span className="min-w-0"><span className="block truncate font-semibold">{p.name}</span><span className="text-xs text-muted">Cheapest: {p.suppliers.find(s => s.cheapest)?.supplierName}</span></span>
+          <span className="min-w-0"><span className="block truncate font-semibold"><span translate="no" data-vtv-name="">{p.name}</span></span><span className="text-xs text-muted">Cheapest: {p.suppliers.find(s => s.cheapest)?.supplierName}</span></span>
           <span className="shrink-0 font-bold text-emerald-700 tabular-nums">Save {money(p.potentialSaving, p.currency)}</span></li>)}</ul>
           : <p className="mt-3 text-sm text-muted">Nothing to save yet. Savings appear when you buy the same product from more than one supplier.</p>}
       </Card>

@@ -55,7 +55,7 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
     <div className="flex flex-wrap items-center justify-between gap-3">
       <h2 className="text-xl font-bold">{companyName ? `Welcome back, ${companyName}` : "Overview"}</h2>
       <div className="flex rounded-lg border border-line bg-white p-1 text-sm" role="tablist" aria-label="Period">
-        {([["month", "This month"], ["quarter", "This quarter"], ["year", "12 months"], ["custom", "Custom"]] as [Period, string][]).map(([value, label]) =>
+        {([["month", "This month"], ["quarter", "This quarter"], ["year", "12 months"], ["custom", "Custom dates"]] as [Period, string][]).map(([value, label]) =>
           <button key={value} type="button" role="tab" aria-selected={period === value} onClick={() => setPeriod(value)} className={`min-h-9 rounded-md px-3 font-semibold ${period === value ? "bg-brand-700 text-white" : "text-muted"}`}>{label}</button>)}
       </div>
     </div>
@@ -83,7 +83,7 @@ export function SimpleDashboard({ companyId, companyName }: { companyId: string;
     <Card className="p-5">
       <div className="flex items-center justify-between"><h3 className="font-bold">Latest invoices</h3><Link href="/app/invoices" className="text-sm font-semibold text-brand-700 underline">View all</Link></div>
       {loading ? <p className="mt-3 text-sm text-muted">Loading…</p> : invoices!.length ? <ul className="mt-2">{invoices!.slice(0, 6).map(i => <li key={i.id} className="flex items-center justify-between gap-3 border-t border-line py-3 text-sm">
-        <Link href={`/app/invoices/${i.id}`} className="min-w-0"><span className="block truncate font-semibold">{i.supplierName}</span><span className="text-xs text-muted">{i.number} · {ukDate(i.issuedOn)}</span></Link>
+        <Link href={`/app/invoices/${i.id}`} className="min-w-0"><span className="block truncate font-semibold"><span translate="no" data-vtv-name="">{i.supplierName}</span></span><span className="text-xs text-muted">{i.number} · {ukDate(i.issuedOn)}</span></Link>
         <span className="shrink-0 text-right tabular-nums"><span className="block font-semibold">{money(i.gross)}</span><span className="text-xs text-muted">VAT {money(i.vat)}</span></span></li>)}</ul>
         : <p className="mt-3 text-sm text-muted">No invoices yet. <Link href="/app/invoices/upload" className="font-semibold text-brand-700 underline">Scan your first invoice</Link>.</p>}
     </Card>

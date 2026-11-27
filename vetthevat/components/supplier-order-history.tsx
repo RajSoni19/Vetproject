@@ -69,7 +69,7 @@ export function SupplierOrderHistory({ companyId, companyName, reloadToken = 0, 
         <tbody>{shown.map(o => <Fragment key={o.id}><tr className="border-t border-line align-middle">
           <td className="py-2 font-semibold"><button type="button" className="underline decoration-dotted" onClick={() => setOpen(open === o.id ? "" : o.id)} aria-expanded={open === o.id}>{o.number}</button></td>
           <td className="whitespace-nowrap text-muted">{ukDate(o.createdAt)}</td>
-          <td className="font-semibold">{o.supplierName}</td><td>{o.lines.length}</td><td className="font-semibold tabular-nums">{money(o.total, o.currency)}</td>
+          <td className="font-semibold"><span translate="no" data-vtv-name="">{o.supplierName}</span></td><td>{o.lines.length}</td><td className="font-semibold tabular-nums">{money(o.total, o.currency)}</td>
           <td>{o.channel === "whatsapp" ? "WhatsApp" : "Email (old)"}</td>
           <td><span className={`rounded-full px-2 py-0.5 text-xs font-bold ${o.status === "delivered" ? "bg-emerald-100 text-emerald-800" : o.status === "cancelled" ? "bg-slate-100 text-slate-600" : "bg-amber-100 text-amber-800"}`}>{o.status === "sent" ? "Sent" : o.status === "delivered" ? "Delivered" : "Cancelled"}</span></td>
           <td className="whitespace-nowrap text-right">

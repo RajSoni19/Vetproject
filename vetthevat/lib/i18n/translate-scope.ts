@@ -1,8 +1,9 @@
-// Pages where the language switcher may use Google Translate: public
-// marketing and sign-in pages. Signed-in pages never do, so customer invoice
-// and financial data is not sent to a translation service. Kept in sync with
-// the privateRoutes list in next.config.ts (the security policy).
-const privatePrefixes = ["/app", "/super-admin", "/api", "/onboarding", "/team-invitation", "/reset-password", "/verify-email"];
+// Pages where the language switcher may use Google Translate: the public site and, since the product
+// owner approved it (2026-11-27), the signed-in workspace too. Business data on those pages (supplier and
+// product names, amounts, invoice numbers) is marked translate="no" and is not translated. Admin pages,
+// the API, and pages whose links carry secret tokens never use it. Kept in sync with the privateRoutes
+// list in next.config.ts (the security policy).
+const privatePrefixes = ["/super-admin", "/api", "/reset-password", "/verify-email"];
 
 export function machineTranslationAllowed(pathname: string) {
   return !privatePrefixes.some((prefix) => pathname === prefix || pathname.startsWith(prefix + "/"));
